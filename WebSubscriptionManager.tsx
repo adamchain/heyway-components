@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Crown, Check, Zap, CreditCard } from 'lucide-react-native';
 import { subscriptionService, SubscriptionStatus } from '@/services/subscriptionService';
-import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '@/components/designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 import { isWeb } from '@/utils/platformUtils';
 
 interface WebSubscriptionManagerProps {
@@ -206,35 +206,13 @@ export default function WebSubscriptionManager({ onSubscriptionChanged }: WebSub
 
 const styles = {
   // ... (copy styles from original SubscriptionManager.tsx)
-  container: { flex: 1, backgroundColor: COLORS.background.primary },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: SPACING.xxxxl },
-  loadingText: { marginTop: SPACING.lg, fontSize: TYPOGRAPHY.sizes.md, color: COLORS.text.secondary, fontWeight: '500' },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: SPACING.xxxxl },
-  errorText: { fontSize: TYPOGRAPHY.sizes.md, color: COLORS.error, textAlign: 'center', marginBottom: SPACING.xl, fontWeight: '500' },
-  retryButton: { backgroundColor: COLORS.green, paddingHorizontal: SPACING.xl, paddingVertical: SPACING.md, borderRadius: RADIUS.md },
-  retryButtonText: { color: COLORS.text.primary, fontSize: TYPOGRAPHY.sizes.md, fontWeight: '600' },
-  planCard: { backgroundColor: COLORS.background.secondary, margin: SPACING.lg, padding: SPACING.xl, borderRadius: RADIUS.lg, borderWidth: 1, ...SHADOWS.md },
-  freeCard: { borderColor: COLORS.border.primary },
-  proCard: { borderColor: COLORS.accent, backgroundColor: COLORS.background.tertiary },
-  planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
-  planTitleRow: { flexDirection: 'row', alignItems: 'center' },
-  planTitle: { fontSize: TYPOGRAPHY.sizes.xxxl, fontWeight: '700', color: COLORS.text.primary, marginLeft: SPACING.sm },
-  proBadge: { backgroundColor: COLORS.accent, paddingHorizontal: SPACING.sm, paddingVertical: SPACING.xs, borderRadius: RADIUS.sm },
-  proBadgeText: { fontSize: TYPOGRAPHY.sizes.xs, fontWeight: '700', color: COLORS.text.primary },
-  usageContainer: { marginBottom: SPACING.lg },
-  usageText: { fontSize: TYPOGRAPHY.sizes.md, fontWeight: '600', color: COLORS.text.primary, marginBottom: SPACING.sm },
-  progressBar: { height: 6, backgroundColor: COLORS.background.quaternary, borderRadius: RADIUS.xs, marginBottom: SPACING.sm },
-  progressFill: { height: '100%', backgroundColor: COLORS.green, borderRadius: RADIUS.xs },
-  renewalText: { fontSize: TYPOGRAPHY.sizes.sm, color: COLORS.text.secondary, fontWeight: '500' },
-  warningContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.background.tertiary, padding: SPACING.md, borderRadius: RADIUS.md, borderWidth: 1, borderColor: COLORS.error },
-  warningText: { marginLeft: SPACING.sm, fontSize: TYPOGRAPHY.sizes.sm, color: COLORS.error, flex: 1, fontWeight: '500' },
-  upgradeSection: { margin: SPACING.lg },
-  sectionTitle: { fontSize: TYPOGRAPHY.sizes.xl, fontWeight: '700', color: COLORS.text.primary, marginBottom: SPACING.lg },
-  proFeaturesCard: { backgroundColor: COLORS.background.secondary, padding: SPACING.xl, borderRadius: RADIUS.lg, marginBottom: SPACING.xl, borderWidth: 1, borderColor: COLORS.border.primary },
-  proFeature: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md },
-  proFeatureText: { marginLeft: SPACING.md, fontSize: TYPOGRAPHY.sizes.md, color: COLORS.text.primary, fontWeight: '500' },
-  upgradeButton: { backgroundColor: COLORS.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: SPACING.lg, borderRadius: RADIUS.lg, ...SHADOWS.accent },
-  upgradeButtonText: { marginLeft: SPACING.sm, fontSize: TYPOGRAPHY.sizes.lg, fontWeight: '700', color: COLORS.text.primary },
+  container: { flex: 1, backgroundColor: HEYWAY_COLORS.background.primary },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: HEYWAY_SPACING.xxxxl },
+  loadingText: { marginTop: HEYWAY_SPACING.lg, fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.secondary, letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal },
+  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: HEYWAY_SPACING.xxxxl },
+  errorText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.status.error, textAlign: 'center', marginBottom: HEYWAY_SPACING.xl, letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal },
+  footerInfo: { margin: HEYWAY_SPACING.lg, padding: HEYWAY_SPACING.lg, backgroundColor: HEYWAY_COLORS.background.secondary, borderRadius: HEYWAY_RADIUS.component.card.md, borderWidth: 1, borderColor: HEYWAY_COLORS.border.primary },
+  footerText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.secondary, textAlign: 'center', marginBottom: HEYWAY_SPACING.xs, letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal }
   buttonDisabled: { opacity: 0.6 },
   footerInfo: { margin: SPACING.lg, padding: SPACING.lg, backgroundColor: COLORS.background.secondary, borderRadius: RADIUS.md, borderWidth: 1, borderColor: COLORS.border.primary },
   footerText: { fontSize: TYPOGRAPHY.sizes.sm, color: COLORS.text.secondary, textAlign: 'center', marginBottom: SPACING.xs, fontWeight: '500' }
