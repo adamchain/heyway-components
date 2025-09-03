@@ -1161,9 +1161,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
     ...HEYWAY_SHADOWS.light.xs,
-    borderWidth: 2,
-    borderColor: HEYWAY_COLORS.status.error,
-    borderStyle: 'dashed',
     alignItems: 'center',
   },
   // Create button styles

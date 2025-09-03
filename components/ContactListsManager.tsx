@@ -792,16 +792,14 @@ const styles = StyleSheet.create({
   },
   settingText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    fontWeight: 400,
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   toggle: {
     width: 44,
     height: 26,
-    borderRadius: HEYWAY_RADIUS.component.button.xl,
+    borderRadius: HEYWAY_RADIUS.component.button.pill,
     backgroundColor: HEYWAY_COLORS.background.tertiary,
     justifyContent: 'center',
     paddingHorizontal: HEYWAY_SPACING.xs,
@@ -812,10 +810,9 @@ const styles = StyleSheet.create({
   toggleIndicator: {
     width: 22,
     height: 22,
-    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    borderRadius: HEYWAY_RADIUS.component.button.full,
     backgroundColor: HEYWAY_COLORS.background.primary,
     alignSelf: 'flex-end',
-    ...HEYWAY_SHADOWS.light.xs,
     ...HEYWAY_SHADOWS.light.xs,
   },
 });

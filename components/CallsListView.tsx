@@ -807,11 +807,11 @@ const styles = StyleSheet.create({
 
   // Loading
   loadingContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: HEYWAY_SPACING.lg, backgroundColor: HEYWAY_COLORS.background.primary },
-  loadingText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large, color: HEYWAY_COLORS.text.secondary, fontWeight: '500' },
+  loadingText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large, color: HEYWAY_COLORS.text.secondary, fontWeight: 500 },
 
   // Empty state
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: HEYWAY_SPACING.xxl * 2, paddingHorizontal: HEYWAY_SPACING.xl },
-  emptyTitle: { marginTop: HEYWAY_SPACING.lg, marginBottom: HEYWAY_SPACING.sm, textAlign: 'center', fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large, fontWeight: '700', color: HEYWAY_COLORS.text.primary, letterSpacing: -0.5 },
+  emptyTitle: { marginTop: HEYWAY_SPACING.lg, marginBottom: HEYWAY_SPACING.sm, textAlign: 'center', fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large, fontWeight: 600, color: HEYWAY_COLORS.text.primary, letterSpacing: -0.5 },
   emptyText: { textAlign: 'center', maxWidth: 280, fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, color: HEYWAY_COLORS.text.secondary, lineHeight: 20 },
 
   // Footer buttons

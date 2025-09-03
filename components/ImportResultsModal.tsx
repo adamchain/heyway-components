@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
-    fontWeight: '600' as any,
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.primary,
   },
   closeButton: {
@@ -414,12 +414,12 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.text.secondary,
   },
   tabTextActive: {
     color: HEYWAY_COLORS.interactive.primary,
-    fontWeight: '600' as any,
+    fontWeight: 600,
   },
   tabContent: {
     flex: 1,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   summaryTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.small,
-    fontWeight: '700' as any,
+    fontWeight: 700,
     color: HEYWAY_COLORS.text.primary,
     marginTop: HEYWAY_SPACING.component.margin.sm,
   },
@@ -460,12 +460,12 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
-    fontWeight: '700' as any,
+    fontWeight: 700,
     color: HEYWAY_COLORS.text.primary,
   },
   statLabel: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.text.secondary,
     marginTop: HEYWAY_SPACING.component.margin.xs,
   },
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   },
   discrepancyTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '600' as any,
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.primary,
     marginBottom: HEYWAY_SPACING.component.margin.xs,
   },
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: '600' as any,
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.primary,
     marginBottom: HEYWAY_SPACING.component.margin.md,
   },
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   },
   bucketCode: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
     marginBottom: HEYWAY_SPACING.component.margin.xs / 2,
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
   },
   bucketCount: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.small,
-    fontWeight: '700' as any,
+    fontWeight: 700,
     color: HEYWAY_COLORS.status.error,
   },
   bucketCountActive: {
@@ -557,7 +557,7 @@ const styles = StyleSheet.create({
   },
   viewAllButtonText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.interactive.primary,
   },
   failuresContainer: {
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
   },
   exportButtonText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.interactive.primary,
   },
   activeFilter: {
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
   },
   activeFilterText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.interactive.primary,
   },
   failuresList: {
@@ -642,7 +642,7 @@ const styles = StyleSheet.create({
   },
   errorContact: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.text.primary,
     flex: 1,
   },
@@ -654,7 +654,7 @@ const styles = StyleSheet.create({
   },
   errorCodeText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '500' as any,
+    fontWeight: 500,
     color: HEYWAY_COLORS.status.error,
   },
   errorPhone: {

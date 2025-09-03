@@ -62,6 +62,9 @@ export const HEYWAY_COLORS = {
         primary: BASE_COLORS.white,
         secondary: BASE_COLORS.gray[100],
         tertiary: BASE_COLORS.gray[50],
+        content: BASE_COLORS.white,
+        card: BASE_COLORS.white,
+        panel: BASE_COLORS.gray[50],
         whatsappPanel: BASE_COLORS.whatsappBackground,
         whatsappChat: BASE_COLORS.whatsappChatGreen,
         intelligenceSubtle: 'rgba(36, 211, 102, 0.05)', // Very subtle green wash
@@ -75,6 +78,7 @@ export const HEYWAY_COLORS = {
         secondary: BASE_COLORS.gray[500],
         tertiary: BASE_COLORS.gray[600],
         inverse: BASE_COLORS.white,
+        white: BASE_COLORS.white,
         whatsappTime: BASE_COLORS.whatsappGreenDark,
         muted: BASE_COLORS.blackOverlay50,
         quote: BASE_COLORS.blackOverlay68,
@@ -83,11 +87,15 @@ export const HEYWAY_COLORS = {
     // Interactive elements
     interactive: {
         primary: BASE_COLORS.whatsappBlue,
-        whatsappGreen: BASE_COLORS.whatsappGreen,
-        whatsappDark: '#0B141A', // Dark WhatsApp header
+        secondary: BASE_COLORS.gray[100],
         hover: BASE_COLORS.blackOverlay04,
         selected: BASE_COLORS.blackOverlay06,
         focus: BASE_COLORS.whatsappGreen,
+        disabled: BASE_COLORS.gray[300],
+        primaryDisabled: BASE_COLORS.gray[400],
+        whatsappLight: 'rgba(36, 211, 102, 0.1)',
+        whatsappGreen: BASE_COLORS.whatsappGreen,
+        whatsappDark: '#0B141A', // Dark WhatsApp header
     },
 
     // Border colors
@@ -95,6 +103,7 @@ export const HEYWAY_COLORS = {
         primary: BASE_COLORS.gray[300],
         secondary: BASE_COLORS.gray[300],
         tertiary: BASE_COLORS.gray[200],
+        divider: BASE_COLORS.gray[200],
         input: BASE_COLORS.gray[400],
         subtle: 'rgba(0, 0, 0, 0.1)',
     },
@@ -102,6 +111,8 @@ export const HEYWAY_COLORS = {
     // Status colors
     status: {
         success: BASE_COLORS.success,
+        online: '#34C759',
+        pending: '#FF9500',
         warning: BASE_COLORS.warning,
         error: BASE_COLORS.error,
     },
@@ -169,10 +180,10 @@ export const HEYWAY_TYPOGRAPHY = {
     },
 
     fontWeight: {
-        regular: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
+        regular: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
     },
 
     lineHeight: {
@@ -191,6 +202,7 @@ export const HEYWAY_TYPOGRAPHY = {
 
 // Spacing system based on 8px grid
 export const HEYWAY_SPACING = {
+    micro: 2,  // 0.25 * base
     xs: 4,     // 0.5 * base
     sm: 8,     // 1 * base  
     md: 12,    // 1.5 * base
@@ -199,6 +211,8 @@ export const HEYWAY_SPACING = {
     xxl: 24,   // 3 * base
     xxxl: 32,  // 4 * base
     xxxxl: 40, // 5 * base
+    giant: 48, // 6 * base
+    huge: 64,  // 8 * base
 
     // Semantic spacing from raw CSS
     component: {
@@ -235,6 +249,7 @@ export const HEYWAY_RADIUS = {
     xl: 12,   // Message bubble radius
     xxl: 16,  // Large container radius
     xxxl: 28, // Avatar radius
+    full: 9999, // Fully rounded
 
     component: {
         button: {
@@ -242,12 +257,15 @@ export const HEYWAY_RADIUS = {
             md: 6,
             lg: 8,
             xl: 12,
+            full: 9999,
+            pill: 20,
         },
         card: {
             sm: 6,
             md: 8,
             lg: 10,
             xl: 12,
+            xxl: 16,
         },
         input: {
             sm: 4,
@@ -267,12 +285,19 @@ export const HEYWAY_RADIUS = {
             lg: 13,
             xl: 16,
         },
+        modal: {
+            sm: 8,
+            md: 12,
+            lg: 16,
+            xl: 20,
+        },
     },
 };
 
 // Shadow system from raw CSS - complex multi-layer shadows
 export const HEYWAY_SHADOWS = {
     light: {
+        none: {},
         xs: {
             shadowColor: '#000000',
             shadowOffset: { width: 0, height: 1 },
@@ -307,6 +332,40 @@ export const HEYWAY_SHADOWS = {
             shadowOpacity: 0.25,
             shadowRadius: 24,
             elevation: 12,
+        },
+    },
+
+    colored: {
+        accent: {
+            shadowColor: BASE_COLORS.whatsappBlue,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 3,
+        },
+    },
+
+    dark: {
+        sm: {
+            shadowColor: '#000000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.3,
+            shadowRadius: 2,
+            elevation: 2,
+        },
+        md: {
+            shadowColor: '#000000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.4,
+            shadowRadius: 4,
+            elevation: 4,
+        },
+        lg: {
+            shadowColor: '#000000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.5,
+            shadowRadius: 8,
+            elevation: 8,
         },
     },
 
@@ -373,6 +432,16 @@ export const HEYWAY_LAYOUT = {
     },
 
     // Component dimensions
+    component: {
+        button: {
+            height: {
+                sm: 32,
+                md: 44,
+                lg: 48,
+            },
+        },
+    },
+
     avatar: {
         sm: 36,
         md: 45,

@@ -1251,6 +1251,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.sm,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: 400,
     color: HEYWAY_COLORS.text.primary,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: HEYWAY_COLORS.border.primary,
@@ -1267,7 +1268,7 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     color: HEYWAY_COLORS.text.inverse,
   },
-  disabledButton: { backgroundColor: HEYWAY_COLORS.interactive.primaryDisabled },
+  disabledButton: { backgroundColor: HEYWAY_COLORS.interactive.disabled },
 
   /* PLACEHOLDER */
   detailsPlaceholder: {
@@ -1284,7 +1285,7 @@ const styles = StyleSheet.create({
     backgroundColor: HEYWAY_COLORS.background.secondary,
     borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.divider,
+    borderColor: HEYWAY_COLORS.border.secondary,
     ...HEYWAY_SHADOWS.light.xs,
     maxWidth: 320,
   },
@@ -1298,8 +1299,9 @@ const styles = StyleSheet.create({
   },
   detailsPlaceholderSubtext: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: 400,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed,
+    lineHeight: 22,
   },
 });

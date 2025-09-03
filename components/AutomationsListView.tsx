@@ -440,16 +440,16 @@ const styles = StyleSheet.create({
   },
   titleContainer: { flex: 1 },
   title: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontSize: 20,
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    letterSpacing: -0.3,
   },
   subtitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    fontSize: 11,
+    fontWeight: 400,
     color: HEYWAY_COLORS.text.secondary,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal,
+    lineHeight: 13,
   },
   toolbarButton: {
     width: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
@@ -509,18 +509,18 @@ const styles = StyleSheet.create({
   },
   automationCardName: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: -0.1,
     lineHeight: 20,
   },
   automationCardNameSelected: {
     color: HEYWAY_COLORS.text.primary,
-    fontWeight: '700',
+    fontWeight: 700,
   },
   automationCardTime: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: 500,
     color: HEYWAY_COLORS.text.tertiary,
   },
   automationCardTimeSelected: {
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
   },
   automationCardMessage: {
     fontSize: 12,
-    fontWeight: '400',
+    fontWeight: 400,
     color: HEYWAY_COLORS.text.secondary,
     lineHeight: 18,
     letterSpacing: -0.1,
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'center',
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: -0.5,
   },
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 600,
     color: HEYWAY_COLORS.interactive.primary,
   },
 });

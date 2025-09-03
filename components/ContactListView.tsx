@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontWeight: 600,
     color: HEYWAY_COLORS.text.inverse,
   },
   contactActions: {

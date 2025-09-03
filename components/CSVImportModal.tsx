@@ -952,9 +952,7 @@ const styles = StyleSheet.create({
   },
   previewText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    fontWeight: 400,
     color: HEYWAY_COLORS.text.primary,
     marginBottom: HEYWAY_SPACING.sm,
   },
