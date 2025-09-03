@@ -346,7 +346,7 @@ const InboundToggleContainer = forwardRef<InboundToggleContainerRef, { onClose: 
     } catch (error) {
       console.error('Failed to toggle call forwarding:', error);
       setShowDialCodeOverlay(false);
-      Alert.alert('Error', 'Failed to toggle call forwarding. Please try manually.');
+      Alert.alert('Error');
     } finally {
       setIsLoading(false);
     }
@@ -560,8 +560,8 @@ const InboundToggleContainer = forwardRef<InboundToggleContainerRef, { onClose: 
         style={[
           styles.powerButton,
           {
-            backgroundColor: isForwardingEnabled ? 'rgba(52,199,89,0.1)' : 'rgba(254,44,85,0.12)',
-            borderColor: isForwardingEnabled ? COLORS.green : COLORS.destructive,
+            backgroundColor: isForwardingEnabled ? HEYWAY_COLORS.status.success + '20' : HEYWAY_COLORS.status.error + '20',
+            borderColor: isForwardingEnabled ? HEYWAY_COLORS.status.success : HEYWAY_COLORS.status.error,
             opacity: isLoading ? 0.7 : 1,
           }
         ]}
@@ -571,247 +571,9 @@ const InboundToggleContainer = forwardRef<InboundToggleContainerRef, { onClose: 
         activeOpacity={0.8}
       >
         {isLoading ? (
-          <ActivityIndicator size={40} color={COLORS.accent} />
+          <ActivityIndicator size={40} color={HEYWAY_COLORS.accent.info} />
         ) : (
           <Animated.View style={{ transform: [{ scale: thumbScaleAnimation }] }}>
             <Power
               size={40}
-              color={isForwardingEnabled ? COLORS.green : COLORS.destructive}
-            />
-          </Animated.View>
-        )}
-      </TouchableOpacity>
-      <View style={styles.statusContainer}>
-        {statusDisplay.showSpinner ? (
-          <ActivityIndicator size={8} color={statusDisplay.color} style={{ marginRight: 8 }} />
-        ) : (
-          <View style={[
-            styles.statusDot,
-            { backgroundColor: statusDisplay.color }
-          ]} />
-        )}
-        <Text style={[
-          styles.statusText,
-          { color: statusDisplay.color }
-        ]}>
-          {statusDisplay.text}
-        </Text>
-        {forwardingState.status === 'error' && (
-          <TouchableOpacity onPress={performStatusCheck} style={{ marginLeft: 8 }}>
-            <AlertTriangle size={12} color={COLORS.accent} />
-          </TouchableOpacity>
-        )}
-      </View>
-      <Text style={styles.hintText}>
-        {isVerifyingAfterDial
-          ? "Verifying call answering setup..."
-          : forwardingState.status === 'inactive' && isForwardingEnabled
-            ? "Call answering setup may have failed - tap to retry"
-            : forwardingState.status === 'checking'
-              ? "Checking if call answering is working..."
-              : forwardingState.status === 'error'
-                ? "Unable to verify call answering status - tap error icon to retry"
-                : isForwardingEnabled
-                  ? "Tap to disable call answering"
-                  : "Tap to enable automatic call answering"}
-      </Text>
-      <TouchableOpacity
-        onPress={onClose}
-        style={styles.closeButton}
-        accessibilityLabel="Close"
-      >
-        <Text style={styles.closeButtonText}>Close</Text>
-      </TouchableOpacity>
-    </View>
-  );
-});
-
-export default function InboundModal({ visible, onClose }: InboundModalProps) {
-  const [slideAnim] = useState(new Animated.Value(Dimensions.get('window').height));
-  const toggleContainerRef = useRef<InboundToggleContainerRef>(null);
-
-  useEffect(() => {
-    if (visible) {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: Dimensions.get('window').height,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [visible, slideAnim]);
-
-  // Start/stop polling based on modal visibility
-  useEffect(() => {
-    if (visible) {
-      // Start polling when modal opens
-      toggleContainerRef.current?.startStatusPolling();
-    } else {
-      // Stop polling when modal closes
-      toggleContainerRef.current?.stopStatusPolling();
-    }
-  }, [visible]);
-
-  return (
-    <Modal
-      visible={visible}
-      animationType="none"
-      transparent
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPressOut={onClose}
-      >
-        <Animated.View
-          style={[
-            styles.animatedContainer,
-            { transform: [{ translateY: slideAnim }] }
-          ]}
-        >
-          <InboundToggleContainer
-            onClose={onClose}
-            ref={toggleContainerRef}
-          />
-        </Animated.View>
-      </TouchableOpacity>
-    </Modal>
-  );
-}
-
-const styles = {
-  overlay: {
-    flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.overlay,
-    justifyContent: 'flex-end' as const,
-  },
-  animatedContainer: {
-    width: '100%' as const,
-    position: 'absolute' as const,
-    bottom: 0,
-    left: 0,
-  },
-  modalContent: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: HEYWAY_SPACING.xxl,
-    minHeight: 320,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    ...HEYWAY_SHADOWS.light.lg,
-  },
-  header: {
-    alignItems: 'center' as const,
-    marginBottom: HEYWAY_SPACING.lg,
-  },
-  title: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold as const,
-    color: HEYWAY_COLORS.text.primary,
-    marginBottom: HEYWAY_SPACING.sm,
-    textAlign: 'center' as const,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
-  },
-  description: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular as const,
-    color: HEYWAY_COLORS.text.secondary,
-    textAlign: 'center' as const,
-    marginBottom: HEYWAY_SPACING.xxl,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  powerButton: {
-    borderRadius: HEYWAY_RADIUS.component.button.full,
-    width: 80,
-    height: 80,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    marginBottom: HEYWAY_SPACING.lg,
-    borderWidth: 2,
-    ...HEYWAY_SHADOWS.light.md,
-  },
-  statusContainer: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    marginBottom: HEYWAY_SPACING.lg,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: HEYWAY_RADIUS.xs,
-    marginRight: HEYWAY_SPACING.sm,
-  },
-  statusText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold as const,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
-  },
-  hintText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular as const,
-    color: HEYWAY_COLORS.text.tertiary,
-    textAlign: 'center' as const,
-    marginBottom: HEYWAY_SPACING.lg,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  closeButton: {
-    marginTop: HEYWAY_SPACING.sm,
-    paddingVertical: HEYWAY_SPACING.sm,
-    paddingHorizontal: HEYWAY_SPACING.xxl,
-    borderRadius: HEYWAY_RADIUS.component.button.lg,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  closeButtonText: {
-    color: HEYWAY_COLORS.text.primary,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold as const,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  dialCodeArrowContainer: {
-    alignItems: 'center' as const,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.xxl,
-    padding: HEYWAY_SPACING.xxxl,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xl,
-  },
-  dialCodeLine: {
-    width: 3,
-    height: 50,
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
-    marginBottom: HEYWAY_SPACING.md,
-    borderRadius: HEYWAY_RADIUS.xs,
-  },
-  dialCodeArrow: {
-    alignItems: 'center' as const,
-    marginBottom: HEYWAY_SPACING.xl,
-  },
-  dialCodeArrowText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large * 2,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold as const,
-    color: HEYWAY_COLORS.interactive.primary,
-    fontWeight: 'bold' as const,
-    lineHeight: 32,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  dialCodeText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold as const,
-    color: HEYWAY_COLORS.text.primary,
-    textAlign: 'center' as const,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.title.large,
-  },
-};
+              color

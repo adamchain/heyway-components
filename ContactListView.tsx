@@ -156,16 +156,16 @@ export default function ContactListView({
 
   const getColorValue = (colorKey: string) => {
     const colorMap: { [key: string]: string } = {
-      blue: '#007AFF',
-      green: '#34C759',
+      blue: HEYWAY_COLORS.interactive.primary,
+      green: HEYWAY_COLORS.status.success,
       purple: '#AF52DE',
-      orange: '#FF9500',
-      red: '#FF3B30',
+      orange: HEYWAY_COLORS.accent.warning,
+      red: HEYWAY_COLORS.status.error,
       pink: '#FF2D92',
       indigo: '#5856D6',
       teal: '#5AC8FA',
     };
-    return colorMap[colorKey] || colorMap.blue;
+    return colorMap[colorKey] || HEYWAY_COLORS.interactive.primary;
   };
 
   const filteredContacts = listData?.contacts.filter(({ contactId }) =>
@@ -363,10 +363,13 @@ const styles = StyleSheet.create({
     color: HEYWAY_COLORS.text.primary,
     maxWidth: 200,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   headerSubtitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },

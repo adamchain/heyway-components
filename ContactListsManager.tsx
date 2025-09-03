@@ -656,6 +656,7 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.accent.warning,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   listCardDescription: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
