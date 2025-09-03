@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Clock, Calendar, X, ChevronRight, Zap, Phone, Trash2, ArrowRight } from 'lucide-react-native';
 import { apiService } from '@/services/apiService';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface ScheduledActivityBannerProps {
     visible: boolean;
@@ -282,7 +282,7 @@ export default function ScheduledActivityBanner({ visible, onPress, onDataChange
                                                                     disabled={deletingCallId === call._id}
                                                                     activeOpacity={0.7}
                                                                 >
-                                                                    <Trash2 size={16} color={HEYWAY_COLORS.semantic.danger} />
+                                                                    <Trash2 size={16} color={HEYWAY_COLORS.status.error} />
                                                                 </TouchableOpacity>
                                                             </View>
                                                         </View>

@@ -24,7 +24,7 @@ import {
   Star,
   StarOff,
 } from 'lucide-react-native';
-import { HEYWAY_COLORS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS } from '../styles/HEYWAY_STYLE_GUIDE';
 import { SPACING, TYPOGRAPHY, RADIUS } from '@/components/designSystem';
 import { apiService } from '@/services/apiService';
 

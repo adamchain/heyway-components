@@ -14,17 +14,15 @@ import {
   PhoneOutgoing,
   ArrowRight,
   Calendar,
-  Clock,
-  Search,
   MoreVertical,
   FolderPlus,
   Plus,
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { useCallHistory } from '@/hooks/useCallHistory';
-import { useContacts } from '@/hooks/useContacts';
-import { useCallAnalysis } from '@/hooks/useCallAnalysis';
-import { apiService } from '@/services/apiService';
+import { useCallHistory } from '../hooks/useCallHistory';
+import { useContacts } from '../hooks/useContacts';
+import { useCallAnalysis } from '../hooks/useCallAnalysis';
+import { apiService } from '../services/apiService';
 import {
   HEYWAY_COLORS,
   HEYWAY_SPACING,
@@ -32,14 +30,12 @@ import {
   HEYWAY_RADIUS,
   HEYWAY_SHADOWS,
   HEYWAY_LAYOUT,
-  HEYWAY_COMPONENTS,
-  HEYWAY_CHAT_PATTERNS,
   HEYWAY_ACCESSIBILITY,
-} from '@styles/HEYWAY_STYLE_GUIDE';
-import CallAnalysisTag from '@/components/CallAnalysisTag';
+} from './HEYWAY_STYLE_GUIDE';
+import CallAnalysisTag from './CallAnalysisTag';
 
 // Lazy load ScheduledActivityBanner
-const ScheduledActivityBanner = React.lazy(() => import('@/components/ScheduledActivityBanner'));
+const ScheduledActivityBanner = React.lazy(() => import('./ScheduledActivityBanner'));
 
 interface Group { id: string; name: string; calls: any[] }
 
@@ -662,7 +658,7 @@ const styles = StyleSheet.create({
   titleContainer: { flex: 1 },
   title: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    fontWeight: '700',
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
@@ -702,7 +698,9 @@ const styles = StyleSheet.create({
   },
   whatsappTypeFilters: { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 },
   whatsappFilterButton: {
-    ...HEYWAY_COMPONENTS.chatItem.default,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.secondary,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: HEYWAY_SPACING.sm,
@@ -712,25 +710,24 @@ const styles = StyleSheet.create({
     minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum / 2,
   },
   whatsappFilterButtonActive: {
-    ...HEYWAY_COMPONENTS.chatItem.selected,
     backgroundColor: HEYWAY_COLORS.interactive.whatsappGreen,
     borderColor: HEYWAY_COLORS.interactive.whatsappGreen,
   },
   whatsappFilterButtonText: {
     fontSize: 10,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    fontWeight: '500',
     color: HEYWAY_COLORS.text.secondary,
   },
   whatsappFilterButtonTextActive: {
     color: HEYWAY_COLORS.text.inverse,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontWeight: '600',
   },
   whatsappOptionsToggle: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 3, gap: 3, borderRadius: 10 },
   whatsappOptionsToggleActive: { backgroundColor: HEYWAY_COLORS.background.secondary, borderWidth: StyleSheet.hairlineWidth, borderColor: HEYWAY_COLORS.border.tertiary },
   whatsappToggleIndicator: { width: 8, height: 8, borderRadius: 4, backgroundColor: HEYWAY_COLORS.background.primary, borderWidth: StyleSheet.hairlineWidth, borderColor: HEYWAY_COLORS.border.tertiary },
   whatsappToggleIndicatorActive: { backgroundColor: HEYWAY_COLORS.interactive.primary, borderColor: HEYWAY_COLORS.interactive.primary },
-  whatsappOptionsText: { fontSize: 9, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular, color: HEYWAY_COLORS.text.tertiary },
-  whatsappOptionsTextActive: { color: HEYWAY_COLORS.text.secondary, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium },
+  whatsappOptionsText: { fontSize: 9, fontWeight: '400', color: HEYWAY_COLORS.text.tertiary },
+  whatsappOptionsTextActive: { color: HEYWAY_COLORS.text.secondary, fontWeight: '500' },
 
   // Group menu
   groupMenuButton: {
@@ -759,7 +756,7 @@ const styles = StyleSheet.create({
   },
   groupDropdownTitle: {
     fontSize: 10,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    fontWeight: '700',
     color: HEYWAY_COLORS.text.tertiary,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
@@ -770,7 +767,7 @@ const styles = StyleSheet.create({
     marginBottom: HEYWAY_SPACING.xs,
   },
   groupDropdownItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: HEYWAY_SPACING.md, paddingVertical: HEYWAY_SPACING.sm, gap: HEYWAY_SPACING.sm },
-  groupDropdownItemText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.primary },
+  groupDropdownItemText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: '500', color: HEYWAY_COLORS.text.primary },
   groupMenuOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 },
 
   // List / cards
@@ -809,15 +806,15 @@ const styles = StyleSheet.create({
   analysisTagContainer: { marginLeft: 6 },
 
   // Loading
-  loadingContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: HEYWAY_SPACING.lg, backgroundColor: HEYWAY_COLORS.background.content },
-  loadingText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large, color: HEYWAY_COLORS.text.secondary, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium },
+  loadingContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: HEYWAY_SPACING.lg, backgroundColor: HEYWAY_COLORS.background.primary },
+  loadingText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large, color: HEYWAY_COLORS.text.secondary, fontWeight: '500' },
 
   // Empty state
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: HEYWAY_SPACING.xxl * 2, paddingHorizontal: HEYWAY_SPACING.xl },
-  emptyTitle: { marginTop: HEYWAY_SPACING.lg, marginBottom: HEYWAY_SPACING.sm, textAlign: 'center', fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold, color: HEYWAY_COLORS.text.primary, letterSpacing: -0.5 },
+  emptyTitle: { marginTop: HEYWAY_SPACING.lg, marginBottom: HEYWAY_SPACING.sm, textAlign: 'center', fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large, fontWeight: '700', color: HEYWAY_COLORS.text.primary, letterSpacing: -0.5 },
   emptyText: { textAlign: 'center', maxWidth: 280, fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, color: HEYWAY_COLORS.text.secondary, lineHeight: 20 },
 
   // Footer buttons
   loadMoreButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: HEYWAY_SPACING.sm, marginHorizontal: HEYWAY_SPACING.lg, marginVertical: HEYWAY_SPACING.lg, paddingHorizontal: HEYWAY_SPACING.lg, paddingVertical: HEYWAY_SPACING.md, backgroundColor: HEYWAY_COLORS.background.primary, borderRadius: HEYWAY_RADIUS.lg, borderWidth: 1, borderColor: HEYWAY_COLORS.border.secondary, ...HEYWAY_SHADOWS.light.sm },
-  loadMoreText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold, color: HEYWAY_COLORS.interactive.primary },
+  loadMoreText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: '600', color: HEYWAY_COLORS.interactive.primary },
 });

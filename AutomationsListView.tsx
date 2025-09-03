@@ -13,7 +13,7 @@ import {
 import { Clock, Users, Play, Pause, Edit3, Trash2, Target, Plus, Settings, MessageCircle, Eye, CheckCircle2, AlertCircle, Phone, Calendar, Zap, ArrowRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { apiService } from '@/services/apiService';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_COMPONENTS, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_COMPONENTS, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface Automation {
   id: string;

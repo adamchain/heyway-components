@@ -30,7 +30,7 @@ import { apiService } from '@/services/apiService';
 import CallerIdManagement from './CallerIdManagement';
 import SubscriptionManager from '@/components/SubscriptionManager';
 import AutomationsManager from '@/components/AutomationsManager';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface SettingsSidebarProps {
   visible: boolean;
@@ -375,7 +375,7 @@ export default function SettingsSidebar({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: HEYWAY_COLORS.effects.overlay,
+    backgroundColor: HEYWAY_COLORS.background.overlay,
   },
   sidebar: {
     position: 'absolute',
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     backgroundColor: HEYWAY_COLORS.background.primary,
     borderRightWidth: 1,
     borderRightColor: HEYWAY_COLORS.border.secondary,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    shadowColor: '#000000',
     shadowOffset: { width: 4, height: 0 },
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? HEYWAY_SPACING.huge : HEYWAY_SPACING.xxxl,
     borderBottomWidth: 1,
     borderBottomColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -455,8 +455,8 @@ const styles = StyleSheet.create({
     paddingVertical: HEYWAY_SPACING.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 1,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     marginBottom: HEYWAY_SPACING.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
@@ -557,8 +557,8 @@ const styles = StyleSheet.create({
     marginBottom: HEYWAY_SPACING.xs,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 1,
@@ -596,10 +596,10 @@ const styles = StyleSheet.create({
     paddingVertical: HEYWAY_SPACING.lg,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     alignItems: 'center',
     marginBottom: HEYWAY_SPACING.xs,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
@@ -641,14 +641,14 @@ const styles = StyleSheet.create({
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: HEYWAY_COLORS.semantic.errorLight,
+    backgroundColor: HEYWAY_COLORS.status.error + '20',
     borderRadius: HEYWAY_RADIUS.lg,
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.md,
     gap: HEYWAY_SPACING.sm,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.semantic.error + '40',
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    borderColor: HEYWAY_COLORS.status.error + '40',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 1,
@@ -657,21 +657,21 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: '500' as const,
-    color: HEYWAY_COLORS.semantic.error,
+    color: HEYWAY_COLORS.status.error,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   deleteButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: HEYWAY_COLORS.semantic.errorLight,
+    backgroundColor: HEYWAY_COLORS.status.error + '20',
     borderRadius: HEYWAY_RADIUS.lg,
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.md,
     gap: HEYWAY_SPACING.sm,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.semantic.error + '40',
+    borderColor: HEYWAY_COLORS.status.error + '40',
     marginTop: HEYWAY_SPACING.sm,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 1,
@@ -680,7 +680,7 @@ const styles = StyleSheet.create({
   deleteText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: '500' as const,
-    color: HEYWAY_COLORS.semantic.error,
+    color: HEYWAY_COLORS.status.error,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
@@ -693,8 +693,8 @@ const styles = StyleSheet.create({
     marginBottom: HEYWAY_SPACING.sm,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
-    shadowColor: HEYWAY_COLORS.effects.shadow,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 1,

@@ -26,7 +26,7 @@ import {
   HEYWAY_TYPOGRAPHY,
   HEYWAY_SPACING,
   HEYWAY_ACCESSIBILITY,
-} from '@styles/HEYWAY_STYLE_GUIDE';
+} from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface CSVImportModalProps {
   visible: boolean;

@@ -33,7 +33,7 @@ import {
   HEYWAY_LAYOUT,
   HEYWAY_COMPONENTS,
   HEYWAY_CHAT_PATTERNS
-} from '@styles/HEYWAY_STYLE_GUIDE';
+} from '../styles/HEYWAY_STYLE_GUIDE';
 
 // Hooks and Services
 import { useContacts } from '@/hooks/useContacts';

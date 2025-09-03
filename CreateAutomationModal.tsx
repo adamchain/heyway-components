@@ -30,7 +30,7 @@ import {
   HEYWAY_COMPONENTS,
   HEYWAY_SHADOWS,
   HEYWAY_ACCESSIBILITY
-} from '@styles/HEYWAY_STYLE_GUIDE';
+} from '../styles/HEYWAY_STYLE_GUIDE';
 import AudioRecorder from './AudioRecorder';
 
 export interface Automation {
@@ -804,7 +804,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? HEYWAY_SPACING.giant : HEYWAY_SPACING.xl,
     borderBottomWidth: 1,
     borderBottomColor: HEYWAY_COLORS.border.divider,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
   headerButton: {
     backgroundColor: HEYWAY_COLORS.background.secondary,
@@ -1081,7 +1081,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     paddingHorizontal: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.background.elevatedSecondary,
+    backgroundColor: HEYWAY_COLORS.background.secondarySecondary,
     borderRadius: HEYWAY_RADIUS.sm,
     borderLeftWidth: 3,
     borderLeftColor: HEYWAY_COLORS.interactive.primary,

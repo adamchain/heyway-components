@@ -20,7 +20,7 @@ import {
   ArrowLeft,
 } from 'lucide-react-native';
 import { useFavorites, FavoriteItem } from '@/hooks/useFavorites';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_TYPOGRAPHY, HEYWAY_SPACING } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_TYPOGRAPHY, HEYWAY_SPACING } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface FavoritesContentProps {
   onClose: () => void;
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,

@@ -16,7 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { ContactSelectionManager } from '@/utils/contactSelection';
 import { apiService } from '@/services/apiService';
 import { useFavorites } from '@/hooks/useFavorites';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_RADIUS, HEYWAY_TYPOGRAPHY, HEYWAY_SHADOWS, HEYWAY_MACOS_PATTERNS, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_RADIUS, HEYWAY_TYPOGRAPHY, HEYWAY_SHADOWS, HEYWAY_MACOS_PATTERNS, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
 
 // Lazy load FavoritesContent
 const FavoritesContent = React.lazy(() => import('@/components/FavoritesContent'));
@@ -898,7 +898,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: HEYWAY_COLORS.border.primary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     marginRight: 8,
   },
   title: {
@@ -1075,7 +1075,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: HEYWAY_COLORS.border.tertiary,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
   contactAvatarText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
@@ -1281,7 +1281,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: HEYWAY_SPACING.xl,
     paddingHorizontal: HEYWAY_SPACING.lg,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.divider,

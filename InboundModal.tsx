@@ -37,7 +37,8 @@ interface InboundToggleContainerRef {
   stopStatusPolling: () => void;
 }
 
-const InboundToggleContainer = forwardRef<InboundToggleContainerRef, { onClose: () => void }>(function InboundToggleContainer({ onClose }, ref) {
+const InboundToggleContainer = forwardRef<InboundToggleContainerRef, { onClose: () => void }>((props, ref) => {
+  const { onClose } = props;
   const [isForwardingEnabled, setIsForwardingEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showDialCodeOverlay, setShowDialCodeOverlay] = useState(false);
@@ -576,4 +577,13 @@ const InboundToggleContainer = forwardRef<InboundToggleContainerRef, { onClose: 
           <Animated.View style={{ transform: [{ scale: thumbScaleAnimation }] }}>
             <Power
               size={40}
-              color
+              color={isForwardingEnabled ? HEYWAY_COLORS.status.success : HEYWAY_COLORS.status.error}
+            />
+          </Animated.View>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+});
+
+export default InboundToggleContainer;

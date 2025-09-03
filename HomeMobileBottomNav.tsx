@@ -10,7 +10,7 @@ import { Phone, Users, Briefcase, Hash, Zap, Settings } from 'lucide-react-nativ
 import * as Haptics from 'expo-haptics';
 
 // Import HEYWAY Style Guide
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface HomeMobileBottomNavProps {
   activeNavItem: string;

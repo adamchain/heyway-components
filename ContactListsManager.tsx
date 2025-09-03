@@ -23,7 +23,7 @@ import {
   Search,
   UserPlus,
 } from 'lucide-react-native';
-import { HEYWAY_COLORS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS } from '../styles/HEYWAY_STYLE_GUIDE';
 import { SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '@/components/designSystem';
 import { apiService } from '@/services/apiService';
 import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';

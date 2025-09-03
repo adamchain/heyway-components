@@ -32,12 +32,12 @@ import {
   Search,
   RefreshCw,
 } from 'lucide-react-native';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
 import CSVImportModal from './CSVImportModal';
 import ImportResultsModal from './ImportResultsModal';
 import CreateAutomationModal, { Automation, CreateAutomationModalProps } from './CreateAutomationModal';
-import { apiService } from '@/services/apiService';
-import { useRealTimeAutomations } from '@/hooks/useRealTimeAutomations';
+import { apiService } from '../services/apiService';
+import { useRealTimeAutomations } from '../hooks/useRealTimeAutomations';
 
 
 
@@ -75,7 +75,7 @@ export default function AutomationsManager() {
   } = useRealTimeAutomations({
     enabled: true,
     pollingInterval: 5000, // Poll every 5 seconds
-    onUpdate: (updatedAutomations) => {
+    onUpdate: (updatedAutomations: any[]) => {
       console.log('🔄 Automations updated via real-time polling:', updatedAutomations.length);
     }
   });
@@ -175,24 +175,24 @@ export default function AutomationsManager() {
   const toggleAutomation = async (automationId: string) => {
     try {
       console.log('🔍 Toggling automation with ID:', automationId);
-      console.log('🔍 Available automations:', automations.map(a => ({ id: a.id, name: a.name })));
+      console.log('🔍 Available automations:', automations.map((a: any) => ({ id: a.id, name: a.name })));
 
       if (!automationId) {
         console.error('❌ Automation ID is undefined or null');
         return;
       }
 
-      const automation = automations.find(a => a.id === automationId);
+      const automation = automations.find((a: any) => a.id === automationId);
       if (!automation) {
         console.error('❌ Automation not found with ID:', automationId);
-        console.log('Available automations:', automations.map(a => ({ id: a.id, name: a.name })));
+        console.log('Available automations:', automations.map((a: any) => ({ id: a.id, name: a.name })));
         return;
       }
 
       console.log('✅ Found automation:', { id: automation.id, name: automation.name, isActive: automation.isActive });
 
       // Optimistic update for immediate UI feedback
-      setAutomations(prev => prev.map(a =>
+      setAutomations((prev: any[]) => prev.map((a: any) =>
         a.id === automationId
           ? { ...a, isActive: !a.isActive }
           : a
@@ -258,7 +258,7 @@ export default function AutomationsManager() {
             try {
               await apiService.deleteAutomation(automationId);
               // Remove from local state immediately for better UX
-              setAutomations(prev => prev.filter(a => a.id !== automationId));
+              setAutomations((prev: any[]) => prev.filter((a: any) => a.id !== automationId));
               Alert.alert('Success', 'Automation deleted successfully');
             } catch (error: any) {
               // Log automationId for debugging
@@ -287,4 +287,9 @@ export default function AutomationsManager() {
     );
   };
 
-  const
+  return (
+    <View style={{ flex: 1, padding: 16 }}>
+      <Text>AutomationsManager - Implementation needed</Text>
+    </View>
+  );
+}

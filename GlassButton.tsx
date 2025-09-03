@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface GlassButtonProps {
   icon: React.ComponentType<{ size: number; color: string }>;

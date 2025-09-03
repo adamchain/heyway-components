@@ -11,7 +11,7 @@ import {
 import { X, Calendar } from 'lucide-react-native';
 
 // Import HEYWAY Style Guide
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_COMPONENTS, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_COMPONENTS, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
 
 // Lazy loaded modal components
 const NewCallModal = React.lazy(() => import('@/components/NewCallModal'));

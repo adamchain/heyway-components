@@ -11,7 +11,7 @@ import {
 import { X, FolderPlus } from 'lucide-react-native';
 
 // Import HEYWAY Style Guide
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface CreateGroupModalProps {
   visible: boolean;

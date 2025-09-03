@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { X, User, Phone, Mail } from 'lucide-react-native';
 import { apiService } from '@/services/apiService';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_TYPOGRAPHY, HEYWAY_SPACING, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_TYPOGRAPHY, HEYWAY_SPACING, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface AddContactModalProps {
   visible: boolean;
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.md,
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     borderBottomWidth: 1,
     borderBottomColor: HEYWAY_COLORS.border.divider,
     borderTopLeftRadius: HEYWAY_RADIUS.component.modal.lg,
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     color: HEYWAY_COLORS.text.primary,
   },
   textInput: {
-    backgroundColor: HEYWAY_COLORS.background.elevated,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     borderRadius: HEYWAY_RADIUS.component.input.md,
     paddingHorizontal: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.sm,

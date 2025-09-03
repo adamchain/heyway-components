@@ -9,7 +9,7 @@ import {
 import { Menu, Settings } from 'lucide-react-native';
 
 // Import HEYWAY Style Guide
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface HomeMobileHeaderProps {
   onMenuPress: () => void;
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 
   mobileHeaderTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontWeight: '600',
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },

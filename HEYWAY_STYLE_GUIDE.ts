@@ -782,6 +782,66 @@ export const HEYWAY_LAYOUT = {
     lg: 992,                      // Large devices (desktops)
     xl: 1200,                     // Extra large devices
     xxl: 1400                     // Extra extra large devices
+  },
+
+  // Window layout
+  window: {
+    width: 1200,
+    minWidth: 800,
+    maxWidth: 1400,
+    height: 800,
+    minHeight: 600
+  },
+
+  // Chat layout
+  chatList: {
+    width: 350,
+    minWidth: 300,
+    maxWidth: 400,
+    padding: {
+      top: 8,
+      bottom: 8,
+      horizontal: 12
+    }
+  },
+
+  chatArea: {
+    padding: {
+      top: 16
+    }
+  },
+
+  chatItem: {
+    height: 72
+  },
+
+  // Avatar sizes
+  avatar: {
+    sm: 32,
+    md: 40,
+    lg: 48,
+    xl: 56
+  },
+
+  // Input bar
+  inputBar: {
+    height: 60
+  },
+
+  // Sidebar
+  sidebar: {
+    width: 280,
+    padding: {
+      top: 16,
+      bottom: 16,
+      horizontal: 16
+    }
+  },
+
+  // Menu button
+  menuButton: {
+    width: 240,
+    height: 44
   }
 };
 
