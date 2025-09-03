@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS, RADIUS, SHADOWS } from './designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface GlassButtonProps {
   icon: React.ComponentType<{ size: number; color: string }>;
@@ -21,39 +21,39 @@ export default function GlassButton({
     switch (variant) {
       case 'accent':
         return {
-          backgroundColor: 'rgba(0,122,255,0.15)',
-          borderColor: 'rgba(0,122,255,0.3)',
+          backgroundColor: HEYWAY_COLORS.interactive.primary + '25',
+          borderColor: HEYWAY_COLORS.interactive.primary + '50',
         };
       case 'success':
         return {
-          backgroundColor: 'rgba(52,199,89,0.15)',
-          borderColor: 'rgba(52,199,89,0.3)',
+          backgroundColor: HEYWAY_COLORS.status.success + '25',
+          borderColor: HEYWAY_COLORS.status.success + '50',
         };
       case 'warning':
         return {
-          backgroundColor: 'rgba(255,159,10,0.15)',
-          borderColor: 'rgba(255,159,10,0.3)',
+          backgroundColor: HEYWAY_COLORS.accent.warning + '25',
+          borderColor: HEYWAY_COLORS.accent.warning + '50',
         };
       default:
         return {
-          backgroundColor: COLORS.background.secondary,
-          borderColor: COLORS.border.secondary,
+          backgroundColor: HEYWAY_COLORS.background.secondary,
+          borderColor: HEYWAY_COLORS.border.secondary,
         };
     }
   };
 
   const getIconColor = () => {
-    if (disabled) return COLORS.text.disabled;
+    if (disabled) return HEYWAY_COLORS.text.tertiary;
     
     switch (variant) {
       case 'accent':
-        return COLORS.accent;
+        return HEYWAY_COLORS.interactive.primary;
       case 'success':
-        return COLORS.success;
+        return HEYWAY_COLORS.status.success;
       case 'warning':
-        return COLORS.warning;
+        return HEYWAY_COLORS.accent.warning;
       default:
-        return COLORS.text.primary;
+        return HEYWAY_COLORS.text.primary;
     }
   };
 
@@ -83,6 +83,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    ...SHADOWS.glassEnhanced,
+    ...HEYWAY_SHADOWS.light.md,
   },
 });

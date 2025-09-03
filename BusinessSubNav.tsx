@@ -4,19 +4,8 @@ import { Search, MapPin, History, Star } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 import { ContactSelectionManager } from '@/utils/contactSelection';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
-const IOS_COLORS = {
-  background: '#000000',
-  cardBackground: '#1C1C1E',
-  secondaryBackground: '#2C2C2E',
-  text: {
-    primary: '#FFFFFF',
-    secondary: '#AEAEB2',
-    tertiary: '#636366',
-  },
-  accent: '#007AFF',
-  separator: '#3A3A3C',
-};
 
 interface BusinessSubNavProps {
   activeSection: string;
@@ -187,136 +176,151 @@ export default function BusinessSubNav({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(28, 28, 30, 0.3)',
-    paddingTop: 20,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    paddingTop: HEYWAY_SPACING.xl,
   },
 
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: IOS_COLORS.text.primary,
-    paddingHorizontal: 20,
-    marginBottom: 24,
-    letterSpacing: -0.3,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    color: HEYWAY_COLORS.text.primary,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    marginBottom: HEYWAY_SPACING.xxl,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
 
   navSection: {
-    paddingHorizontal: 12,
-    marginBottom: 20,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    marginBottom: HEYWAY_SPACING.xl,
   },
 
   navItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginVertical: 2,
-    gap: 12,
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    marginVertical: HEYWAY_SPACING.xs,
+    gap: HEYWAY_SPACING.md,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
   },
 
   activeNavItem: {
-    backgroundColor: 'rgba(0,122,255,0.15)',
+    backgroundColor: HEYWAY_COLORS.interactive.selected,
     borderWidth: 1,
-    borderColor: 'rgba(0,122,255,0.3)',
+    borderColor: HEYWAY_COLORS.interactive.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   navItemText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: IOS_COLORS.text.secondary,
-    letterSpacing: 0.1,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   activeNavItemText: {
-    color: IOS_COLORS.accent,
-    fontWeight: '600',
+    color: HEYWAY_COLORS.interactive.primary,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
   },
 
   searchSection: {
-    paddingHorizontal: 20,
+    paddingHorizontal: HEYWAY_SPACING.xl,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.08)',
-    paddingTop: 20,
+    borderTopColor: HEYWAY_COLORS.border.tertiary,
+    paddingTop: HEYWAY_SPACING.xl,
   },
 
   searchSectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: IOS_COLORS.text.tertiary,
-    marginBottom: 16,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.tertiary,
+    marginBottom: HEYWAY_SPACING.lg,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
   },
 
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 12,
-    gap: 12,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    marginBottom: HEYWAY_SPACING.md,
+    gap: HEYWAY_SPACING.md,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    color: IOS_COLORS.text.primary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   searchButton: {
-    backgroundColor: IOS_COLORS.accent,
-    borderRadius: 12,
-    paddingVertical: 14,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    paddingVertical: HEYWAY_SPACING.md,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
+    marginTop: HEYWAY_SPACING.sm,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+    ...HEYWAY_SHADOWS.light.sm,
   },
 
   searchButtonDisabled: {
-    backgroundColor: 'rgba(0,122,255,0.3)',
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
+    opacity: 0.6,
   },
 
   searchButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
+    color: HEYWAY_COLORS.text.inverse,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   searchButtonTextDisabled: {
-    color: 'rgba(255,255,255,0.6)',
+    color: HEYWAY_COLORS.text.tertiary,
   },
 
   historySection: {
-    marginTop: 24,
-    paddingHorizontal: 20,
+    marginTop: HEYWAY_SPACING.xxl,
+    paddingHorizontal: HEYWAY_SPACING.xl,
   },
 
   historySectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: IOS_COLORS.text.tertiary,
-    marginBottom: 12,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.tertiary,
+    marginBottom: HEYWAY_SPACING.md,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
   },
 
   historyItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginBottom: 4,
-    gap: 10,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    borderRadius: HEYWAY_RADIUS.component.button.md,
+    marginBottom: HEYWAY_SPACING.xs,
+    gap: HEYWAY_SPACING.sm,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   historyItemText: {
-    fontSize: 14,
-    color: IOS_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     flex: 1,
   },
 });

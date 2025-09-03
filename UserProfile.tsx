@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LogOut, User, Crown } from 'lucide-react-native';
-import { COLORS } from './designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface UserProfileProps {
@@ -46,9 +46,9 @@ export default function UserProfile({ showLogout = true, compact = false }: User
 
   const getSubscriptionColor = (plan: string) => {
     switch (plan) {
-      case 'premium': return '#FFD700';
-      case 'basic': return '#007AFF';
-      default: return '#8E8E93';
+      case 'premium': return HEYWAY_COLORS.accent.warning;
+      case 'basic': return HEYWAY_COLORS.interactive.primary;
+      default: return HEYWAY_COLORS.text.secondary;
     }
   };
 
@@ -149,78 +149,86 @@ export default function UserProfile({ showLogout = true, compact = false }: User
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#232323',
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    padding: HEYWAY_SPACING.xl,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.md,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: HEYWAY_SPACING.xl,
   },
   avatar: {
     width: 60,
     height: 60,
-    borderRadius: 30,
+    borderRadius: HEYWAY_RADIUS.component.avatar.xl,
     // backgroundColor replaced with LinearGradient component
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: HEYWAY_SPACING.lg,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   avatarText: {
-    fontSize: 20,
-    fontFamily: 'Inter-Bold',
-    color: '#FFFFFF',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    color: HEYWAY_COLORS.text.inverse,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   userInfo: {
     flex: 1,
   },
   name: {
-    fontSize: 20,
-    fontFamily: 'Inter-Bold',
-    color: '#FFFFFF',
-    marginBottom: 4,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   email: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#CCCCCC',
-    marginBottom: 8,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    marginBottom: HEYWAY_SPACING.sm,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   subscriptionBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#333333',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
+    borderRadius: HEYWAY_RADIUS.component.badge.lg,
     alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
   },
   subscriptionText: {
-    fontSize: 12,
-    fontFamily: 'Inter-SemiBold',
-    marginLeft: 4,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    marginLeft: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3A1A1A',
-    borderRadius: 12,
-    paddingVertical: 12,
+    backgroundColor: HEYWAY_COLORS.status.error + '20',
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    paddingVertical: HEYWAY_SPACING.md,
     borderWidth: 1,
-    borderColor: '#FF3B30',
+    borderColor: HEYWAY_COLORS.status.error,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   logoutText: {
-    marginLeft: 8,
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FF3B30',
+    marginLeft: HEYWAY_SPACING.sm,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.status.error,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   compactContainer: {
     flexDirection: 'row',
@@ -229,29 +237,32 @@ const styles = StyleSheet.create({
   compactAvatar: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: HEYWAY_RADIUS.xl,
     // backgroundColor replaced with LinearGradient component
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: HEYWAY_SPACING.md,
   },
   compactAvatarText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Bold',
-    color: '#FFFFFF',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    color: HEYWAY_COLORS.text.inverse,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   compactInfo: {
     flex: 1,
   },
   compactName: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
-    marginBottom: 2,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   compactEmail: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#CCCCCC',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

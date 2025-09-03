@@ -17,7 +17,7 @@ import { ContactSelectionManager } from '@/utils/contactSelection';
 import { useContacts } from '@/hooks/useContacts';
 import { useAICallerPrompts } from '@/hooks/useAICallerPrompts';
 
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 // Using HEYWAY_COLORS from the style guide
 
 interface CallPanelProps {
@@ -511,21 +511,17 @@ const styles = StyleSheet.create({
     height: '85%', // Make it 85% height as requested
     width: '30%', // Set to 30% width to be a right side panel
     position: 'absolute',
-    right: 20, // 20px from right edge
-    bottom: 20, // 20px from bottom
-    backgroundColor: 'rgba(0, 0, 0, 0.95)', // Dark minimalist background
-    borderRadius: 16, // Rounded corners for panel feel
+    right: HEYWAY_SPACING.xl,
+    bottom: HEYWAY_SPACING.xl,
+    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', // Subtle border all around
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 }, // Shadow below the panel
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 16,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 24,
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xl,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingTop: HEYWAY_SPACING.xxl,
+    paddingBottom: HEYWAY_SPACING.xxl,
   },
 
   // Missing styles for renderKeypad function
@@ -534,59 +530,64 @@ const styles = StyleSheet.create({
   },
 
   displayContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 16,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    marginBottom: HEYWAY_SPACING.lg,
   },
 
   phoneNumberContainer: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   phoneNumberInput: {
-    fontSize: 18,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
-    fontWeight: '600',
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingVertical: HEYWAY_SPACING.lg,
   },
 
   secondaryButton: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: HEYWAY_RADIUS.component.button.full,
+    backgroundColor: HEYWAY_COLORS.interactive.hover,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   callButton: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: HEYWAY_RADIUS.component.button.full,
     backgroundColor: HEYWAY_COLORS.status.success,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.md,
   },
 
   callButtonDisabled: {
     backgroundColor: HEYWAY_COLORS.text.tertiary,
+    opacity: 0.6,
   },
 
   // Missing styles for renderContacts function
@@ -633,39 +634,37 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)', // More subtle background
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 10,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    gap: HEYWAY_SPACING.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', // Subtle border
-    marginBottom: 16,
+    borderColor: HEYWAY_COLORS.border.primary,
+    marginBottom: HEYWAY_SPACING.lg,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.primary,
     minHeight: 28,
-    fontWeight: '500',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   contactResultsOverlay: {
     position: 'absolute',
-    top: 72, // Position below search container
-    left: 20,
-    right: 20,
+    top: 72,
+    left: HEYWAY_SPACING.xl,
+    right: HEYWAY_SPACING.xl,
     zIndex: 1000,
-    backgroundColor: 'rgba(0,0,0,0.98)', // Slightly more opaque for better contrast
-    borderRadius: 12,
+    backgroundColor: HEYWAY_COLORS.background.overlayDark,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)', // Softer border
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 10,
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xl,
   },
 
   contactResults: {
@@ -677,57 +676,51 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.lg,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.08)',
+    borderBottomColor: HEYWAY_COLORS.border.tertiary,
   },
 
 
   keypadContainer: {
-    paddingHorizontal: 8,
-    paddingVertical: 20, // Increase vertical padding
-    marginBottom: 20, // Add bottom margin
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xl,
+    marginBottom: HEYWAY_SPACING.xl,
   },
 
   keypadRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
-    paddingHorizontal: 12,
+    marginBottom: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
   },
 
   keypadButton: {
     width: 60,
     height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255,255,255,0.06)', // More subtle
+    borderRadius: HEYWAY_RADIUS.component.button.full,
+    backgroundColor: HEYWAY_COLORS.interactive.hover,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)', // Softer border
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2,
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   keypadNumber: {
-    fontSize: 20,
-    fontFamily: 'System',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
     color: HEYWAY_COLORS.text.primary,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   keypadLetters: {
-    fontSize: 10,
-    fontFamily: 'System',
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.secondary,
-    marginTop: -2,
-    letterSpacing: 0.2,
+    marginTop: -HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
   },
 
 
@@ -735,18 +728,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    gap: 14,
+    gap: HEYWAY_SPACING.md,
   },
 
   contactAvatar: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: HEYWAY_RADIUS.component.avatar.md,
+    backgroundColor: HEYWAY_COLORS.interactive.hover,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   contactDetails: {
@@ -754,29 +748,31 @@ const styles = StyleSheet.create({
   },
 
   contactName: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
-    marginBottom: 2,
-    letterSpacing: 0.1,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   contactPhone: {
-    fontSize: 12,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.secondary,
-    fontWeight: '500',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   selectedContactsSection: {
-    marginBottom: 20,
+    marginBottom: HEYWAY_SPACING.xl,
     maxHeight: 120, // Slightly increase max height
   },
 
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
-    marginBottom: 12,
+    marginBottom: HEYWAY_SPACING.md,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   selectedContactsList: {
@@ -786,23 +782,24 @@ const styles = StyleSheet.create({
   selectedContactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: 'rgba(255,255,255,0.04)', // More subtle
-    borderRadius: 8,
-    marginBottom: 6,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.card.sm,
+    marginBottom: HEYWAY_SPACING.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', // Softer border
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   selectedContactIcon: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: HEYWAY_RADIUS.component.avatar.sm,
+    backgroundColor: HEYWAY_COLORS.interactive.hover,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: HEYWAY_SPACING.sm,
   },
 
   selectedContactDetails: {
@@ -810,52 +807,59 @@ const styles = StyleSheet.create({
   },
 
   selectedContactName: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
-    marginBottom: 2,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   selectedContactAddress: {
-    fontSize: 12,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   messageSection: {
-    marginBottom: 20,
+    marginBottom: HEYWAY_SPACING.xl,
     minHeight: 120, // Set minimum height instead of flex: 1
   },
 
   messageInput: {
-    backgroundColor: 'rgba(255,255,255,0.04)', // More subtle
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 15,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
+    padding: HEYWAY_SPACING.lg,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.primary,
     minHeight: 80,
     height: 80,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)', // Softer border
+    borderColor: HEYWAY_COLORS.border.primary,
     textAlignVertical: 'top',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   callActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingBottom: 20, // Reduce bottom padding since we have scroll container padding
-    marginTop: 10, // Add top margin for better spacing
+    gap: HEYWAY_SPACING.md,
+    paddingBottom: HEYWAY_SPACING.xl,
+    marginTop: HEYWAY_SPACING.sm,
   },
 
   scheduleButton: {
-    backgroundColor: 'rgba(255,255,255,0.06)', // More subtle
+    backgroundColor: HEYWAY_COLORS.background.primary,
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: HEYWAY_RADIUS.component.button.full,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)', // Softer border
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   sendButton: {
@@ -864,27 +868,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 24,
-    gap: 8,
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    borderRadius: HEYWAY_RADIUS.component.button.full,
+    gap: HEYWAY_SPACING.sm,
     shadowColor: HEYWAY_COLORS.status.success,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    ...HEYWAY_SHADOWS.light.md,
   },
 
   sendButtonDisabled: {
     backgroundColor: HEYWAY_COLORS.text.tertiary,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
+    opacity: 0.6,
   },
 
   sendButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
     color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   scrollContainer: {
@@ -902,14 +903,15 @@ const styles = StyleSheet.create({
 
   showKeypadLink: {
     alignItems: 'center',
-    paddingVertical: 8,
-    marginBottom: 10,
+    paddingVertical: HEYWAY_SPACING.sm,
+    marginBottom: HEYWAY_SPACING.sm,
   },
 
   showKeypadText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.interactive.primary, // Use blue color for the link
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.interactive.primary,
     textDecorationLine: 'underline',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Calendar, Package, MessageSquare, CheckCircle } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface DynamicFieldsProps {
   selectedPromptTemplate: string | null;
@@ -20,17 +21,17 @@ interface DynamicFieldsProps {
 
 // iOS Dark Mode Colors to match NewCallModal
 const IOS_COLORS = {
-  background: '#000000',
-  cardBackground: '#1C1C1E',
-  secondaryBackground: '#2C2C2E',
-  buttonBackground: '#3A3A3C',
+  background: HEYWAY_COLORS.background.whatsappPanel,
+  cardBackground: HEYWAY_COLORS.background.secondary,
+  secondaryBackground: HEYWAY_COLORS.background.tertiary,
+  buttonBackground: HEYWAY_COLORS.background.tertiary,
   text: {
-    primary: '#FFFFFF',
-    secondary: '#AEAEB2',
-    tertiary: '#636366',
+    primary: HEYWAY_COLORS.text.primary,
+    secondary: HEYWAY_COLORS.text.secondary,
+    tertiary: HEYWAY_COLORS.text.tertiary,
   },
-  accent: '#007AFF',
-  separator: '#3A3A3C',
+  accent: HEYWAY_COLORS.interactive.primary,
+  separator: HEYWAY_COLORS.border.primary,
 };
 
 const DynamicFields: React.FC<DynamicFieldsProps> = ({
@@ -377,185 +378,205 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
 
 const styles = StyleSheet.create({
   formContainer: {
-    marginBottom: 90,
+    marginBottom: HEYWAY_SPACING.xxxxl * 2,
   },
   formSection: {
     backgroundColor: IOS_COLORS.cardBackground,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    padding: HEYWAY_SPACING.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    marginBottom: 4,
+    borderColor: HEYWAY_COLORS.border.subtle,
+    marginBottom: HEYWAY_SPACING.xs,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 8,
+    marginBottom: HEYWAY_SPACING.lg,
+    paddingBottom: HEYWAY_SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: HEYWAY_COLORS.border.subtle,
   },
   sectionIconContainer: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: HEYWAY_RADIUS.component.avatar.sm,
     backgroundColor: IOS_COLORS.buttonBackground,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: HEYWAY_SPACING.md,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: IOS_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   fieldGroup: {
-    marginBottom: 16,
+    marginBottom: HEYWAY_SPACING.lg,
   },
   fieldLabel: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: IOS_COLORS.text.primary,
-    marginBottom: 8,
+    marginBottom: HEYWAY_SPACING.sm,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   // Option Buttons
   optionsRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: HEYWAY_SPACING.md,
   },
   optionButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: HEYWAY_COLORS.border.subtle,
     backgroundColor: IOS_COLORS.buttonBackground,
-    gap: 6,
+    gap: HEYWAY_SPACING.xs,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   optionButtonSelected: {
     backgroundColor: IOS_COLORS.accent,
     borderColor: IOS_COLORS.accent,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   optionButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: IOS_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   optionButtonTextSelected: {
-    color: '#ffffff',
+    color: HEYWAY_COLORS.text.inverse,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
   },
   checkIcon: {
-    marginLeft: 4,
+    marginLeft: HEYWAY_SPACING.xs,
   },
 
   // Scrollable Options
   scrollContainer: {
-    paddingHorizontal: 4,
+    paddingHorizontal: HEYWAY_SPACING.xs,
   },
   timeOptionsRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: HEYWAY_SPACING.md,
   },
   timeOption: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: HEYWAY_COLORS.border.subtle,
     backgroundColor: IOS_COLORS.buttonBackground,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   timeOptionWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: HEYWAY_SPACING.xs,
   },
   timeOptionSelected: {
     backgroundColor: IOS_COLORS.accent,
     borderColor: IOS_COLORS.accent,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   timeOptionText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: IOS_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   timeOptionTextSelected: {
-    color: '#ffffff',
+    color: HEYWAY_COLORS.text.inverse,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
   },
   timeOptionEmoji: {
-    fontSize: 14,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
   },
 
   // Day Buttons
   daysRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: HEYWAY_SPACING.sm,
   },
   dayButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: HEYWAY_RADIUS.component.button.full,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: HEYWAY_COLORS.border.subtle,
     backgroundColor: IOS_COLORS.buttonBackground,
     alignItems: 'center',
     justifyContent: 'center',
+    ...HEYWAY_SHADOWS.light.xs,
   },
   dayButtonSelected: {
     backgroundColor: IOS_COLORS.accent,
     borderColor: IOS_COLORS.accent,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   dayButtonText: {
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: IOS_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   dayButtonTextSelected: {
-    color: '#ffffff',
+    color: HEYWAY_COLORS.text.inverse,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
   },
 
   // Input Fields
   inputContainer: {
     backgroundColor: IOS_COLORS.buttonBackground,
-    borderRadius: 16,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   textInput: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
-    fontWeight: '400',
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: IOS_COLORS.text.primary,
     backgroundColor: 'transparent',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   textAreaContainer: {
     backgroundColor: IOS_COLORS.buttonBackground,
-    borderRadius: 16,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: HEYWAY_COLORS.border.subtle,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   textArea: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
-    fontWeight: '400',
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: IOS_COLORS.text.primary,
     backgroundColor: 'transparent',
     textAlignVertical: 'top',
     minHeight: 60,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   // Order Form Specific
   orderItemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    gap: HEYWAY_SPACING.md,
+    marginBottom: HEYWAY_SPACING.md,
   },
   orderItemInput: {
     flex: 1,

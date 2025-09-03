@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS } from './designSystem';
+import { HEYWAY_COLORS } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface AnimatedBorderProps {
     width: number;
@@ -32,13 +32,14 @@ const AnimatedBorderComponent: React.FC<AnimatedBorderProps> = ({
             return colors;
         }
         
+        // Fallback gradient colors using HEYWAY color system
         switch (intensity) {
             case 'subtle':
-                return COLORS.gradient.appleBorderSubtle;
+                return [HEYWAY_COLORS.interactive.primary, HEYWAY_COLORS.accent.info, HEYWAY_COLORS.background.secondary, HEYWAY_COLORS.interactive.primary];
             case 'intense':
-                return COLORS.gradient.appleBorderIntense;
+                return [HEYWAY_COLORS.accent.success, HEYWAY_COLORS.accent.info, HEYWAY_COLORS.accent.warning, HEYWAY_COLORS.accent.success];
             default:
-                return COLORS.gradient.appleBorder;
+                return [HEYWAY_COLORS.interactive.primary, HEYWAY_COLORS.accent.info, HEYWAY_COLORS.interactive.primary, HEYWAY_COLORS.accent.info];
         }
     };
 
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     },
     staticGradient: {
         flex: 1,
-        shadowColor: '#FF6B9D',
+        shadowColor: HEYWAY_COLORS.interactive.primary,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.2,
         shadowRadius: 15,

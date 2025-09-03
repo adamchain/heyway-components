@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Phone, Calendar, ShoppingBag, History } from 'lucide-react-native';
-import { COLORS, RADIUS, SHADOWS } from '@/components/designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface PromptCardsProps {
   onPromptSelect: (promptType: 'call' | 'schedule' | 'order' | 'history') => void;
@@ -19,28 +19,28 @@ const PromptCards: React.FC<PromptCardsProps> = ({ onPromptSelect }) => {
       title: 'Make a Call',
       subtitle: 'Call contacts immediately',
       icon: Phone,
-      color: COLORS.accent,
+      color: HEYWAY_COLORS.interactive.primary,
     },
     {
       type: 'schedule' as const,
       title: 'Schedule Call',
       subtitle: 'Schedule for later',
       icon: Calendar,
-      color: COLORS.green,
+      color: HEYWAY_COLORS.status.success,
     },
     {
       type: 'order' as const,
       title: 'Place Order',
       subtitle: 'Order items or services',
       icon: ShoppingBag,
-      color: COLORS.warning,
+      color: HEYWAY_COLORS.accent.warning,
     },
     {
       type: 'history' as const,
       title: 'Call History',
       subtitle: 'View past calls',
       icon: History,
-      color: COLORS.text.secondary,
+      color: HEYWAY_COLORS.text.secondary,
     },
   ];
 
@@ -71,51 +71,57 @@ const PromptCards: React.FC<PromptCardsProps> = ({ onPromptSelect }) => {
 
 const styles = StyleSheet.create({
   promptCardsContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingVertical: HEYWAY_SPACING.xxl,
   },
   promptCardsTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: COLORS.text.primary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: HEYWAY_SPACING.xxl,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   promptCardsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 16,
+    gap: HEYWAY_SPACING.lg,
   },
   promptCard: {
     width: '47%',
-    backgroundColor: COLORS.background.secondary,
-    borderRadius: RADIUS.lg,
-    padding: 20,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    padding: HEYWAY_SPACING.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    ...SHADOWS.sm,
+    borderColor: HEYWAY_COLORS.border.primary,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.large * 2,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   promptCardIcon: {
     width: 50,
     height: 50,
-    borderRadius: RADIUS.full,
+    borderRadius: HEYWAY_RADIUS.component.avatar.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: HEYWAY_SPACING.md,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   promptCardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text.primary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   promptCardSubtitle: {
-    fontSize: 14,
-    color: COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });
 

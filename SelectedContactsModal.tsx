@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, Trash2 } from 'lucide-react-native';
-import { COLORS } from './designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 import { ContactSelectionManager } from '@/utils/contactSelection';
 
 interface SelectedContactsModalProps {
@@ -117,70 +117,76 @@ export default function SelectedContactsModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#181818',
+    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingVertical: HEYWAY_SPACING.lg,
     borderBottomWidth: 1,
-    borderBottomColor: '#333333',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
   title: {
-    fontSize: 18,
-    fontFamily: 'System',
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingTop: HEYWAY_SPACING.xl,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: HEYWAY_SPACING.xl,
   },
   contactItem: {
-    backgroundColor: '#232323',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.component.card.sm,
+    padding: HEYWAY_SPACING.lg,
+    marginBottom: HEYWAY_SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   contactName: {
-    fontSize: 16,
-    fontFamily: 'System',
-    fontWeight: '500',
-    color: '#FFFFFF',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.primary,
     flex: 1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactPhone: {
-    fontSize: 14,
-    fontFamily: 'System',
-    color: '#CCCCCC',
-    marginRight: 12,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    marginRight: HEYWAY_SPACING.md,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   removeButton: {
-    padding: 4,
+    padding: HEYWAY_SPACING.xs,
   },
   clearButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     // backgroundColor replaced with LinearGradient component
-    borderRadius: 8,
-    paddingVertical: 16,
-    marginVertical: 20,
+    borderRadius: HEYWAY_RADIUS.component.button.md,
+    paddingVertical: HEYWAY_SPACING.lg,
+    marginVertical: HEYWAY_SPACING.xl,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
   },
   clearButtonText: {
-    marginLeft: 8,
-    fontSize: 16,
-    fontFamily: 'System',
-    fontWeight: '600',
-    color: '#FFFFFF',
+    marginLeft: HEYWAY_SPACING.sm,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.inverse,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   emptyState: {
     flex: 1,
@@ -188,9 +194,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 16,
-    fontFamily: 'System',
-    color: '#CCCCCC',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Animated,
 } from 'react-native';
+import { HEYWAY_COLORS, HEYWAY_SPACING } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 const { width, height } = Dimensions.get('window');
 
@@ -76,11 +77,10 @@ export default function SplashScreen({ visible }: SplashScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#FFFFFF',
-
+    borderColor: HEYWAY_COLORS.text.inverse,
   },
   spinnerContainer: {
     flex: 1,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: HEYWAY_SPACING.xxxxl + HEYWAY_SPACING.xl,
     alignItems: 'center',
     justifyContent: 'center',
     width: width,

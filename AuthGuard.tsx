@@ -10,6 +10,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import RegisterScreen from '@/app/auth/register';
+import { HEYWAY_COLORS, HEYWAY_TYPOGRAPHY, HEYWAY_SPACING } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -40,12 +41,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
-    color: '#8E8E93',
+    marginTop: HEYWAY_SPACING.lg,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

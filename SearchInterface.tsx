@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Search, Phone, User } from 'lucide-react-native';
-import { COLORS, RADIUS, SHADOWS } from '@/components/designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface SearchInterfaceProps {
   searchQuery: string;
@@ -93,54 +93,57 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
 const styles = StyleSheet.create({
   bottomSearchContainer: {
     position: 'absolute',
-    bottom: 30,
-    left: 20,
-    right: 20,
+    bottom: HEYWAY_SPACING.xxxl,
+    left: HEYWAY_SPACING.xl,
+    right: HEYWAY_SPACING.xl,
     zIndex: 999,
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background.secondary,
-    borderRadius: RADIUS.lg,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.component.input.lg,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    ...SHADOWS.sm,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   searchIcon: {
-    marginRight: 12,
+    marginRight: HEYWAY_SPACING.md,
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: COLORS.text.primary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.primary,
     paddingVertical: 0,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   directCallButton: {
-    backgroundColor: COLORS.accent,
-    borderRadius: RADIUS.md,
-    padding: 8,
-    marginLeft: 8,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.component.button.md,
+    padding: HEYWAY_SPACING.sm,
+    marginLeft: HEYWAY_SPACING.sm,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   contactResults: {
-    backgroundColor: COLORS.background.secondary,
-    borderRadius: RADIUS.lg,
-    marginTop: 8,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    marginTop: HEYWAY_SPACING.sm,
     maxHeight: 200,
     borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    ...SHADOWS.sm,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   contactResultsList: {
     maxHeight: 200,
   },
   contactResult: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border.secondary,
+    borderBottomColor: HEYWAY_COLORS.border.secondary,
   },
   contactResultContent: {
     flexDirection: 'row',
@@ -155,27 +158,30 @@ const styles = StyleSheet.create({
   contactIcon: {
     width: 40,
     height: 40,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.background.tertiary,
+    borderRadius: HEYWAY_RADIUS.component.avatar.lg,
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: HEYWAY_SPACING.md,
   },
   contactDetails: {
     flex: 1,
   },
   contactName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: COLORS.text.primary,
-    marginBottom: 2,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactPhone: {
-    fontSize: 14,
-    color: COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   callIconContainer: {
-    padding: 8,
+    padding: HEYWAY_SPACING.sm,
   },
 });
 

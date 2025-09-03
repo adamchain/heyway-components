@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { ChevronDown, ChevronUp, Phone, X, User, Plus } from 'lucide-react-native';
 import { useContacts } from '@/hooks/useContacts';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface Contact {
   id: string;
@@ -259,17 +260,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     borderTopWidth: 1,
-    borderTopColor: '#3A3A3C',
+    borderTopColor: HEYWAY_COLORS.border.primary,
     zIndex: 1000,
     overflow: 'hidden',
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
+        ...HEYWAY_SHADOWS.light.lg,
       },
       android: {
         elevation: 4,
@@ -280,7 +278,7 @@ const styles = StyleSheet.create({
   header: {
     height: 48,
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: HEYWAY_SPACING.lg,
   },
 
   headerContent: {
@@ -297,86 +295,91 @@ const styles = StyleSheet.create({
   composeIcon: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+    borderRadius: HEYWAY_RADIUS.component.avatar.sm,
+    backgroundColor: HEYWAY_COLORS.interactive.primary + '20',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: HEYWAY_SPACING.sm,
   },
 
   headerTitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#FFFFFF',
-    letterSpacing: -0.1,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   headerRight: {
-    padding: 4,
+    padding: HEYWAY_SPACING.xs,
   },
 
   expandedContent: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingBottom: HEYWAY_SPACING.md,
   },
 
   searchContainer: {
-    marginBottom: 12,
+    marginBottom: HEYWAY_SPACING.md,
   },
 
   searchInput: {
     height: 36,
-    backgroundColor: '#2C2C2E',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 14,
-    color: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
+    borderRadius: HEYWAY_RADIUS.component.input.md,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.primary,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: HEYWAY_COLORS.border.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   recipientsContainer: {
-    marginBottom: 12,
+    marginBottom: HEYWAY_SPACING.md,
   },
 
   recipientsLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#8E8E93',
-    marginBottom: 6,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.tertiary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   recipientsList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: HEYWAY_SPACING.sm,
   },
 
   recipientChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
-    borderRadius: 16,
-    paddingLeft: 12,
-    paddingRight: 8,
-    paddingVertical: 6,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    paddingLeft: HEYWAY_SPACING.md,
+    paddingRight: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
     maxWidth: 200,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   recipientChipText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#FFFFFF',
-    marginRight: 6,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.inverse,
+    marginRight: HEYWAY_SPACING.xs,
     flex: 1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   removeChipButton: {
     width: 20,
     height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: HEYWAY_RADIUS.component.button.sm,
+    backgroundColor: HEYWAY_COLORS.background.primary + '30',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -384,31 +387,34 @@ const styles = StyleSheet.create({
   resultsContainer: {
     flex: 1,
     maxHeight: 120,
-    marginBottom: 16,
+    marginBottom: HEYWAY_SPACING.lg,
   },
 
   resultsList: {
-    backgroundColor: '#2C2C2E',
-    borderRadius: 12,
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3C',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
   },
 
   contactAvatar: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: '#3A3A3C',
+    borderRadius: HEYWAY_RADIUS.component.avatar.md,
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: HEYWAY_SPACING.md,
   },
 
   contactInfo: {
@@ -416,43 +422,50 @@ const styles = StyleSheet.create({
   },
 
   contactName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 2,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   contactNumber: {
-    fontSize: 14,
-    color: '#8E8E93',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   actionContainer: {
-    paddingTop: 8,
+    paddingTop: HEYWAY_SPACING.sm,
   },
 
   callButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#007AFF',
-    borderRadius: 25,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.component.button.full,
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.xxl,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+    ...HEYWAY_SHADOWS.light.sm,
   },
 
   callButtonDisabled: {
-    backgroundColor: '#3A3A3C',
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
+    opacity: 0.6,
   },
 
   callButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginLeft: 8,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.inverse,
+    marginLeft: HEYWAY_SPACING.sm,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   callButtonTextDisabled: {
-    color: '#8E8E93',
+    color: HEYWAY_COLORS.text.tertiary,
   },
 });

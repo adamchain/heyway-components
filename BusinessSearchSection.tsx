@@ -34,6 +34,7 @@ import {
   HEYWAY_TYPOGRAPHY,
   HEYWAY_RADIUS,
   HEYWAY_SHADOWS,
+  HEYWAY_ACCESSIBILITY,
 } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface BusinessResult {
@@ -628,7 +629,7 @@ const styles = StyleSheet.create({
   businessItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: HEYWAY_COLORS.background.secondary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
@@ -639,8 +640,8 @@ const styles = StyleSheet.create({
   },
   businessItemSelected: {
     borderColor: HEYWAY_COLORS.interactive.primary,
-    backgroundColor: HEYWAY_COLORS.background.accent,
-    ...HEYWAY_SHADOWS.colored.accent,
+    backgroundColor: HEYWAY_COLORS.interactive.selected,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   businessItemLeft: {
     flexDirection: 'row',
@@ -654,9 +655,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.sm,
+    borderRadius: HEYWAY_RADIUS.component.avatar.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   businessInfo: {
     flex: 1,
@@ -665,18 +667,22 @@ const styles = StyleSheet.create({
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semiBold,
     color: HEYWAY_COLORS.text.primary,
-    marginBottom: 2,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   businessAddress: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     lineHeight: 16,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   businessDistance: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.interactive.primary,
-    marginTop: 2,
+    marginTop: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   businessActions: {
     flexDirection: 'row',
@@ -688,10 +694,11 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: HEYWAY_RADIUS.sm,
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
     backgroundColor: HEYWAY_COLORS.background.primary,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   selectionIndicator: {
     width: 24,

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import { Phone } from 'lucide-react-native';
-import { COLORS, RADIUS, SHADOWS } from '@/components/designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface CallInitiationOverlayProps {
   visible: boolean;
@@ -198,45 +198,47 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'none'.dark,
+    backgroundColor: HEYWAY_COLORS.background.overlayDark,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
   },
   container: {
-    backgroundColor: 'rgba(52, 199, 89, 0.9)', // Using rgba for transparency
-    borderRadius: RADIUS.xl,
-    padding: 30,
+    backgroundColor: 'rgba(52, 199, 89, 0.9)',
+    borderRadius: HEYWAY_RADIUS.xxl,
+    padding: HEYWAY_SPACING.xxxl,
     alignItems: 'center',
     width: '80%',
     maxWidth: 300,
+    ...HEYWAY_SHADOWS.light.xl,
   },
   iconContainer: {
     width: 80,
     height: 80,
-    borderRadius: RADIUS.full,
-    backgroundColor: 'none'.light,
+    borderRadius: HEYWAY_RADIUS.xxxl * 2,
+    backgroundColor: HEYWAY_COLORS.background.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: HEYWAY_SPACING.xl,
+    ...HEYWAY_SHADOWS.light.md,
   },
   message: {
-    color: COLORS.text.primary,
-    fontSize: 18,
-    fontFamily: 'System',
-    fontWeight: '600',
+    color: HEYWAY_COLORS.text.inverse,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: HEYWAY_SPACING.xl,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   spinner: {
-    marginTop: 10,
+    marginTop: HEYWAY_SPACING.sm,
   },
   ripple: {
     position: 'absolute',
     width: 200,
     height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(52, 199, 89, 0.3)',
+    borderRadius: HEYWAY_RADIUS.xxxl * 6,
+    backgroundColor: 'rgba(52, 199, 89, 0.2)',
     borderWidth: 2,
     borderColor: 'rgba(52, 199, 89, 0.5)',
   }

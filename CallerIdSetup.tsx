@@ -1,5 +1,6 @@
 import React from 'react';
 import CallerIdManagement from './CallerIdManagement';
+import { HEYWAY_COLORS } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface CallerIdSetupProps {
   visible: boolean;

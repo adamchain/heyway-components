@@ -16,22 +16,11 @@ import { apiService } from '@/services/apiService';
 import { useFavorites } from '@/hooks/useFavorites';
 import { ContactSelectionManager } from '@/utils/contactSelection';
 import * as Location from 'expo-location';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 // Lazy load FavoritesContent for business favorites
 const FavoritesContent = React.lazy(() => import('@/components/FavoritesContent'));
 
-const IOS_COLORS = {
-  background: '#000000',
-  cardBackground: '#1C1C1E',
-  secondaryBackground: '#2C2C2E',
-  text: {
-    primary: '#FFFFFF',
-    secondary: '#AEAEB2',
-    tertiary: '#636366',
-  },
-  accent: '#007AFF',
-  separator: '#3A3A3C',
-};
 
 interface BusinessResult {
   id: string;
@@ -413,79 +402,86 @@ export default function BusinessCardView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: IOS_COLORS.background,
+    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
   },
 
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
+    gap: HEYWAY_SPACING.lg,
   },
 
   loadingText: {
-    fontSize: 16,
-    color: IOS_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingTop: HEYWAY_SPACING.xl,
+    paddingBottom: HEYWAY_SPACING.lg,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.08)',
+    borderBottomColor: HEYWAY_COLORS.border.tertiary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
 
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: IOS_COLORS.text.primary,
-    marginBottom: 4,
-    letterSpacing: -0.3,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
 
   subtitle: {
-    fontSize: 14,
-    color: IOS_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingBottom: HEYWAY_SPACING.xl,
   },
 
   businessCard: {
-    backgroundColor: 'rgba(28, 28, 30, 0.6)',
-    borderRadius: 16,
-    marginBottom: 12,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    marginBottom: HEYWAY_SPACING.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.light.sm,
   },
 
   businessCardContent: {
-    padding: 16,
+    padding: HEYWAY_SPACING.lg,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
 
   businessInfo: {
     flex: 1,
-    gap: 8,
+    gap: HEYWAY_SPACING.sm,
   },
 
   businessHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: HEYWAY_SPACING.md,
   },
 
   businessIcon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0,122,255,0.15)',
+    borderRadius: HEYWAY_RADIUS.xl,
+    backgroundColor: HEYWAY_COLORS.interactive.selected,
     alignItems: 'center',
     justifyContent: 'center',
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   businessDetails: {
@@ -493,114 +489,127 @@ const styles = StyleSheet.create({
   },
 
   businessName: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: IOS_COLORS.text.primary,
-    marginBottom: 4,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
 
   businessMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: HEYWAY_SPACING.md,
   },
 
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: HEYWAY_SPACING.xs,
   },
 
   ratingText: {
-    fontSize: 13,
-    color: IOS_COLORS.text.secondary,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   priceLevel: {
-    fontSize: 13,
-    color: '#34C759',
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.status.success,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   distance: {
-    fontSize: 13,
-    color: IOS_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   addressContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 8,
+    gap: HEYWAY_SPACING.sm,
     paddingLeft: 52,
   },
 
   businessAddress: {
-    fontSize: 14,
-    color: IOS_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
     lineHeight: 18,
     flex: 1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   businessPhone: {
-    fontSize: 15,
-    color: IOS_COLORS.accent,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.interactive.primary,
     paddingLeft: 52,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   businessActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginLeft: 12,
+    gap: HEYWAY_SPACING.sm,
+    marginLeft: HEYWAY_SPACING.md,
   },
 
   actionButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    backgroundColor: HEYWAY_COLORS.interactive.hover,
     alignItems: 'center',
     justifyContent: 'center',
+    ...HEYWAY_SHADOWS.light.xs,
   },
 
   selectButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: HEYWAY_RADIUS.component.button.lg,
+    backgroundColor: HEYWAY_COLORS.interactive.hover,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: HEYWAY_COLORS.border.subtle,
   },
 
   selectButtonActive: {
-    backgroundColor: IOS_COLORS.accent,
-    borderColor: IOS_COLORS.accent,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderColor: HEYWAY_COLORS.interactive.primary,
+    ...HEYWAY_SHADOWS.light.sm,
   },
 
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 40,
+    paddingVertical: HEYWAY_SPACING.xxxxl * 2,
+    paddingHorizontal: HEYWAY_SPACING.xxxxl,
   },
 
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: IOS_COLORS.text.primary,
-    marginTop: 16,
-    marginBottom: 8,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    marginTop: HEYWAY_SPACING.lg,
+    marginBottom: HEYWAY_SPACING.sm,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
 
   emptyText: {
-    fontSize: 15,
-    color: IOS_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

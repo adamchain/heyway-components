@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Phone, ShoppingCart, PhoneCall, Calendar } from 'lucide-react-native';
-import { COLORS, RADIUS, SHADOWS } from '@/components/designSystem';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface AICallerPromptCardsProps {
   onPromptSelect: (promptType: 'standard' | 'order' | 'callback' | 'schedule') => void;
@@ -69,56 +69,63 @@ export default function AICallerPromptCards({ onPromptSelect, selectedPrompt }: 
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: HEYWAY_SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text.primary,
-    marginBottom: 12,
-    paddingHorizontal: 4,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   cardsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: HEYWAY_SPACING.sm,
   },
   promptCard: {
     flex: 1,
-    backgroundColor: COLORS.background.primary,
-    borderRadius: RADIUS.md,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.component.card.md,
     borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    borderColor: HEYWAY_COLORS.border.primary,
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.sm,
     alignItems: 'center',
     minHeight: 80,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   promptCardSelected: {
     borderWidth: 2,
-    borderColor: COLORS.text.primary,
+    borderColor: HEYWAY_COLORS.interactive.primary,
+    backgroundColor: HEYWAY_COLORS.interactive.selected,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   iconContainer: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: HEYWAY_RADIUS.component.avatar.md,
     borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    backgroundColor: COLORS.background.primary,
+    borderColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 6,
+    marginBottom: HEYWAY_SPACING.xs,
   },
   cardTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.text.primary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
-    marginBottom: 2,
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   cardSubtitle: {
-    fontSize: 10,
-    color: COLORS.text.tertiary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.tertiary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

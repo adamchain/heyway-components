@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { PhoneIncoming, PhoneOutgoing, CheckCircle, X } from 'lucide-react-native';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
 
 interface CallHistoryListProps {
   callHistory: any[];
@@ -133,31 +133,36 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 8,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingVertical: HEYWAY_SPACING.lg,
+    gap: HEYWAY_SPACING.sm,
   },
   filterButton: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: HEYWAY_RADIUS.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    borderRadius: HEYWAY_RADIUS.component.button.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
     backgroundColor: HEYWAY_COLORS.background.secondary,
     alignItems: 'center',
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   filterButtonActive: {
-    backgroundColor: HEYWAY_COLORS.accent,
-    borderColor: HEYWAY_COLORS.accent,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderColor: HEYWAY_COLORS.interactive.primary,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   filterButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   filterButtonTextActive: {
-    color: HEYWAY_COLORS.background.primary,
+    color: HEYWAY_COLORS.text.inverse,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
   },
   loadingContainer: {
     flex: 1,
@@ -165,19 +170,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: HEYWAY_SPACING.xl,
     paddingBottom: 100,
   },
   callItem: {
     backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.lg,
-    marginBottom: 12,
+    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    marginBottom: HEYWAY_SPACING.md,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.sm,
+    ...HEYWAY_SHADOWS.light.xs,
   },
   callItemContent: {
-    padding: 16,
+    padding: HEYWAY_SPACING.lg,
   },
   callInfo: {
     flex: 1,
@@ -186,38 +191,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: HEYWAY_SPACING.sm,
   },
   callContact: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     flex: 1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   callStatus: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: HEYWAY_SPACING.xs,
   },
   callStatusText: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   successText: {
     color: HEYWAY_COLORS.status.success,
   },
   errorText: {
-    color: HEYWAY_COLORS.text.error,
+    color: HEYWAY_COLORS.status.error,
   },
   callTime: {
-    fontSize: 14,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
-    marginBottom: 8,
+    marginBottom: HEYWAY_SPACING.sm,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   callPrompt: {
-    fontSize: 14,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.tertiary,
     fontStyle: 'italic',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });
 
