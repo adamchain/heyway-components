@@ -1,476 +1,217 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView 
-} from 'react-native';
-import { Plus, X, Phone } from 'lucide-react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Crown, Check, Zap, CreditCard } from 'lucide-react-native';
+import { subscriptionService, SubscriptionStatus } from '@/services/subscriptionService';
 import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { isWeb } from '@/utils/platformUtils';
 
-interface OrderItem {
-  name: string;
-  quantity: string;
+interface WebSubscriptionManagerProps {
+  onSubscriptionChanged?: () => void;
 }
 
-interface FormData {
-  // Standard form
-  message?: string;
-  
-  // Order form
-  items?: OrderItem[];
-  deliveryOption?: string;
-  specialInstructions?: string;
-  
-  // Callback form
-  callerName?: string;
-  reason?: string;
-  urgency?: 'low' | 'medium' | 'high';
-  additionalInfo?: string;
-  
-  // Schedule form
-  serviceType?: string;
-  timePreference?: string;
-  dayOfWeek?: string;
-  timeOfDay?: string;
-}
+// Stripe integration for web payments
+const handleStripeCheckout = async () => {
+  try {
+    // Initialize Stripe checkout
+    const response = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceId: 'price_heyway_pro_monthly', // Your Stripe price ID
+        successUrl: `${window.location.origin}/subscription-success`,
+        cancelUrl: `${window.location.origin}/subscription-cancelled`,
+      }),
+    });
 
-interface AICallerFormsProps {
-  selectedPrompt: 'standard' | 'order' | 'callback' | 'schedule' | null;
-  formData: FormData;
-  updateFormData: (field: string, value: any) => void;
-  updateOrderItem: (index: number, field: 'name' | 'quantity', value: string) => void;
-  addOrderItem: () => void;
-  removeOrderItem: (index: number) => void;
-  onMakeCall: () => void;
-  selectedCallList: any[];
-  isLoading: boolean;
-}
+    const { sessionId } = await response.json();
+    
+    // Redirect to Stripe Checkout
+    const stripe = (window as any).Stripe(process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+    await stripe.redirectToCheckout({ sessionId });
+  } catch (error) {
+    console.error('Stripe checkout failed:', error);
+    throw new Error('Payment processing failed');
+  }
+};
 
-export default function AICallerForms({ 
-  selectedPrompt, 
-  formData, 
-  updateFormData, 
-  updateOrderItem,
-  addOrderItem,
-  removeOrderItem,
-  onMakeCall,
-  selectedCallList,
-  isLoading
-}: AICallerFormsProps) {
-  if (!selectedPrompt) return null;
+export default function WebSubscriptionManager({ onSubscriptionChanged }: WebSubscriptionManagerProps) {
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
-  const renderStandardForm = () => (
-    <View style={styles.formSection}>
-      <TextInput
-        style={styles.textInput}
-        placeholder="What would you like to say?"
-        placeholderTextColor={COLORS.text.tertiary}
-        value={formData.message || ''}
-        onChangeText={(text) => updateFormData('message', text)}
-        multiline
-        numberOfLines={3}
-      />
-    </View>
-  );
+  useEffect(() => {
+    loadSubscriptionStatus();
+  }, []);
 
-  const renderOrderForm = () => (
-    <View style={styles.formSection}>
-      <Text style={styles.formLabel}>Items to order</Text>
-      {(formData.items || [{ name: '', quantity: '1' }]).map((item, index) => (
-        <View key={index} style={styles.orderItemRow}>
-          <TextInput
-            style={[styles.textInput, { flex: 1, marginRight: 8 }]}
-            placeholder="Item name"
-            placeholderTextColor={COLORS.text.tertiary}
-            value={item.name}
-            onChangeText={(text) => updateOrderItem(index, 'name', text)}
-          />
-          <TextInput
-            style={[styles.textInput, { width: 60, marginRight: 8 }]}
-            placeholder="Qty"
-            placeholderTextColor={COLORS.text.tertiary}
-            value={item.quantity}
-            onChangeText={(text) => updateOrderItem(index, 'quantity', text)}
-            keyboardType="numeric"
-          />
-          {(formData.items || []).length > 1 && (
-            <TouchableOpacity
-              style={styles.removeButton}
-              onPress={() => removeOrderItem(index)}
-            >
-              <X size={16} color={COLORS.error} />
-            </TouchableOpacity>
-          )}
-        </View>
-      ))}
+  const loadSubscriptionStatus = async () => {
+    try {
+      setIsLoading(true);
+      const status = await subscriptionService.getSubscriptionStatus();
+      setSubscriptionStatus(status);
+    } catch (error) {
+      console.error('Failed to load subscription:', error);
+      Alert.alert('Error', 'Failed to load subscription information');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    try {
+      setIsPurchasing(true);
       
-      <TouchableOpacity style={styles.addButton} onPress={addOrderItem}>
-        <Plus size={16} color={COLORS.text.primary} />
-        <Text style={styles.addButtonText}>Add Item</Text>
-      </TouchableOpacity>
+      if (isWeb) {
+        // Use Stripe for web payments
+        await handleStripeCheckout();
+      } else {
+        // Use in-app purchases for mobile (existing flow)
+        const success = await subscriptionService.purchaseProduct('com.heyway.pro_monthly');
+        if (success) {
+          const updatedStatus = await subscriptionService.getSubscriptionStatus();
+          setSubscriptionStatus(updatedStatus);
+          Alert.alert('Upgrade Successful!', 'Welcome to HeyWay Pro!');
+          onSubscriptionChanged?.();
+        }
+      }
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      Alert.alert('Purchase Failed', 'Unable to complete purchase');
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
 
-      <Text style={styles.formLabel}>Delivery Option</Text>
-      <View style={styles.optionsRow}>
-        {['pickup', 'delivery'].map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.optionButton,
-              formData.deliveryOption === option && styles.optionButtonSelected
-            ]}
-            onPress={() => updateFormData('deliveryOption', option)}
-          >
-            <Text style={[
-              styles.optionText,
-              formData.deliveryOption === option && styles.optionTextSelected
-            ]}>
-              {option.charAt(0).toUpperCase() + option.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#34C759" />
+        <Text style={styles.loadingText}>Loading subscription...</Text>
       </View>
+    );
+  }
 
-      <Text style={styles.formLabel}>Special Instructions (optional)</Text>
-      <TextInput
-        style={styles.textInput}
-        placeholder="Any special requests..."
-        placeholderTextColor={COLORS.text.tertiary}
-        value={formData.specialInstructions || ''}
-        onChangeText={(text) => updateFormData('specialInstructions', text)}
-        multiline
-        numberOfLines={2}
-      />
-    </View>
-  );
-
-  const renderCallbackForm = () => (
-    <View style={styles.formSection}>
-      <Text style={styles.formLabel}>Who called?</Text>
-      <TextInput
-        style={styles.textInput}
-        placeholder="Enter caller's name"
-        placeholderTextColor={COLORS.text.tertiary}
-        value={formData.callerName || ''}
-        onChangeText={(text) => updateFormData('callerName', text)}
-      />
-
-      <Text style={styles.formLabel}>Reason for call</Text>
-      <TextInput
-        style={styles.textInput}
-        placeholder="What was the call about?"
-        placeholderTextColor={COLORS.text.tertiary}
-        value={formData.reason || ''}
-        onChangeText={(text) => updateFormData('reason', text)}
-        multiline
-        numberOfLines={2}
-      />
-
-      <Text style={styles.formLabel}>Urgency Level</Text>
-      <View style={styles.optionsRow}>
-        {[
-          { key: 'low', label: 'Low' },
-          { key: 'medium', label: 'Medium' },
-          { key: 'high', label: 'High' }
-        ].map((option) => (
-          <TouchableOpacity
-            key={option.key}
-            style={[
-              styles.optionButton,
-              formData.urgency === option.key && styles.optionButtonSelected
-            ]}
-            onPress={() => updateFormData('urgency', option.key)}
-          >
-            <Text style={[
-              styles.optionText,
-              formData.urgency === option.key && styles.optionTextSelected
-            ]}>
-              {option.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+  if (!subscriptionStatus) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Unable to load subscription information</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={loadSubscriptionStatus}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
       </View>
+    );
+  }
 
-      <Text style={styles.formLabel}>Additional Information (optional)</Text>
-      <TextInput
-        style={styles.textInput}
-        placeholder="Any other details..."
-        placeholderTextColor={COLORS.text.tertiary}
-        value={formData.additionalInfo || ''}
-        onChangeText={(text) => updateFormData('additionalInfo', text)}
-        multiline
-        numberOfLines={2}
-      />
-    </View>
-  );
-
-  const renderScheduleForm = () => (
-    <View style={styles.formSection}>
-      <Text style={styles.formLabel}>Service Type</Text>
-      <TextInput
-        style={styles.textInput}
-        placeholder="What type of appointment?"
-        placeholderTextColor={COLORS.text.tertiary}
-        value={formData.serviceType || ''}
-        onChangeText={(text) => updateFormData('serviceType', text)}
-      />
-
-      <Text style={styles.formLabel}>When would you like to schedule?</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.timeOptionsRow}>
-          {[
-            { key: 'today', label: 'Today' },
-            { key: 'tomorrow', label: 'Tomorrow' },
-            { key: 'this week', label: 'This Week' },
-            { key: 'next week', label: 'Next Week' },
-            { key: 'flexible', label: 'Flexible' }
-          ].map((option) => (
-            <TouchableOpacity
-              key={option.key}
-              style={[
-                styles.timeOption,
-                formData.timePreference === option.key && styles.timeOptionSelected
-              ]}
-              onPress={() => updateFormData('timePreference', option.key)}
-            >
-              <Text style={[
-                styles.timeOptionText,
-                formData.timePreference === option.key && styles.timeOptionTextSelected
-              ]}>
-                {option.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-
-      <Text style={styles.formLabel}>Preferred Day (optional)</Text>
-      <View style={styles.optionsRow}>
-        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => (
-          <TouchableOpacity
-            key={day}
-            style={[
-              styles.dayButton,
-              formData.dayOfWeek === day && styles.dayButtonSelected
-            ]}
-            onPress={() => updateFormData('dayOfWeek', day)}
-          >
-            <Text style={[
-              styles.dayButtonText,
-              formData.dayOfWeek === day && styles.dayButtonTextSelected
-            ]}>
-              {day.slice(0, 3)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <Text style={styles.formLabel}>Time of Day (optional)</Text>
-      <View style={styles.optionsRow}>
-        {['morning', 'afternoon', 'evening'].map((time) => (
-          <TouchableOpacity
-            key={time}
-            style={[
-              styles.optionButton,
-              formData.timeOfDay === time && styles.optionButtonSelected
-            ]}
-            onPress={() => updateFormData('timeOfDay', time)}
-          >
-            <Text style={[
-              styles.optionText,
-              formData.timeOfDay === time && styles.optionTextSelected
-            ]}>
-              {time.charAt(0).toUpperCase() + time.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
+  const displayInfo = subscriptionService.getSubscriptionDisplayInfo(subscriptionStatus);
+  const isProUser = subscriptionStatus?.plan === 'pro';
 
   return (
     <View style={styles.container}>
-      {selectedPrompt === 'standard' && renderStandardForm()}
-      {selectedPrompt === 'order' && renderOrderForm()}
-      {selectedPrompt === 'callback' && renderCallbackForm()}
-      {selectedPrompt === 'schedule' && renderScheduleForm()}
+      {/* Current Plan Status */}
+      <View style={[styles.planCard, isProUser ? styles.proCard : styles.freeCard]}>
+        <View style={styles.planHeader}>
+          <View style={styles.planTitleRow}>
+            {isProUser ? (
+              <Crown size={24} color="#FFD700" />
+            ) : (
+              <Zap size={24} color="#8E8E93" />
+            )}
+            <Text style={styles.planTitle}>{displayInfo.planName}</Text>
+          </View>
+          {isProUser && (
+            <View style={styles.proBadge}>
+              <Text style={styles.proBadgeText}>PRO</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Usage Display */}
+        <View style={styles.usageContainer}>
+          <Text style={styles.usageText}>{displayInfo.callsText}</Text>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${Math.min(displayInfo.progressPercentage, 100)}%` }
+              ]}
+            />
+          </View>
+          <Text style={styles.renewalText}>{displayInfo.renewalText}</Text>
+        </View>
+
+        {/* Limit Warning */}
+        {displayInfo.isLimitReached && (
+          <View style={styles.warningContainer}>
+            <Zap size={16} color="#FF3B30" />
+            <Text style={styles.warningText}>
+              Monthly limit reached! {!isProUser && 'Upgrade to continue making calls.'}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Upgrade Section */}
+      {!isProUser && (
+        <View style={styles.upgradeSection}>
+          <Text style={styles.sectionTitle}>Upgrade to HeyWay Pro</Text>
+
+          <View style={styles.proFeaturesCard}>
+            {[
+              '100 AI calls per month',
+              'All AI voice options',
+              'Advanced call scheduling',
+              'Priority support',
+            ].map((feature) => (
+              <View style={styles.proFeature} key={feature}>
+                <Check size={20} color="#34C759" />
+                <Text style={styles.proFeatureText}>{feature}</Text>
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity
+            style={[styles.upgradeButton, isPurchasing && styles.buttonDisabled]}
+            onPress={handleUpgrade}
+            disabled={isPurchasing}
+          >
+            {isPurchasing ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <>
+                {isWeb ? (
+                  <CreditCard size={20} color="#FFFFFF" />
+                ) : (
+                  <Crown size={20} color="#FFFFFF" />
+                )}
+                <Text style={styles.upgradeButtonText}>
+                  {isWeb ? 'Subscribe with Card - $9.99/month' : 'Upgrade to Pro - $9.99/month'}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Platform-specific footer */}
+      <View style={styles.footerInfo}>
+        <Text style={styles.footerText}>
+          {isWeb 
+            ? 'Secure payment processing by Stripe. Cancel anytime from your account settings.'
+            : 'Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.'
+          }
+        </Text>
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: HEYWAY_SPACING.lg,
-  },
-  formSection: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    padding: HEYWAY_SPACING.lg,
-    marginBottom: HEYWAY_SPACING.md,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  formLabel: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.primary,
-    marginBottom: HEYWAY_SPACING.sm,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  textInput: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.component.input.md,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.sm,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    color: HEYWAY_COLORS.text.primary,
-    marginBottom: HEYWAY_SPACING.md,
-    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  orderItemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: HEYWAY_SPACING.sm,
-  },
-  removeButton: {
-    padding: HEYWAY_SPACING.sm,
-    borderRadius: HEYWAY_RADIUS.component.button.sm,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.component.button.md,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    paddingVertical: HEYWAY_SPACING.sm,
-    marginBottom: HEYWAY_SPACING.md,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  addButtonText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-    color: HEYWAY_COLORS.text.primary,
-    marginLeft: HEYWAY_SPACING.xs,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: HEYWAY_SPACING.sm,
-    marginBottom: HEYWAY_SPACING.md,
-  },
-  optionButton: {
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.sm,
-    borderRadius: HEYWAY_RADIUS.component.button.md,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  optionButtonSelected: {
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
-    borderColor: HEYWAY_COLORS.interactive.primary,
-    ...HEYWAY_SHADOWS.light.sm,
-  },
-  optionText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  optionTextSelected: {
-    color: HEYWAY_COLORS.text.inverse,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-  },
-  timeOptionsRow: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    gap: 8,
-  },
-  timeOption: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: RADIUS.sm,
-    backgroundColor: COLORS.background.primary,
-    borderWidth: 1,
-    borderColor: COLORS.border.primary,
-  },
-  timeOptionSelected: {
-    backgroundColor: COLORS.text.primary,
-    borderColor: COLORS.text.primary,
-  },
-  timeOptionText: {
-    fontSize: 14,
-    color: COLORS.text.primary,
-    whiteSpace: 'nowrap',
-  },
-  timeOptionTextSelected: {
-    color: COLORS.background.primary,
-    fontWeight: '600',
-  },
-  dayButton: {
-    flex: 1,
-    paddingVertical: 8,
-    borderRadius: RADIUS.sm,
-    backgroundColor: COLORS.background.primary,
-    borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    alignItems: 'center',
-  },
-  dayButtonSelected: {
-    backgroundColor: COLORS.text.primary,
-    borderColor: COLORS.text.primary,
-  },
-  dayButtonText: {
-    fontSize: 12,
-    color: COLORS.text.primary,
-  },
-  dayButtonTextSelected: {
-    color: COLORS.background.primary,
-    fontWeight: '600',
-  },
-  // Input with circular button styles
-  inputWithButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 12,
-  },
-  textInputWithButton: {
-    flex: 1,
-    backgroundColor: COLORS.background.primary,
-    borderRadius: RADIUS.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: COLORS.text.primary,
-    marginBottom: 12,
-  },
-  circularCallButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  circularCallButtonDisabled: {
-    backgroundColor: COLORS.text.tertiary,
-    opacity: 0.6,
-  },
-});
+const styles = {
+  // ... (copy styles from original SubscriptionManager.tsx)
+  container: { flex: 1, backgroundColor: HEYWAY_COLORS.background.primary },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: HEYWAY_SPACING.xxxxl },
+  loadingText: { marginTop: HEYWAY_SPACING.lg, fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.secondary, letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal },
+  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: HEYWAY_SPACING.xxxxl },
+  errorText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.status.error, textAlign: 'center', marginBottom: HEYWAY_SPACING.xl, letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal },
+  footerInfo: { margin: HEYWAY_SPACING.lg, padding: HEYWAY_SPACING.lg, backgroundColor: HEYWAY_COLORS.background.secondary, borderRadius: HEYWAY_RADIUS.component.card.md, borderWidth: 1, borderColor: HEYWAY_COLORS.border.primary },
+  footerText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.secondary, textAlign: 'center', marginBottom: HEYWAY_SPACING.xs, letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal },
+  buttonDisabled: { opacity: 0.6 }
+} as const;
