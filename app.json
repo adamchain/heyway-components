@@ -1,0 +1,84 @@
+{
+  "expo": {
+    "name": "HeyWay",
+    "slug": "callphone",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.webp",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/logo.webp",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "newArchEnabled": false,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.recordedmail.app",
+      "buildNumber": "83",
+      "jsEngine": "hermes",
+      "deploymentTarget": "13.0",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSContactsUsageDescription": "This app needs access to your contacts to sync and make calls to your saved contacts. You can import your device contacts for easy calling.",
+        "NSCameraUsageDescription": "This app may need camera access for future features. Camera access is optional and not currently used.",
+        "NSMicrophoneUsageDescription": "This app needs microphone access to record and make audio calls.",
+        "NSUserNotificationUsageDescription": "This app uses notifications to alert you about important call events and updates.",
+        "NSLocationWhenInUseUsageDescription": "This app needs location access to find businesses near you when searching for places to call.",
+        "UIBackgroundModes": [
+          "audio",
+          "voip"
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSExceptionDomains": {
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        }
+      }
+    },
+    "android": {
+      "package": "com.recordedmail.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favlogo.webp"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logo.webp",
+          "color": "#FF3B30",
+          "sounds": []
+        }
+      ],
+      "expo-audio"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "BASE_URL": "http://localhost:3000/api",
+      "NODE_ENV": "development",
+      "router": {},
+      "eas": {
+        "projectId": "75f2d9c0-0376-434d-baae-5f683ed3711d"
+      }
+    },
+    "owner": "adamchain"
+  }
+}

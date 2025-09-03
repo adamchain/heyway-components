@@ -1,19 +1,19 @@
-@@ .. @@
- module.exports = function (api) {
-   api.cache(true);
-   return {
-     presets: ['babel-preset-expo'],
-+    plugins: [
-+      [
-+        'module-resolver',
-+        {
-+          root: ['.'],
-+          alias: {
-+            '@styles': './styles',
-+          },
-+          extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-+        },
-+      ],
-+    ],
-   };
- };
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      // Required for react-native-reanimated
+      'react-native-reanimated/plugin',
+      // Module resolver for path aliases
+      [
+        'module-resolver',
+        {
+          alias: {
+            '@': './',
+          },
+        },
+      ],
+    ],
+  };
+};
