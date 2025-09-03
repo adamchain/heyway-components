@@ -89,7 +89,7 @@ export default function SelectedContactsModal({
               />
 
               <LinearGradient
-                colors={COLORS.gradient.accent}
+                colors={[HEYWAY_COLORS.accent.success, HEYWAY_COLORS.accent.info]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.clearButton}
@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   content: {
     flex: 1,
@@ -152,16 +153,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  contactName: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.primary,
-    flex: 1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactPhone: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
@@ -180,12 +180,14 @@ const styles = StyleSheet.create({
     paddingVertical: HEYWAY_SPACING.lg,
     marginVertical: HEYWAY_SPACING.xl,
     minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
   },
   clearButtonText: {
     marginLeft: HEYWAY_SPACING.sm,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.inverse,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   emptyState: {
@@ -197,7 +199,9 @@ const styles = StyleSheet.create({
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
+    color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });

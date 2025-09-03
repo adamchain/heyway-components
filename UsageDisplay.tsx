@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   limitReachedBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background.tertiary,
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
     padding: HEYWAY_SPACING.sm,
     borderRadius: HEYWAY_RADIUS.component.card.md,
     borderWidth: 1,
@@ -262,6 +262,7 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.status.error,
     flex: 1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   warningContainer: {

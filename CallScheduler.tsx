@@ -242,7 +242,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
         {/* Header */}
         <View style={styles.modalHeader}>
           <View style={styles.headerContent}>
-            <Calendar size={24} color={COLORS.accent} />
+            <Calendar size={24} color={HEYWAY_COLORS.accent.info} />
             <Text style={styles.modalTitle}>Schedule Call</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -254,7 +254,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
               {/* Recipients Section */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Users size={18} color={COLORS.accent} />
+                  <Users size={18} color={HEYWAY_COLORS.accent.info} />
                   <Text style={styles.sectionTitle}>Recipients</Text>
                 </View>
                 <View style={styles.recipientsContainer}>
@@ -271,7 +271,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
               {/* Date Section */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Calendar size={18} color={COLORS.accent} />
+                  <Calendar size={18} color={HEYWAY_COLORS.accent.info} />
                   <Text style={styles.sectionTitle}>Date</Text>
                 </View>
                 <TouchableOpacity
@@ -285,7 +285,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
                   </View>
                   <ChevronDown 
                     size={20} 
-                    color={COLORS.text.secondary} 
+                    color={HEYWAY_COLORS.text.secondary} 
                     style={[
                       styles.chevron,
                       showDatePicker && styles.chevronRotated
@@ -342,7 +342,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
               {/* Time Section */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Clock size={18} color={COLORS.accent} />
+                  <Clock size={18} color={HEYWAY_COLORS.accent.info} />
                   <Text style={styles.sectionTitle}>Time</Text>
                 </View>
                 <TouchableOpacity
@@ -356,7 +356,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
                   </View>
                   <ChevronDown 
                     size={20} 
-                    color={COLORS.text.secondary} 
+                    color={HEYWAY_COLORS.text.secondary} 
                     style={[
                       styles.chevron,
                       showTimePicker && styles.chevronRotated
@@ -413,13 +413,13 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
               {/* Notes Section */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <MessageSquare size={18} color={COLORS.accent} />
+                  <MessageSquare size={18} color={HEYWAY_COLORS.accent.info} />
                   <Text style={styles.sectionTitle}>Instructions for the AI</Text>
                 </View>
                 <TextInput
                   style={styles.notesInput}
                   placeholder="E.g., Schedule a haircut appointment. Ask about availability next week and mention my name. Get their callback number for confirmation."
-                  placeholderTextColor={COLORS.text.tertiary}
+                  placeholderTextColor={HEYWAY_COLORS.text.tertiary}
                   multiline
                   numberOfLines={4}
                   value={notes}
@@ -453,7 +453,7 @@ export default function CallScheduler({ visible, onClose, onSchedule, recipients
                     </View>
                   ) : (
                     <View style={styles.buttonContent}>
-                      <Check size={20} color={COLORS.text.onDark} />
+                      <Check size={20} color={HEYWAY_COLORS.text.inverse} />
                       <Text style={styles.scheduleButtonText}>Schedule Call</Text>
                     </View>
                   )}

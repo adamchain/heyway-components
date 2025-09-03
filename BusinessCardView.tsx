@@ -229,7 +229,7 @@ export default function BusinessCardView({
           <View style={styles.businessInfo}>
             <View style={styles.businessHeader}>
               <View style={styles.businessIcon}>
-                <Building size={20} color={IOS_COLORS.accent} />
+                <Building size={20} color={HEYWAY_COLORS.interactive.primary} />
               </View>
               <View style={styles.businessDetails}>
                 <Text style={styles.businessName} numberOfLines={1}>
@@ -250,7 +250,7 @@ export default function BusinessCardView({
             </View>
             
             <View style={styles.addressContainer}>
-              <MapPin size={14} color={IOS_COLORS.text.secondary} />
+              <MapPin size={14} color={HEYWAY_COLORS.text.secondary} />
               <Text style={styles.businessAddress} numberOfLines={2}>
                 {business.address}
               </Text>
@@ -270,7 +270,7 @@ export default function BusinessCardView({
             >
               <Star
                 size={16}
-                color={isFavorite ? '#FFD700' : IOS_COLORS.text.secondary}
+                color={isFavorite ? '#FFD700' : HEYWAY_COLORS.text.secondary}
                 fill={isFavorite ? '#FFD700' : 'none'}
               />
             </TouchableOpacity>
@@ -281,7 +281,7 @@ export default function BusinessCardView({
                 onPress={() => openWebsite(business.website!)}
                 activeOpacity={0.7}
               >
-                <ExternalLink size={16} color={IOS_COLORS.text.secondary} />
+                <ExternalLink size={16} color={HEYWAY_COLORS.text.secondary} />
               </TouchableOpacity>
             )}
 
@@ -290,7 +290,7 @@ export default function BusinessCardView({
               onPress={() => {/* Handle direct call */}}
               activeOpacity={0.7}
             >
-              <Phone size={16} color={IOS_COLORS.accent} />
+              <Phone size={16} color={HEYWAY_COLORS.interactive.primary} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -304,7 +304,7 @@ export default function BusinessCardView({
               {isSelected ? (
                 <Check size={14} color="#FFFFFF" />
               ) : (
-                <Plus size={14} color={IOS_COLORS.text.secondary} />
+                <Plus size={14} color={HEYWAY_COLORS.text.secondary} />
               )}
             </TouchableOpacity>
           </View>
@@ -319,7 +319,7 @@ export default function BusinessCardView({
       <View style={styles.container}>
         <Suspense fallback={
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={IOS_COLORS.accent} />
+            <ActivityIndicator size="large" color={HEYWAY_COLORS.interactive.primary} />
             <Text style={styles.loadingText}>Loading favorites...</Text>
           </View>
         }>
@@ -357,7 +357,7 @@ export default function BusinessCardView({
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={IOS_COLORS.accent} />
+        <ActivityIndicator size="large" color={HEYWAY_COLORS.interactive.primary} />
         <Text style={styles.loadingText}>Searching businesses...</Text>
       </View>
     );
@@ -382,7 +382,7 @@ export default function BusinessCardView({
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Building size={48} color={IOS_COLORS.text.tertiary} />
+            <Building size={48} color={HEYWAY_COLORS.text.tertiary} />
             <Text style={styles.emptyTitle}>
               {searchExecuted ? 'No Results Found' : 'Ready to Search'}
             </Text>
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
 
   loadingText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,

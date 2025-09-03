@@ -30,25 +30,25 @@ const styles = StyleSheet.create({
     outerWrapper: {
         flex: 1,
         padding: 2.5,
-        borderRadius: BORDER_RADIUS,
+        borderRadius: HEYWAY_RADIUS.xxxl,
         overflow: 'hidden',
     },
     borderGlow: {
         ...StyleSheet.absoluteFillObject,
-        borderRadius: BORDER_RADIUS,
+        borderRadius: HEYWAY_RADIUS.xxxl,
         zIndex: 0,
         opacity: 0.9,
     },
     glassInner: {
         flex: 1,
-        borderRadius: BORDER_RADIUS - 2,
+        borderRadius: HEYWAY_RADIUS.xxxl - 2,
         overflow: 'hidden',
         zIndex: 1,
     },
     glassContent: {
         flex: 1,
-        backgroundColor: 'rgba(255, 255, 255, 0.06)',
-        padding: 16,
+        backgroundColor: HEYWAY_COLORS.background.overlay + '06',
+        padding: HEYWAY_SPACING.lg,
     },
 });
 

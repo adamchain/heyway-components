@@ -91,7 +91,7 @@ export default function UserProfile({ showLogout = true, compact = false }: User
     return (
       <View style={styles.compactContainer}>
         <LinearGradient
-          colors={COLORS.gradient.accent as any}
+          colors={[HEYWAY_COLORS.accent.success, HEYWAY_COLORS.accent.info]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.compactAvatar}
@@ -114,7 +114,7 @@ export default function UserProfile({ showLogout = true, compact = false }: User
     <View style={styles.container}>
       <View style={styles.header}>
         <LinearGradient
-          colors={COLORS.gradient.accent as any}
+          colors={[HEYWAY_COLORS.accent.success, HEYWAY_COLORS.accent.info]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.avatar}

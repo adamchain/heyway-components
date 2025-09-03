@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   warningContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background.tertiary,
+    backgroundColor: HEYWAY_COLORS.background.tertiary,
     padding: HEYWAY_SPACING.md,
     borderRadius: HEYWAY_RADIUS.component.card.md,
     borderWidth: 1,
