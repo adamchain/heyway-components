@@ -1,0 +1,12 @@
+@@ .. @@
+ {
+   "extends": "expo/tsconfig.base",
+   "compilerOptions": {
++    "baseUrl": ".",
++    "paths": {
++      "@styles/*": ["styles/*"],
++      "@styles": ["styles"]
++    },
+     "strict": true
+   }
+ }

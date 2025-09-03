@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useContacts } from '@/hooks/useContacts';
 import { useCallAnalysis } from '@/hooks/useCallAnalysis';
 import { apiService } from '@/services/apiService';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_LAYOUT, HEYWAY_COMPONENTS, HEYWAY_CHAT_PATTERNS } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_LAYOUT, HEYWAY_COMPONENTS, HEYWAY_CHAT_PATTERNS } from '@styles/HEYWAY_STYLE_GUIDE';
 import { aiGradient, aiInset } from '@/ts/utils/theme';
 import CallAnalysisTag from '@/components/CallAnalysisTag';
 

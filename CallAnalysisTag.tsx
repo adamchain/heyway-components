@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { AlertTriangle, CheckCircle, Clock } from 'lucide-react-native';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS } from '@styles/HEYWAY_STYLE_GUIDE';
 import type { CallAnalysis } from '@/services/callAnalysisService';
 
 interface CallAnalysisTagProps {

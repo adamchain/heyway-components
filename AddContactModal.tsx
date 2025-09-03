@@ -13,13 +13,7 @@ import {
 } from 'react-native';
 import { X, User, Phone, Mail } from 'lucide-react-native';
 import { apiService } from '@/services/apiService';
-import {
-  HEYWAY_COLORS,
-  HEYWAY_RADIUS,
-  HEYWAY_SHADOWS,
-  HEYWAY_TYPOGRAPHY,
-  HEYWAY_SPACING,
-} from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_TYPOGRAPHY, HEYWAY_SPACING, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
 
 interface AddContactModalProps {
   visible: boolean;

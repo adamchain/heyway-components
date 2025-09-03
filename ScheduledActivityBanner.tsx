@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Clock, Calendar, X, ChevronRight, Zap, Phone, Trash2, ArrowRight } from 'lucide-react-native';
 import { apiService } from '@/services/apiService';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@styles/HEYWAY_STYLE_GUIDE';
 
 interface ScheduledActivityBannerProps {
     visible: boolean;

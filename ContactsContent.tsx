@@ -562,8 +562,10 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: HEYWAY_RADIUS.lg,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
     backgroundColor: HEYWAY_COLORS.background.secondary,
     borderRadius: HEYWAY_RADIUS.component.button.full,
     paddingVertical: HEYWAY_SPACING.xl,

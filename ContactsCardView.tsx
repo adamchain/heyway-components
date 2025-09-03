@@ -16,7 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { ContactSelectionManager } from '@/utils/contactSelection';
 import { apiService } from '@/services/apiService';
 import { useFavorites } from '@/hooks/useFavorites';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_RADIUS, HEYWAY_TYPOGRAPHY, HEYWAY_SHADOWS, HEYWAY_MACOS_PATTERNS, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_RADIUS, HEYWAY_TYPOGRAPHY, HEYWAY_SHADOWS, HEYWAY_MACOS_PATTERNS, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
 
 // Lazy load FavoritesContent
 const FavoritesContent = React.lazy(() => import('@/components/FavoritesContent'));

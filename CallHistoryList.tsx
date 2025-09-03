@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { PhoneIncoming, PhoneOutgoing, CheckCircle, X } from 'lucide-react-native';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@styles/HEYWAY_STYLE_GUIDE';
 
 interface CallHistoryListProps {
   callHistory: any[];

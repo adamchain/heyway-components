@@ -30,7 +30,7 @@ import { apiService } from '@/services/apiService';
 import CallerIdManagement from './CallerIdManagement';
 import SubscriptionManager from '@/components/SubscriptionManager';
 import AutomationsManager from '@/components/AutomationsManager';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '@styles/HEYWAY_STYLE_GUIDE';
 
 interface SettingsSidebarProps {
   visible: boolean;

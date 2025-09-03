@@ -24,7 +24,8 @@ import {
   Star,
   StarOff,
 } from 'lucide-react-native';
-import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from '@/components/designSystem';
+import { HEYWAY_COLORS } from '@styles/HEYWAY_STYLE_GUIDE';
+import { SPACING, TYPOGRAPHY, RADIUS } from '@/components/designSystem';
 import { apiService } from '@/services/apiService';
 
 import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '@/styles/HEYWAY_STYLE_GUIDE';
@@ -364,11 +365,13 @@ const styles = StyleSheet.create({
     maxWidth: 200,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   headerSubtitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
@@ -384,11 +387,13 @@ const styles = StyleSheet.create({
     gap: HEYWAY_SPACING.sm,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
+    borderColor: HEYWAY_COLORS.border.primary,
   },
   searchInput: {
     flex: 1,
     paddingVertical: HEYWAY_SPACING.md,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.primary,
@@ -409,6 +414,7 @@ const styles = StyleSheet.create({
   },
   selectedInfoText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.interactive.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
@@ -421,6 +427,7 @@ const styles = StyleSheet.create({
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.interactive.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   scrollView: {
@@ -439,6 +446,7 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   emptyState: {
     alignItems: 'center',
@@ -454,13 +462,16 @@ const styles = StyleSheet.create({
     marginBottom: HEYWAY_SPACING.sm,
     textAlign: 'center',
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   emptySubtitle: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
     lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactCard: {
@@ -496,6 +507,7 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactInfo: {
     flex: 1,
@@ -506,22 +518,29 @@ const styles = StyleSheet.create({
     color: HEYWAY_COLORS.text.primary,
     marginBottom: HEYWAY_SPACING.xs,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactPhone: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.interactive.primary,
-    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactEmail: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
-    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactAddedDate: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.tertiary,

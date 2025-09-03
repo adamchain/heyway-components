@@ -30,7 +30,7 @@ import {
   HEYWAY_COMPONENTS,
   HEYWAY_SHADOWS,
   HEYWAY_ACCESSIBILITY
-} from '@/styles/HEYWAY_STYLE_GUIDE';
+} from '@styles/HEYWAY_STYLE_GUIDE';
 import AudioRecorder from './AudioRecorder';
 
 export interface Automation {

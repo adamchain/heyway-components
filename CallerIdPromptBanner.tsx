@@ -10,7 +10,7 @@ import {
 import { Phone, X, AlertTriangle } from 'lucide-react-native';
 import { apiService } from '@/services/apiService';
 import CallerIdAdd from './CallerIdAdd';
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY } from '@styles/HEYWAY_STYLE_GUIDE';
 
 interface CallerIdPromptBannerProps {
     visible: boolean;

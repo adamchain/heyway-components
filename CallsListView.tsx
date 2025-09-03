@@ -35,7 +35,7 @@ import {
   HEYWAY_COMPONENTS,
   HEYWAY_CHAT_PATTERNS,
   HEYWAY_ACCESSIBILITY,
-} from '@/styles/HEYWAY_STYLE_GUIDE';
+} from '@styles/HEYWAY_STYLE_GUIDE';
 import CallAnalysisTag from '@/components/CallAnalysisTag';
 
 // Lazy load ScheduledActivityBanner

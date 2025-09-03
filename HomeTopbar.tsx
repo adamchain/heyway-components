@@ -10,7 +10,7 @@ import {
 import { Search, Plus, ChevronDown, Phone, Users, Briefcase, Hash, Zap } from 'lucide-react-native';
 
 // Import HEYWAY Style Guide
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_LAYOUT } from '@/styles/HEYWAY_STYLE_GUIDE';
+import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_LAYOUT } from '@styles/HEYWAY_STYLE_GUIDE';
 
 interface HomeTopbarProps {
   searchQuery: string;
