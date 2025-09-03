@@ -36,12 +36,12 @@ const CallHistoryList: React.FC<CallHistoryListProps> = ({
 
     const getStatusIcon = () => {
       if (isInbound) {
-        return <PhoneIncoming size={16} color={HEYWAY_COLORS.accent} />;
+        return <PhoneIncoming size={16} color={HEYWAY_COLORS.accent.info} />;
       }
       if (isSuccess) {
         return <CheckCircle size={16} color={HEYWAY_COLORS.status.success} />;
       }
-      return <X size={16} color={HEYWAY_COLORS.text.error} />;
+      return <X size={16} color={HEYWAY_COLORS.status.error} />;
     };
 
     return (
@@ -104,7 +104,7 @@ const CallHistoryList: React.FC<CallHistoryListProps> = ({
 
       {isLoading && !refreshing ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={HEYWAY_COLORS.accent} />
+          <ActivityIndicator size="large" color={HEYWAY_COLORS.accent.info} />
         </View>
       ) : (
         <FlatList
@@ -115,7 +115,7 @@ const CallHistoryList: React.FC<CallHistoryListProps> = ({
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={HEYWAY_COLORS.accent}
+              tintColor={HEYWAY_COLORS.accent.info}
             />
           }
           contentContainerStyle={styles.listContainer}

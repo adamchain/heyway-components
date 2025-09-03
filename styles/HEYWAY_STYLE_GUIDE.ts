@@ -126,10 +126,11 @@ export const HEYWAY_COLORS = {
     },
 
     // Legacy color aliases for backward compatibility
+    // Note: Do not use a key named 'accent' here because 'accent' above is the structured object
     green: BASE_COLORS.whatsappGreen,
     destructive: BASE_COLORS.error,
     error: BASE_COLORS.error,
-    accent: BASE_COLORS.whatsappBlue,
+    brand: BASE_COLORS.whatsappBlue,
 
     // macOS window controls
     macOS: {
@@ -180,11 +181,12 @@ export const HEYWAY_TYPOGRAPHY = {
     },
 
     fontWeight: {
-        regular: 400,
-        medium: 500,
-        semibold: 600,
-        bold: 700,
-    },
+        // Use string literal weights to align with React Native's FontWeight type
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+    } as const,
 
     lineHeight: {
         tight: 1.2,    // 120% for headings

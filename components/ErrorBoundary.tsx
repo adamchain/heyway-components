@@ -91,6 +91,11 @@ export class ErrorBoundary extends Component<Props, State> {
                 {this.state.error.stack && (
                   <Text style={styles.debugStack}>{this.state.error.stack}</Text>
                 )}
+                {this.state.errorInfo?.componentStack ? (
+                  <Text style={styles.debugStack}>
+                    {this.state.errorInfo.componentStack}
+                  </Text>
+                ) : null}
               </View>
             )}
 
