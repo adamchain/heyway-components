@@ -101,11 +101,11 @@ export default function BusinessSubNav({
             <Text style={styles.searchSectionTitle}>Search Businesses</Text>
             
             <View style={styles.inputContainer}>
-              <Search size={16} color={IOS_COLORS.text.secondary} />
+              <Search size={16} color={HEYWAY_COLORS.text.secondary} />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Business name or type..."
-                placeholderTextColor={IOS_COLORS.text.secondary}
+                placeholderTextColor={HEYWAY_COLORS.text.secondary}
                 value={searchQuery}
                 onChangeText={onSearchQueryChange}
                 onSubmitEditing={onSearch}
@@ -115,11 +115,11 @@ export default function BusinessSubNav({
 
             {/* Location Input */}
             <View style={styles.inputContainer}>
-              <MapPin size={16} color={IOS_COLORS.text.secondary} />
+              <MapPin size={16} color={HEYWAY_COLORS.text.secondary} />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Location (optional)..."
-                placeholderTextColor={IOS_COLORS.text.secondary}
+                placeholderTextColor={HEYWAY_COLORS.text.secondary}
                 value={locationQuery}
                 onChangeText={onLocationQueryChange}
               />
@@ -157,7 +157,7 @@ export default function BusinessSubNav({
                     onPress={() => handleSearchHistorySelect(item)}
                     activeOpacity={0.7}
                   >
-                    <History size={14} color={IOS_COLORS.text.secondary} />
+                    <History size={14} color={HEYWAY_COLORS.text.secondary} />
                     <Text style={styles.historyItemText} numberOfLines={1}>
                       {item}
                     </Text>
@@ -203,13 +203,11 @@ const styles = StyleSheet.create({
     marginVertical: HEYWAY_SPACING.xs,
     gap: HEYWAY_SPACING.md,
     minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
-    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
   },
 
   activeNavItem: {
     backgroundColor: HEYWAY_COLORS.interactive.selected,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.interactive.primary,
     borderColor: HEYWAY_COLORS.interactive.primary,
     ...HEYWAY_SHADOWS.light.xs,
   },
@@ -233,6 +231,7 @@ const styles = StyleSheet.create({
     paddingTop: HEYWAY_SPACING.xl,
   },
 
+  searchSectionTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.tertiary,
@@ -245,21 +244,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: HEYWAY_COLORS.background.primary,
-    backgroundColor: HEYWAY_COLORS.background.primary,
     borderRadius: HEYWAY_RADIUS.component.input.lg,
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.md,
     marginBottom: HEYWAY_SPACING.md,
     gap: HEYWAY_SPACING.md,
-    borderColor: HEYWAY_COLORS.border.primary,
+    borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
     ...HEYWAY_SHADOWS.light.xs,
   },
 
   searchInput: {
     flex: 1,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.primary,
@@ -269,12 +265,10 @@ const styles = StyleSheet.create({
   searchButton: {
     backgroundColor: HEYWAY_COLORS.interactive.primary,
     borderRadius: HEYWAY_RADIUS.component.button.lg,
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
-    borderRadius: HEYWAY_RADIUS.component.button.lg,
     paddingVertical: HEYWAY_SPACING.md,
+    alignItems: 'center',
     minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
     marginTop: HEYWAY_SPACING.sm,
-    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
     ...HEYWAY_SHADOWS.light.sm,
   },
 
@@ -287,7 +281,7 @@ const styles = StyleSheet.create({
     color: HEYWAY_COLORS.text.inverse,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    textAlign: 'center',
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
@@ -305,6 +299,7 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.tertiary,
     marginBottom: HEYWAY_SPACING.md,
+    textTransform: 'uppercase',
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
   },
 
@@ -316,10 +311,6 @@ const styles = StyleSheet.create({
     borderRadius: HEYWAY_RADIUS.component.button.md,
     marginBottom: HEYWAY_SPACING.xs,
     gap: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
     backgroundColor: HEYWAY_COLORS.background.primary,
     borderWidth: 1,
     borderColor: HEYWAY_COLORS.border.primary,
