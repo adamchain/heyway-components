@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Phone, PhoneIncoming, PhoneOutgoing, Calendar, Plus, Clock, ChevronDown } from 'lucide-react-native';
+import { Phone, PhoneIncoming, PhoneOutgoing, Calendar, Plus, Clock, ChevronDown, Filter } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS } from '../styles/HEYWAY_STYLE_GUIDE';
@@ -25,10 +25,10 @@ export default function CallsSubNav({
   };
 
   const navItems = [
-    { key: 'all', icon: Phone, label: 'All Calls' },
-    { key: 'inbound', icon: PhoneIncoming, label: 'Inbound' },
-    { key: 'outbound', icon: PhoneOutgoing, label: 'Outbound' },
-    { key: 'scheduled', icon: Calendar, label: 'Scheduled' },
+    { key: 'all', icon: Phone, label: 'All Calls', description: 'View all your calls' },
+    { key: 'inbound', icon: PhoneIncoming, label: 'Inbound', description: 'Incoming calls' },
+    { key: 'outbound', icon: PhoneOutgoing, label: 'Outbound', description: 'Outgoing calls' },
+    { key: 'scheduled', icon: Calendar, label: 'Scheduled', description: 'Scheduled calls' },
   ];
 
   const activeItem = navItems.find(item => item.key === activeSection) || navItems[0];
@@ -43,7 +43,10 @@ export default function CallsSubNav({
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-       
+        <Text style={styles.headerTitle}>Call Management</Text>
+        <TouchableOpacity style={styles.filterButton} onPress={() => {}}>
+          <Filter size={14} color="#8E8E93" />
+        </TouchableOpacity>
       </View>
 
       {/* Dropdown Navigation */}
@@ -97,12 +100,20 @@ export default function CallsSubNav({
                       size={16} 
                       color={activeSection === item.key ? '#007AFF' : '#8E8E93'} 
                     />
-                    <Text style={[
-                      styles.dropdownItemText,
-                      activeSection === item.key && styles.activeDropdownItemText
-                    ]}>
-                      {item.label}
-                    </Text>
+                    <View style={styles.dropdownItemTextContainer}>
+                      <Text style={[
+                        styles.dropdownItemText,
+                        activeSection === item.key && styles.activeDropdownItemText
+                      ]}>
+                        {item.label}
+                      </Text>
+                      <Text style={[
+                        styles.dropdownItemDescription,
+                        activeSection === item.key && styles.activeDropdownItemDescription
+                      ]}>
+                        {item.description}
+                      </Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -140,6 +151,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     letterSpacing: -0.2,
+    flex: 1,
+  },
+
+  filterButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   newCallButton: {
@@ -249,7 +270,11 @@ const styles = StyleSheet.create({
   dropdownItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
+  },
+
+  dropdownItemTextContainer: {
+    flex: 1,
   },
 
   dropdownItemText: {
@@ -262,5 +287,16 @@ const styles = StyleSheet.create({
   activeDropdownItemText: {
     color: '#007AFF',
     fontWeight: '600',
+  },
+
+  dropdownItemDescription: {
+    fontSize: 11,
+    fontWeight: '400',
+    color: '#636366',
+    marginTop: 2,
+  },
+
+  activeDropdownItemDescription: {
+    color: '#007AFF',
   },
 });

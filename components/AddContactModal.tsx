@@ -129,15 +129,15 @@ export default function AddContactModal({
 
       console.log('Contact created successfully:', newContact);
 
-      // If we have an automation ID, add the contact to that automation
+      // If we have an automation ID, add the contact to that automation's contact list
       if (automationId && newContact) {
-        console.log('Adding contact to automation:', automationId);
-        await apiService.addContactsToAutomation(automationId, [newContact]);
-        console.log('Contact added to automation successfully');
+        console.log('Adding contact to automation contact list:', automationId);
+        await apiService.addContactsToAutomationContactList(automationId, [newContact.id]);
+        console.log('Contact added to automation contact list successfully');
 
         Alert.alert(
           'Success',
-          `Contact "${newContact.name}" has been created and added to the automation.`
+          `Contact "${newContact.name}" has been created and added to the automation's contact list.`
         );
       } else {
         Alert.alert('Success', `Contact "${newContact.name}" has been created successfully.`);

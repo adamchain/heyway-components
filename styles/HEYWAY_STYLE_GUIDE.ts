@@ -1,675 +1,651 @@
 /**
- * HEYWAY Design System - WhatsApp-Inspired Style Guide
- * 
- * Extracted from raw CSS and converted to structured design tokens
- * for consistent, maintainable styling across the application.
+ * HEYWAY Design System – macOS Tahoe (macOS 15) Design System Updates
+ * Liquid-Glass pass: translucent panels, frosted borders, saturated wallpaper accents.
+ * (Naming preserved; values updated only.)
  */
 
-// Base color palette extracted from raw CSS
+// ---------- Base Colors ----------
 const BASE_COLORS = {
-    // Primary colors from design
-    white: '#FFFFFF',
-    gray: {
-        50: '#F7F7F6',
-        100: '#F1F1F1',
-        200: '#E5E5E5',
-        300: '#DCDCDC',
-        400: '#CDCDCD',
-        500: '#808080',
-        600: '#666666',
-        700: '#494950',
-        800: '#272727',
-        900: '#000000',
-    },
+  // macOS Tahoe system colors (refined)
+  white: '#FFFFFF',
+  black: '#000000',
 
-    // WhatsApp-inspired accents
-    whatsappGreen: '#24D366',
-    whatsappGreenDark: '#1FA755',
-    whatsappBlue: '#43B4FF',
-    whatsappChatGreen: '#E1FFD4',
-    whatsappBackground: '#F0E9DF',
+  gray: {
+    50: '#F7F8FA',
+    100: '#F0F2F5',
+    200: '#E4E6EB',
+    300: '#DADDE1',
+    400: '#CCD0D5',
+    500: '#BEC3C9',
+    600: '#8D949E',
+    700: '#606770',
+    800: '#444950',
+    900: '#1C1E21',
+  },
 
-    // macOS window controls
-    macRed: '#FF5F57',
-    macRedBorder: '#E34239',
-    macYellow: '#FEBC2E',
-    macYellowBorder: '#E19D1A',
-    macGreen: '#28C840',
-    macGreenBorder: '#1CA926',
+  // Accents (slightly cooler/saturated for glass)
+  systemBlue: '#0866FF',
+  systemIndigo: '#5B6BFF',
+  systemPurple: '#8A39FF',
+  systemTeal: '#00C7FF',
+  systemCyan: '#12B3FF',
+  systemMint: '#00E6A1',
+  systemGreen: '#42B72A',
+  systemYellow: '#FFBA00',
+  systemOrange: '#FF8A00',
+  systemPink: '#F35369',
+  systemRed: '#F02849',
 
-    // Status colors
-    error: '#FF3B2F',
-    warning: '#D82928',
-    success: '#05A884',
+  // Glass fill ladder (slightly stronger to read on busy wallpapers)
+  fill: {
+    primary: 'rgba(255,255,255,0.28)',
+    secondary: 'rgba(255,255,255,0.22)',
+    tertiary: 'rgba(255,255,255,0.16)',
+    quaternary: 'rgba(255,255,255,0.10)',
+  },
 
-    // Transparency layers
-    blackOverlay04: 'rgba(0, 0, 0, 0.04)',
-    blackOverlay06: 'rgba(0, 0, 0, 0.06)',
-    blackOverlay08: 'rgba(0, 0, 0, 0.08)',
-    blackOverlay20: 'rgba(0, 0, 0, 0.2)',
-    blackOverlay50: 'rgba(0, 0, 0, 0.5)',
-    blackOverlay60: 'rgba(0, 0, 0, 0.6)',
-    blackOverlay68: 'rgba(0, 0, 0, 0.68)',
+  // Separators tuned for glass (hairline + non-opaque)
+  separator: {
+    opaque: 'rgba(255,255,255,0.55)',
+    nonOpaque: 'rgba(60,60,67,0.24)',
+  },
 
-    whiteOverlay10: 'rgba(255, 255, 255, 0.1)',
-    whiteOverlay20: 'rgba(255, 255, 255, 0.2)',
+  // Window chrome (kept neutral; content remains bright)
+  chrome: {
+    controlBackgroundActive: '#FFFFFF',
+    controlBackgroundInactive: '#F0F2F5',
+    windowBackground: '#F0F2F5',
+    sidebarBackground: '#F0F2F5',
+    contentBackground: '#fdf9fdff',
+  },
+
+  // HeyWay brand colors (preserved)
+  brandTeal: '#00C7FF',
+  brandBlue: '#0D99FF',
+  brandPurple: '#8A39FF',
+  brandYellow: '#FFBA00',
+  brandCoral: '#FF5C7A',
+
+  // Legacy system colors
+  systemBlueDark: '#0051D0',
+  success: '#30D158',
+  warning: '#FFD60A',
+  error: '#FF3B30',
+
+  // Overlays (kept, slightly tuned)
+  overlay02: 'rgba(0,0,0,0.02)',
+  overlay04: 'rgba(0,0,0,0.04)',
+  overlay06: 'rgba(0,0,0,0.06)',
+  overlay08: 'rgba(0,0,0,0.08)',
+  overlay15: 'rgba(0,0,0,0.15)',
+  overlay40: 'rgba(0,0,0,0.40)',
+
+  whiteOverlay05: 'rgba(255,255,255,0.05)',
+  whiteOverlay15: 'rgba(255,255,255,0.15)',
+
+  // macOS window controls
+  macRed: '#FF5F57',
+  macRedBorder: '#E2463F',
+  macYellow: '#FEBC2E',
+  macYellowBorder: '#E29C1B',
+  macGreen: '#28C840',
+  macGreenBorder: '#229D32',
+
+  // Legacy compatibility
+  whatsappGreen: '#30D158',
+  whatsappGreenDark: '#248A3D',
+  whatsappBlue: '#007AFF',
+  whatsappChatGreen: '#F0F9FF',
+  whatsappBackground: '#F5F5F7',
 };
 
-// Semantic color system
+// ---------- Semantic Colors ----------
 export const HEYWAY_COLORS = {
-    // Background colors
-    background: {
-        primary: BASE_COLORS.white,
-        secondary: BASE_COLORS.gray[100],
-        tertiary: BASE_COLORS.gray[50],
-        content: BASE_COLORS.white,
-        card: BASE_COLORS.white,
-        panel: BASE_COLORS.gray[50],
-        whatsappPanel: BASE_COLORS.whatsappBackground,
-        whatsappChat: BASE_COLORS.whatsappChatGreen,
-        intelligenceSubtle: 'rgba(36, 211, 102, 0.05)', // Very subtle green wash
-        overlay: BASE_COLORS.blackOverlay20,
-        overlayDark: BASE_COLORS.blackOverlay60,
-    },
+  // Backgrounds (glassified)
+  background: {
+    primary: BASE_COLORS.chrome.contentBackground, // solid white for text-heavy areas
+    secondary: BASE_COLORS.chrome.sidebarBackground, // neutral solid
+    tertiary: BASE_COLORS.gray[100],
 
-    // Text colors
-    text: {
-        primary: BASE_COLORS.gray[800],
-        secondary: BASE_COLORS.gray[500],
-        tertiary: BASE_COLORS.gray[600],
-        inverse: BASE_COLORS.white,
-        white: BASE_COLORS.white,
-        whatsappTime: BASE_COLORS.whatsappGreenDark,
-        muted: BASE_COLORS.blackOverlay50,
-        quote: BASE_COLORS.blackOverlay68,
-    },
+    window: BASE_COLORS.chrome.windowBackground,
+    sidebar: BASE_COLORS.chrome.sidebarBackground,
 
-    // Interactive elements
-    interactive: {
-        primary: BASE_COLORS.whatsappBlue,
-        secondary: BASE_COLORS.gray[100],
-        hover: BASE_COLORS.blackOverlay04,
-        selected: BASE_COLORS.blackOverlay06,
-        focus: BASE_COLORS.whatsappGreen,
-        disabled: BASE_COLORS.gray[300],
-        primaryDisabled: BASE_COLORS.gray[400],
-        whatsappLight: 'rgba(36, 211, 102, 0.1)',
-        whatsappGreen: BASE_COLORS.whatsappGreen,
-        whatsappDark: '#0B141A', // Dark WhatsApp header
-    },
+    // Translucent surfaces for liquid-glass panels/cards
+    panel: BASE_COLORS.fill.secondary,     // rgba(255,255,255,0.22)
+    card: BASE_COLORS.fill.primary,       // rgba(255,255,255,0.28)
+    content: BASE_COLORS.white,
 
-    // Border colors
-    border: {
-        primary: BASE_COLORS.gray[300],
-        secondary: BASE_COLORS.gray[300],
-        tertiary: BASE_COLORS.gray[200],
-        divider: BASE_COLORS.gray[200],
-        input: BASE_COLORS.gray[400],
-        subtle: 'rgba(0, 0, 0, 0.1)',
-    },
+    // overlays
+    overlay: 'rgba(0,0,0,0.35)',
+    overlayDark: BASE_COLORS.overlay15,
 
-    // Status colors
-    status: {
-        success: BASE_COLORS.success,
-        online: '#34C759',
-        pending: '#FF9500',
-        warning: BASE_COLORS.warning,
-        error: BASE_COLORS.error,
-    },
+    // States
+    hover: 'rgba(255,255,255,0.12)',
+    selected: 'rgba(0,122,255,0.10)',
+    pressed: 'rgba(255,255,255,0.18)',
 
-    // Accent colors
-    accent: {
-        success: BASE_COLORS.whatsappGreen,
-        info: BASE_COLORS.whatsappBlue,
-        warning: BASE_COLORS.macYellow,
-        error: BASE_COLORS.error,
-    },
+    // Legacy + Mail specifics
+    sidebarHover: '#e8e8e8',
+    sidebarActive: '#dcdcdc',
+    whatsappPanel: BASE_COLORS.whatsappBackground,
+    whatsappChat: BASE_COLORS.whatsappChatGreen,
+    intelligenceSubtle: 'rgba(0,122,255,0.04)',
 
-    // Legacy color aliases for backward compatibility
-    // Note: Do not use a key named 'accent' here because 'accent' above is the structured object
-    green: BASE_COLORS.whatsappGreen,
-    destructive: BASE_COLORS.error,
-    error: BASE_COLORS.error,
-    brand: BASE_COLORS.whatsappBlue,
+    macosBg: '#f5f5f7',
+    macosSidebar: '#f0f0f2',
+    macosHover: '#e8e8e8',
+    macosActive: '#dcdcdc',
+    macosBorder: '#e0e0e0',
+  },
 
-    // macOS window controls
-    macOS: {
-        red: BASE_COLORS.macRed,
-        redBorder: BASE_COLORS.macRedBorder,
-        yellow: BASE_COLORS.macYellow,
-        yellowBorder: BASE_COLORS.macYellowBorder,
-        green: BASE_COLORS.macGreen,
-        greenBorder: BASE_COLORS.macGreenBorder,
-    },
+  // Text
+  text: {
+    primary: BASE_COLORS.gray[800],
+    secondary: BASE_COLORS.gray[600],
+    tertiary: BASE_COLORS.gray[500],
+    quaternary: BASE_COLORS.gray[400],
+    placeholder: BASE_COLORS.gray[400],
+    disabled: BASE_COLORS.gray[300],
+    inverse: BASE_COLORS.white,
+    white: BASE_COLORS.white,
+
+    link: BASE_COLORS.systemBlue,
+    linkPressed: BASE_COLORS.systemBlueDark,
+
+    whatsappTime: BASE_COLORS.whatsappGreenDark,
+    muted: BASE_COLORS.overlay40,
+    quote: BASE_COLORS.overlay15,
+
+    macosPrimary: '#1d1d1f',
+    macosSecondary: '#86868b',
+  },
+
+  // Interactive
+  interactive: {
+    primary: BASE_COLORS.systemBlue,
+    secondary: BASE_COLORS.systemIndigo,
+    tertiary: BASE_COLORS.systemTeal,
+
+    hover: 'rgba(0,122,255,0.12)',
+    pressed: 'rgba(0,122,255,0.22)',
+    disabled: BASE_COLORS.gray[300],
+
+    controlTint: BASE_COLORS.systemBlue,
+    controlBackground: BASE_COLORS.chrome.controlBackgroundActive,
+
+    primaryDisabled: BASE_COLORS.gray[400],
+    whatsappLight: 'rgba(48,209,88,0.08)',
+    whatsappGreen: BASE_COLORS.whatsappGreen,
+    whatsappDark: '#1C1C1E',
+
+    macosBlue: '#0071e3',
+  },
+
+  // Borders & Separators (frosted)
+  border: {
+    primary: 'rgba(255,255,255,0.45)', // outer frost edge
+    secondary: 'rgba(255,255,255,0.30)',
+    tertiary: 'rgba(255,255,255,0.18)',
+    hairline: BASE_COLORS.separator.nonOpaque,
+
+    divider: 'rgba(0,0,0,0.06)',
+    input: BASE_COLORS.gray[300],
+    subtle: 'rgba(255,255,255,0.12)',
+  },
+
+  // Status
+  status: {
+    success: BASE_COLORS.systemGreen,
+    warning: BASE_COLORS.systemYellow,
+    error: BASE_COLORS.systemRed,
+    info: BASE_COLORS.systemBlue,
+
+    online: '#30D158',
+    pending: '#FF9F0A',
+  },
+
+  // Fill (kept synced to BASE_COLORS.fill ladder)
+  fill: {
+    primary: BASE_COLORS.fill.primary,
+    secondary: BASE_COLORS.fill.secondary,
+    tertiary: BASE_COLORS.fill.tertiary,
+    quaternary: BASE_COLORS.fill.quaternary,
+  },
+
+  // Accents
+  accent: {
+    success: BASE_COLORS.systemGreen,
+    info: BASE_COLORS.systemBlue,
+    warning: BASE_COLORS.systemOrange,
+    error: BASE_COLORS.systemRed,
+  },
+
+  // Legacy aliases
+  green: BASE_COLORS.whatsappGreen,
+  destructive: BASE_COLORS.error,
+  error: BASE_COLORS.error,
+  brand: BASE_COLORS.brandTeal,
+
+  // HeyWay brand palette
+  brandPalette: {
+    teal: BASE_COLORS.brandTeal,
+    blue: BASE_COLORS.brandBlue,
+    purple: BASE_COLORS.brandPurple,
+    yellow: BASE_COLORS.brandYellow,
+    coral: BASE_COLORS.brandCoral,
+  },
+
+  // macOS window controls
+  macOS: {
+    red: BASE_COLORS.macRed,
+    redBorder: BASE_COLORS.macRedBorder,
+    yellow: BASE_COLORS.macYellow,
+    yellowBorder: BASE_COLORS.macYellowBorder,
+    green: BASE_COLORS.macGreen,
+    greenBorder: BASE_COLORS.macGreenBorder,
+  },
 };
 
-// Typography system based on SF Pro Text from raw CSS
+// ---------- Typography ----------
 export const HEYWAY_TYPOGRAPHY = {
-    fontFamily: {
-        primary: 'SF Pro Text',
-        system: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    },
+  fontFamily: {
+    display: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+    text: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+    rounded: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+    mono: 'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace',
 
-    fontSize: {
-        // Title hierarchy
-        title: {
-            large: 17, // Title 1 - Bold
-            medium: 14, // Title 2 - Semibold/Bold  
-            small: 13,  // Title 2 - Semibold
-        },
+    primary: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+    system: 'system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+  },
 
-        // Body text hierarchy  
-        body: {
-            large: 13,  // Body 1 - Medium/Messages
-            medium: 13, // Body 1 - Regular
-            small: 12,  // Body 2 - Medium/Regular
-        },
+  fontSize: {
+    largeTitle: 34,
+    title1: 28,
+    title2: 22,
+    title3: 20,
+    headline: 17,
+    body: 17,
+    callout: 16,
+    subheadline: 15,
+    footnote: 13,
+    caption1: 12,
+    caption2: 11,
 
-        // UI labels
-        label: {
-            large: 14,  // Menu labels
-            medium: 13, // Input labels
-            small: 12,  // Secondary labels
-        },
+    title: { large: 17, medium: 15, small: 13 },
+    label: { large: 13, medium: 11, small: 10 },
+    caption: { large: 10, medium: 9, small: 8 },
+  },
 
-        // Caption text
-        caption: {
-            large: 11,  // Body 3 - Medium (time stamps)
-            medium: 10, // Body 4 - Regular (encryption notice)
-            small: 9,   // Smallest text
-        },
-    },
+  fontWeight: {
+    ultraLight: '100',
+    thin: '200',
+    light: '300',
+    regular: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    heavy: '800',
+    black: '900',
+  },
 
-    fontWeight: {
-        // Use string literal weights to align with React Native's FontWeight type
-        regular: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-    } as const,
+  lineHeight: { tight: 1.1, normal: 1.22, relaxed: 1.4 },
 
-    lineHeight: {
-        tight: 1.2,    // 120% for headings
-        normal: 1.3,   // 130% for body
-        relaxed: 1.5,  // 150% for reading
-    },
-
-    letterSpacing: {
-        tight: -0.03,   // Tight spacing for titles
-
-        normal: -0.02,  // Normal spacing for body
-        wide: -0.01,    // Wide spacing for labels
-    },
+  letterSpacing: {
+    tight: -0.3,
+    normal: -0.15,
+    wide: 0,
+  },
 };
 
-// Spacing system based on 8px grid
+// ---------- Spacing ----------
 export const HEYWAY_SPACING = {
-    micro: 2,  // 0.25 * base
-    xs: 4,     // 0.5 * base
-    sm: 8,     // 1 * base  
-    md: 12,    // 1.5 * base
-    lg: 16,    // 2 * base
-    xl: 20,    // 2.5 * base
-    xxl: 24,   // 3 * base
-    xxxl: 32,  // 4 * base
-    xxxxl: 40, // 5 * base
-    giant: 48, // 6 * base
-    huge: 64,  // 8 * base
+  micro: 2, xxs: 4, xs: 8, sm: 12, md: 16, lg: 20, xl: 24, xxl: 32, xxxl: 40,
+  xxxxl: 40, giant: 48, huge: 64,
 
-    // Semantic spacing from raw CSS
-    component: {
-        padding: {
-            xs: 4,
-            sm: 8,
-            md: 10,
-            lg: 16,
-            xl: 20,
-        },
-        gap: {
-            xs: 2,
-            sm: 4,
-            md: 8,
-            lg: 12,
-            xl: 16,
-        },
-        margin: {
-            xs: 4,
-            sm: 8,
-            md: 10,
-            lg: 16,
-            xl: 20,
-        },
-    },
+  component: {
+    padding: { xs: 8, sm: 12, md: 16, lg: 20, xl: 24 },
+    margin: { xs: 8, sm: 12, md: 16, lg: 20, xl: 24 },
+    gap: { xs: 4, sm: 8, md: 12, lg: 16, xl: 20 },
+  },
+
+  layout: {
+    windowPadding: 20,
+    sidebarPadding: 16,
+    contentPadding: 24,
+    sectionGap: 32,
+  },
 };
 
-// Border radius system
+// ---------- Radius ----------
 export const HEYWAY_RADIUS = {
-    xs: 4,
-    sm: 6,    // Standard component radius
-    md: 8,    // Card radius
-    lg: 10,   // Large card radius  
-    xl: 12,   // Message bubble radius
-    xxl: 16,  // Large container radius
-    xxxl: 28, // Avatar radius
-    full: 9999, // Fully rounded
-
-    component: {
-        button: {
-            sm: 4,
-            md: 6,
-            lg: 8,
-            xl: 12,
-            full: 9999,
-            pill: 20,
-        },
-        card: {
-            sm: 6,
-            md: 8,
-            lg: 10,
-            xl: 12,
-            xxl: 16,
-        },
-        input: {
-            sm: 4,
-            md: 6,
-            lg: 8,
-            xl: 16, // Rounded input fields
-        },
-        avatar: {
-            sm: 14,
-            md: 18,
-            lg: 24,
-            xl: 28,
-        },
-        badge: {
-            sm: 8,
-            md: 9,
-            lg: 13,
-            xl: 16,
-        },
-        modal: {
-            sm: 8,
-            md: 12,
-            lg: 16,
-            xl: 20,
-        },
-    },
+  none: 0, xs: 4, sm: 6, md: 8, lg: 10, xl: 12, xxl: 16, xxxl: 20, full: 9999,
+  component: {
+    button: 10, input: 10, card: 12, modal: 14, window: 10, sidebar: 8,
+    avatar: { sm: 10, md: 14, lg: 18, xl: 22 },
+    badge: { sm: 8, md: 9, lg: 10, xl: 12 },
+  },
 };
 
-// Shadow system from raw CSS - complex multi-layer shadows
+// ---------- Shadows ----------
 export const HEYWAY_SHADOWS = {
-    light: {
-        none: {},
-        xs: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.08,
-            shadowRadius: 2,
-            elevation: 1,
-        },
-        sm: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 2,
-        },
-        md: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.15,
-            shadowRadius: 8,
-            elevation: 4,
-        },
-        lg: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.2,
-            shadowRadius: 16,
-            elevation: 8,
-        },
-        xl: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: 0.25,
-            shadowRadius: 24,
-            elevation: 12,
-        },
-    },
+  level1: { shadowColor: '#000', shadowOffset: { width: 0, height: 0.5 }, shadowOpacity: 0.04, shadowRadius: 1.5, elevation: 1 },
+  level2: { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 },
+  level3: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.09, shadowRadius: 6, elevation: 3 },
+  level4: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 4 },
+  level5: { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.16, shadowRadius: 20, elevation: 5 },
 
-    colored: {
-        accent: {
-            shadowColor: BASE_COLORS.whatsappBlue,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
-            elevation: 3,
-        },
-    },
+  window: { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.18, shadowRadius: 24, elevation: 10 },
+  menu: { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.14, shadowRadius: 20, elevation: 8 },
 
-    dark: {
-        sm: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.3,
-            shadowRadius: 2,
-            elevation: 2,
-        },
-        md: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.4,
-            shadowRadius: 4,
-            elevation: 4,
-        },
-        lg: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.5,
-            shadowRadius: 8,
-            elevation: 8,
-        },
-    },
-
-    // Windows-style shadow from raw CSS
-    windows: {
-        main: {
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 20 },
-            shadowOpacity: 0.6,
-            shadowRadius: 50,
-            elevation: 20,
-        },
-    },
-
-    // Message bubble drop shadows
-    balloon: {
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.08,
-        shadowRadius: 1,
-        elevation: 1,
-    },
+  light: {
+    none: {},
+    xs: { shadowColor: '#000', shadowOffset: { width: 0, height: 0.5 }, shadowOpacity: 0.02, shadowRadius: 1, elevation: 1 },
+    sm: { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 2, elevation: 2 },
+    md: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 3 },
+    lg: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 4 },
+    xl: { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.10, shadowRadius: 16, elevation: 6 },
+  },
+  colored: {
+    accent: { shadowColor: '#0866FF', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 4, elevation: 2 },
+  },
+  dark: {
+    sm: { shadowColor: '#000', shadowOffset: { width: 0, height: 0.5 }, shadowOpacity: 0.14, shadowRadius: 1, elevation: 1 },
+    md: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.20, shadowRadius: 4, elevation: 3 },
+    lg: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.24, shadowRadius: 8, elevation: 5 },
+  },
 };
 
-// Layout constants from raw CSS
+// ---------- Layout ----------
 export const HEYWAY_LAYOUT = {
-    // Main container dimensions
-    window: {
-        width: 1000,
-        minWidth: 789,
-        maxWidth: 1000,
-        height: 680,
-        minHeight: 480,
-    },
+  window: {
+    minWidth: 800, minHeight: 600, defaultWidth: 1200, defaultHeight: 800,
+    titleBarHeight: 28, toolbarHeight: 48,
+    width: 980, maxWidth: 980, height: 660,
+  },
 
-    // Sidebar dimensions
-    sidebar: {
-        width: 68,
-        padding: {
-            top: 44,
-            horizontal: 10,
-            bottom: 10,
-        },
-    },
+  sidebar: {
+    width: 240, minWidth: 200, maxWidth: 320, padding: 16,
+    itemHeight: 28, sectionSpacing: 20,
+    backgroundColor: '#f0f0f2',
+  },
 
-    // Chat list panel
-    chatList: {
-        width: 314,
-        minWidth: 241,
-        maxWidth: 314,
-        padding: {
-            top: 92,
-            horizontal: 11,
-            bottom: 20,
-        },
-    },
+  content: { padding: 24, maxWidth: 800, columnGap: 32 },
 
-    // Main chat area
-    chatArea: {
-        minWidth: 480,
-        padding: {
-            top: 52,
-        },
-    },
+  list: {
+    itemHeight: 44, compactItemHeight: 32, sectionHeaderHeight: 28,
+    padding: { horizontal: 16, vertical: 8 },
+  },
 
-    // Component dimensions
-    component: {
-        button: {
-            height: {
-                sm: 32,
-                md: 44,
-                lg: 48,
-            },
-        },
-    },
+  control: {
+    button: { small: 28, medium: 32, large: 40 },
+    input: { small: 28, medium: 32, large: 40 },
+    searchField: 28, segmentedControl: 28,
+  },
 
-    avatar: {
-        sm: 36,
-        md: 45,
-        lg: 48,
-    },
-
-    menuButton: {
-        width: 48,
-        height: 48,
-    },
-
-    chatItem: {
-        height: 68.5,
-    },
-
-    searchInput: {
-        height: 32,
-    },
-
-    inputBar: {
-        height: 52,
-    },
+  chatList: { width: 260, minWidth: 200, maxWidth: 300, padding: { top: 88, horizontal: 8, bottom: 16 } },
+  chatArea: { minWidth: 580, padding: { top: 48 } },
+  component: { button: { height: { sm: 28, md: 36, lg: 44 } } },
+  avatar: { sm: 32, md: 40, lg: 44 },
+  menuButton: { width: 44, height: 44 },
+  chatItem: { height: 64 },
+  searchInput: { height: 28 },
+  inputBar: { height: 48 },
 };
 
-// Accessibility and interaction patterns
+// ---------- Accessibility ----------
 export const HEYWAY_ACCESSIBILITY = {
-    touchTarget: {
-        minimum: 44,
-        comfortable: 48,
-        large: 56,
-    },
-
-    contrast: {
-        aa: 4.5,
-        aaa: 7,
-    },
-
-    animation: {
-        fast: 150,
-        normal: 250,
-        slow: 400,
-    },
+  touchTarget: { minimum: 44, comfortable: 48, large: 56 },
+  contrast: { aa: 4.5, aaa: 7 },
+  animation: { fast: 120, normal: 200, slow: 350 },
 };
 
-// macOS window patterns
+// ---------- macOS Patterns ----------
 export const HEYWAY_MACOS_PATTERNS = {
-    windowControls: {
-        size: 12,
-        gap: 8,
-        position: {
-            left: 8,
-            top: 8,
-        },
-    },
-
-    titleBar: {
-        height: 52,
-        backgroundColor: HEYWAY_COLORS.background.primary,
-        borderBottomWidth: 0.5,
-        borderBottomColor: HEYWAY_COLORS.border.secondary,
-    },
+  windowControls: { size: 12, gap: 8, position: { left: 8, top: 8 } },
+  titleBar: {
+    height: 48,
+    backgroundColor: HEYWAY_COLORS.background.panel, // subtle glass titlebar
+    borderBottomWidth: 0.5,
+    borderBottomColor: HEYWAY_COLORS.border.subtle,
+  },
 };
 
-// Chat-specific patterns extracted from raw CSS
+// ---------- Chat Patterns ----------
 export const HEYWAY_CHAT_PATTERNS = {
-    bubble: {
-        minWidth: 84,
-        maxWidth: 360,
-        borderRadius: 12,
-        padding: {
-            vertical: 6,
-            horizontal: 10,
-        },
-        tail: {
-            width: 14.5,
-            height: 20,
-            offset: -6.5,
-        },
-    },
-
-    avatar: {
-        border: {
-            width: 0.4,
-            color: BASE_COLORS.blackOverlay20,
-        },
-        update: {
-            borderWidth: 2,
-            borderColor: BASE_COLORS.success,
-        },
-    },
-
-    badge: {
-        minWidth: 17,
-        height: 17,
-        borderRadius: 9,
-        padding: {
-            vertical: 1,
-            horizontal: 4,
-        },
-    },
-
-    timestamp: {
-        fontSize: 11,
-        fontWeight: '500',
-        color: BASE_COLORS.blackOverlay50,
-    },
-
-    checkmark: {
-        size: 17,
-        color: BASE_COLORS.whatsappBlue,
-    },
+  bubble: {
+    minWidth: 80, maxWidth: 340, borderRadius: 14,
+    padding: { vertical: 8, horizontal: 12 },
+    tail: { width: 12, height: 16, offset: -6 },
+  },
+  avatar: {
+    border: { width: 0.5, color: BASE_COLORS.gray[200] },
+    update: { borderWidth: 1.5, borderColor: BASE_COLORS.success },
+  },
+  badge: { minWidth: 16, height: 16, borderRadius: 8, padding: { vertical: 0, horizontal: 3 } },
+  timestamp: { fontSize: 10, fontWeight: '500', color: BASE_COLORS.gray[500] },
+  checkmark: { size: 16, color: BASE_COLORS.systemBlue },
 };
 
-// Component-specific style utilities
+// ---------- Component Tokens ----------
 export const HEYWAY_COMPONENTS = {
-    // Chat list item states
-    chatItem: {
-        default: {
-            backgroundColor: 'transparent',
-            borderRadius: 6,
-        },
-        hover: {
-            backgroundColor: HEYWAY_COLORS.interactive.hover,
-        },
-        selected: {
-            backgroundColor: HEYWAY_COLORS.interactive.selected,
-        },
+  // Sidebar (kept solid, Mail-like)
+  sidebar: {
+    background: HEYWAY_COLORS.background.sidebar,
+    border: HEYWAY_COLORS.border.hairline,
+    borderRadius: 0,
+
+    item: {
+      height: HEYWAY_LAYOUT.sidebar.itemHeight,
+      padding: { horizontal: 16, vertical: 4 },
+      borderRadius: 0,
+
+      default: { background: 'transparent' },
+      hover: { background: HEYWAY_COLORS.background.hover },
+      active: { background: HEYWAY_COLORS.background.selected },
+
+      text: {
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+        color: HEYWAY_COLORS.text.primary,
+      },
+
+      icon: { size: 16, color: HEYWAY_COLORS.text.secondary },
     },
 
-    // Menu button states
-    menuButton: {
-        default: {
-            backgroundColor: 'transparent',
-            borderRadius: 6,
+    section: {
+      header: {
+        height: 28,
+        padding: { horizontal: 16, vertical: 4 },
+        text: {
+          fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption1,
+          fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+          color: HEYWAY_COLORS.text.tertiary,
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
         },
-        active: {
-            backgroundColor: HEYWAY_COLORS.interactive.selected,
-        },
-        badge: {
-            backgroundColor: HEYWAY_COLORS.accent.success,
-            color: HEYWAY_COLORS.text.inverse,
-        },
+      },
+    },
+  },
+
+  // List items
+  listItem: {
+    height: HEYWAY_LAYOUT.list.itemHeight,
+    padding: HEYWAY_LAYOUT.list.padding,
+    borderBottom: `0.5px solid ${HEYWAY_COLORS.border.hairline}`,
+
+    default: { background: 'transparent' },
+    hover: { background: HEYWAY_COLORS.background.hover },
+    selected: { background: HEYWAY_COLORS.background.selected },
+
+    title: {
+      fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+      fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+      color: HEYWAY_COLORS.text.primary,
+      letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     },
 
-    // Input field styles
-    input: {
-        default: {
-            backgroundColor: HEYWAY_COLORS.background.primary,
-            borderColor: HEYWAY_COLORS.border.input,
-            borderWidth: 0.5,
-            borderRadius: 16,
-            padding: {
-                vertical: 8,
-                horizontal: 12,
-            },
-        },
-        focus: {
-            borderColor: HEYWAY_COLORS.interactive.focus,
-        },
+    subtitle: {
+      fontSize: HEYWAY_TYPOGRAPHY.fontSize.footnote,
+      color: HEYWAY_COLORS.text.secondary,
+      letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     },
 
-    // Search field
-    search: {
-        backgroundColor: HEYWAY_COLORS.background.primary,
-        borderColor: HEYWAY_COLORS.border.secondary,
-        borderWidth: 1,
-        borderRadius: 6,
-        height: 32,
-        padding: {
-            vertical: 8,
-            horizontal: 7,
-        },
+    metadata: {
+      fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption1,
+      color: HEYWAY_COLORS.text.tertiary,
     },
+  },
+
+  // Buttons
+  button: {
+    primary: {
+      background: HEYWAY_COLORS.interactive.primary,
+      color: HEYWAY_COLORS.text.inverse,
+      borderRadius: HEYWAY_RADIUS.component.button,
+      padding: { horizontal: 16, vertical: 6 },
+      fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+      fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+      shadow: HEYWAY_SHADOWS.level2,
+    },
+
+    secondary: {
+      background: HEYWAY_COLORS.fill.quaternary,
+      color: HEYWAY_COLORS.text.primary,
+      borderRadius: HEYWAY_RADIUS.component.button,
+      padding: { horizontal: 16, vertical: 6 },
+      fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+      fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+      border: `0.5px solid ${HEYWAY_COLORS.border.secondary}`,
+    },
+
+    toolbar: {
+      background: 'transparent',
+      color: HEYWAY_COLORS.text.secondary,
+      borderRadius: HEYWAY_RADIUS.sm,
+      padding: { horizontal: 8, vertical: 6 },
+      fontSize: HEYWAY_TYPOGRAPHY.fontSize.footnote,
+      fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    },
+  },
+
+  // Input fields (glass border ring on focus)
+  input: {
+    background: HEYWAY_COLORS.background.card,
+    border: `1px solid ${HEYWAY_COLORS.border.secondary}`,
+    borderRadius: HEYWAY_RADIUS.component.input,
+    padding: { horizontal: 12, vertical: 8 },
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    color: HEYWAY_COLORS.text.primary,
+    placeholderColor: HEYWAY_COLORS.text.placeholder,
+
+    focus: {
+      borderColor: HEYWAY_COLORS.interactive.primary,
+      shadow: `0 0 0 3px ${HEYWAY_COLORS.interactive.primary}20`,
+    },
+  },
+
+  searchField: {
+    background: HEYWAY_COLORS.fill.quaternary,
+    border: 'none',
+    borderRadius: HEYWAY_RADIUS.component.input,
+    height: HEYWAY_LAYOUT.control.searchField,
+    padding: { horizontal: 12, vertical: 6 },
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    color: HEYWAY_COLORS.text.primary,
+    placeholderColor: HEYWAY_COLORS.text.tertiary,
+  },
+
+  // Legacy compatibility
+  chatItem: {
+    default: { backgroundColor: 'transparent', borderRadius: 6 },
+    hover: { backgroundColor: BASE_COLORS.overlay02 },
+    selected: { backgroundColor: 'rgba(0,122,255,0.06)' },
+  },
+
+  sidebarItem: {
+    default: { backgroundColor: 'transparent', borderRadius: 0, padding: { vertical: 8, horizontal: 16 } },
+    hover: { backgroundColor: '#e8e8e8' },
+    active: { backgroundColor: '#dcdcdc' },
+    icon: { width: 20, color: '#86868b', marginRight: 8 },
+    text: { fontSize: 14, color: '#1d1d1f' },
+    badge: {
+      backgroundColor: '#0071e3', color: '#ffffff',
+      borderRadius: 20, minWidth: 20, height: 20, fontSize: 12, padding: { horizontal: 6, vertical: 2 }
+    }
+  },
+
+  analysisTag: {
+    backgroundColor: 'rgba(0, 113, 227, 0.08)',
+    borderColor: 'rgba(0, 113, 227, 0.2)',
+    borderWidth: 0.5,
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    text: { fontSize: 10, fontWeight: '500', color: '#0071e3' }
+  },
+
+  sidebarComposeButton: {
+    width: '100%',
+    backgroundColor: '#0071e3', color: '#ffffff',
+    borderRadius: 6, padding: { vertical: 6, horizontal: 12 },
+    fontSize: 14, fontWeight: '500', marginBottom: 16
+  },
+
+  menuButton: {
+    default: { backgroundColor: 'transparent', borderRadius: 6 },
+    active: { backgroundColor: BASE_COLORS.overlay04 },
+    badge: { backgroundColor: BASE_COLORS.systemBlue, color: '#FFFFFF' },
+  },
+
+  search: {
+    backgroundColor: BASE_COLORS.gray[100],
+    borderColor: 'transparent',
+    borderWidth: 0,
+    borderRadius: 8,
+    height: 28,
+    padding: { vertical: 6, horizontal: 8 },
+  },
 };
 
-// Animation and transition values
+// ---------- Animations ----------
 export const HEYWAY_ANIMATIONS = {
-    timing: {
-        fast: 150,
-        normal: 250,
-        slow: 400,
-    },
-
-    easing: {
-        default: 'ease-out',
-        bounce: 'spring',
-        smooth: 'ease-in-out',
-    },
-
-    // Hover and interaction animations
-    interactions: {
-        hover: {
-            duration: 150,
-            scale: 0.98,
-        },
-        tap: {
-            duration: 100,
-            scale: 0.95,
-        },
-        focus: {
-            duration: 200,
-        },
-    },
+  timing: { micro: 100, fast: 150, normal: 250, slow: 350, slowest: 500 },
+  easing: {
+    standard: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+    emphasized: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    decelerate: 'cubic-bezier(0, 0, 0.2, 1)',
+    accelerate: 'cubic-bezier(0.4, 0, 1, 1)',
+    default: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+    bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+    smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  },
+  interaction: {
+    hover: { duration: 150, scale: 0.98 },
+    press: { duration: 100, scale: 0.95 },
+    focus: { duration: 200 },
+  },
+  interactions: {
+    hover: { duration: 120, scale: 0.98 },
+    tap: { duration: 80, scale: 0.96 },
+    focus: { duration: 150 },
+  },
 };
 
-// Layout grid and breakpoints
-export const HEYWAY_BREAKPOINTS = {
-    mobile: 768,
-    tablet: 1024,
-    desktop: 1200,
-    wide: 1440,
-};
+// ---------- Breakpoints ----------
+export const HEYWAY_BREAKPOINTS = { mobile: 768, tablet: 1024, desktop: 1200, wide: 1440 };
 
-// Default export with all style guide components
+// ---------- Default Export ----------
 export default {
-    HEYWAY_COLORS,
-    HEYWAY_TYPOGRAPHY,
-    HEYWAY_SPACING,
-    HEYWAY_RADIUS,
-    HEYWAY_SHADOWS,
-    HEYWAY_LAYOUT,
-    HEYWAY_ACCESSIBILITY,
-    HEYWAY_MACOS_PATTERNS,
-    HEYWAY_CHAT_PATTERNS,
-    HEYWAY_COMPONENTS,
-    HEYWAY_ANIMATIONS,
-    HEYWAY_BREAKPOINTS,
-
+  HEYWAY_COLORS,
+  HEYWAY_TYPOGRAPHY,
+  HEYWAY_SPACING,
+  HEYWAY_RADIUS,
+  HEYWAY_SHADOWS,
+  HEYWAY_LAYOUT,
+  HEYWAY_ACCESSIBILITY,
+  HEYWAY_MACOS_PATTERNS,
+  HEYWAY_CHAT_PATTERNS,
+  HEYWAY_COMPONENTS,
+  HEYWAY_ANIMATIONS,
+  HEYWAY_BREAKPOINTS,
 };

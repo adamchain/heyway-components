@@ -55,7 +55,9 @@ export interface Automation {
   voiceAudioDuration?: number;
   aiInstructions: string;
   callbackEnabled?: boolean; // callback option for voicemail detection
-  callbackTime?: string; // time to call back if voicemail detected (HH:MM)
+  callbackDelay?: '15min' | '30min' | '1hr' | '2hr' | '4hr' | '8hr' | '12hr' | '24hr' | 'custom';
+  callbackCustomTime?: string; // custom time (HH:MM) when delay is 'custom'
+  callbackCustomDay?: 'today' | 'tomorrow'; // custom day when delay is 'custom'
 }
 
 export interface CreateAutomationModalProps {
@@ -91,9 +93,11 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
   const [voiceAudioUri, setVoiceAudioUri] = useState<string | null>(null);
   const [voiceAudioDuration, setVoiceAudioDuration] = useState(0);
   const [callbackEnabled, setCallbackEnabled] = useState(false);
-  const [callbackHour, setCallbackHour] = useState(9);
-  const [callbackMinute, setCallbackMinute] = useState(0);
-  const [callbackPeriod, setCallbackPeriod] = useState<'AM' | 'PM'>('AM');
+  const [callbackDelay, setCallbackDelay] = useState<'15min' | '30min' | '1hr' | '2hr' | '4hr' | '8hr' | '12hr' | '24hr' | 'custom'>('2hr');
+  const [callbackCustomHour, setCallbackCustomHour] = useState(9);
+  const [callbackCustomMinute, setCallbackCustomMinute] = useState(0);
+  const [callbackCustomPeriod, setCallbackCustomPeriod] = useState<'AM' | 'PM'>('AM');
+  const [callbackCustomDay, setCallbackCustomDay] = useState<'today' | 'tomorrow'>('today');
 
   // Helper functions for time conversion
   const clampInt = (value: number, min: number, max: number): number => {
@@ -208,9 +212,11 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
       setVoiceAudioUri(editingAutomation.voiceAudioUri || null);
       setVoiceAudioDuration(editingAutomation.voiceAudioDuration || 0);
       setCallbackEnabled(editingAutomation.callbackEnabled || false);
-      if (editingAutomation.callbackTime) {
-        const { hour, minute, period } = parseTimeSafe(editingAutomation.callbackTime, { h: 9, m: 0 });
-        setCallbackHour(hour); setCallbackMinute(minute); setCallbackPeriod(period);
+      setCallbackDelay(editingAutomation.callbackDelay || '2hr');
+      setCallbackCustomDay(editingAutomation.callbackCustomDay || 'today');
+      if (editingAutomation.callbackCustomTime) {
+        const { hour, minute, period } = parseTimeSafe(editingAutomation.callbackCustomTime, { h: 9, m: 0 });
+        setCallbackCustomHour(hour); setCallbackCustomMinute(minute); setCallbackCustomPeriod(period);
       }
     } else {
       // Reset for new automation
@@ -233,9 +239,11 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
       setVoiceAudioUri(null);
       setVoiceAudioDuration(0);
       setCallbackEnabled(false);
-      setCallbackHour(9);
-      setCallbackMinute(0);
-      setCallbackPeriod('AM');
+      setCallbackDelay('2hr');
+      setCallbackCustomHour(9);
+      setCallbackCustomMinute(0);
+      setCallbackCustomPeriod('AM');
+      setCallbackCustomDay('today');
     }
   }, [editingAutomation, visible]);
 
@@ -254,16 +262,25 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
     }
   };
 
-  const handleSave = () => {
-    if (!name.trim()) return Alert.alert('Error', 'Please enter an automation name');
-    if (!aiInstructions.trim()) return Alert.alert('Error', 'Please provide AI instructions');
+  const handleSave = async () => {
+    // Validation with specific error messages
+    if (!name.trim()) {
+      return Alert.alert('Missing Information', 'Please enter an automation name to continue.');
+    }
+    
+    if (!aiInstructions.trim()) {
+      return Alert.alert('Missing Information', 'Please provide AI instructions for your automation.');
+    }
 
-    const callbackTime = callbackEnabled
-      ? formatTimeToMilitary(callbackHour || 9, callbackMinute || 0, callbackPeriod)
+    const callbackCustomTime = callbackEnabled && callbackDelay === 'custom'
+      ? formatTimeToMilitary(callbackCustomHour || 9, callbackCustomMinute || 0, callbackCustomPeriod)
       : undefined;
 
     if (triggerType === 'on_date') {
-      if (!onDate) return Alert.alert('Error', 'Please select a date for the automation');
+      if (!onDate) {
+        return Alert.alert('Missing Date', 'Please select a date for your automation.');
+      }
+      
       const onTime = formatTimeToMilitary(onDateHour || 9, onDateMinute || 0, onDatePeriod);
 
       // Past date/time guard (uses local)
@@ -271,41 +288,60 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
       const when = new Date(onDateValue);
       when.setHours(parseInt(hStr, 10), parseInt(mStr, 10), 0, 0);
       if (when.getTime() <= Date.now()) {
-        return Alert.alert('Invalid time', 'Please choose a future date & time.');
+        return Alert.alert('Invalid Time', 'The selected date and time is in the past. Please choose a future date and time for your automation.');
       }
 
-      onSave({
-        name: name.trim(),
-        description: description.trim(),
-        triggerType: 'on_date',
-        onDate,
-        onTime,
-        aiInstructions: aiInstructions.trim(),
-        voiceMessage: voiceMessage.trim() || undefined,
-        voiceAudioUri: voiceAudioUri || undefined,
-        voiceAudioDuration: voiceAudioDuration || undefined,
-        callbackEnabled,
-        callbackTime,
-      });
+      try {
+        await onSave({
+          name: name.trim(),
+          description: description.trim(),
+          triggerType: 'on_date',
+          onDate,
+          onTime,
+          aiInstructions: aiInstructions.trim(),
+          voiceMessage: voiceMessage.trim() || undefined,
+          voiceAudioUri: voiceAudioUri || undefined,
+          voiceAudioDuration: voiceAudioDuration || undefined,
+          callbackEnabled,
+          callbackDelay,
+          callbackCustomTime,
+          callbackCustomDay,
+        });
+        onClose();
+      } catch (error) {
+        console.error('Failed to save automation:', error);
+        Alert.alert('Save Failed', 'Unable to save your automation. Please check your connection and try again.');
+      }
     } else {
-      const militaryTime = formatTimeToMilitary(selectedHour || 9, selectedMinute || 0, selectedPeriod);
-      onSave({
-        name: name.trim(),
-        description: description.trim(),
-        triggerType: 'date_offset',
-        offsetDays: Math.max(0, Math.min(365, offsetDays)),
-        offsetDirection,
-        offsetTime: militaryTime,
-        aiInstructions: aiInstructions.trim(),
-        voiceMessage: voiceMessage.trim() || undefined,
-        voiceAudioUri: voiceAudioUri || undefined,
-        voiceAudioDuration: voiceAudioDuration || undefined,
-        callbackEnabled,
-        callbackTime,
-      });
-    }
+      if (offsetDays === 0 && offsetDirection === 'before') {
+        Alert.alert('Invalid Configuration', 'Setting "0 days before" would result in calls on the same day. Please use "0 days after" or choose a different number of days.');
+        return;
+      }
 
-    onClose();
+      try {
+        const militaryTime = formatTimeToMilitary(selectedHour || 9, selectedMinute || 0, selectedPeriod);
+        await onSave({
+          name: name.trim(),
+          description: description.trim(),
+          triggerType: 'date_offset',
+          offsetDays: Math.max(0, Math.min(365, offsetDays)),
+          offsetDirection,
+          offsetTime: militaryTime,
+          aiInstructions: aiInstructions.trim(),
+          voiceMessage: voiceMessage.trim() || undefined,
+          voiceAudioUri: voiceAudioUri || undefined,
+          voiceAudioDuration: voiceAudioDuration || undefined,
+          callbackEnabled,
+          callbackDelay,
+          callbackCustomTime,
+          callbackCustomDay,
+        });
+        onClose();
+      } catch (error) {
+        console.error('Failed to save automation:', error);
+        Alert.alert('Save Failed', 'Unable to save your automation. Please check your connection and try again.');
+      }
+    }
   };
 
   return (
@@ -454,11 +490,18 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
                           style={styles.timePickerInput}
                           value={selectedMinute.toString().padStart(2, '0')}
                           onChangeText={(text) => {
-                            const num = parseInt(text);
-                            if (!isNaN(num) && num >= 0 && num <= 59) {
-                              setSelectedMinute(num);
-                            } else if (text === '') {
+                            // Allow empty string
+                            if (text === '') {
                               setSelectedMinute(0);
+                              return;
+                            }
+                            // Only allow numeric input
+                            if (/^\d{1,2}$/.test(text)) {
+                              const num = parseInt(text, 10);
+                              // Allow any single digit immediately, or two digits if <= 59
+                              if (text.length === 1 || (text.length === 2 && num <= 59)) {
+                                setSelectedMinute(num);
+                              }
                             }
                           }}
                           keyboardType="number-pad"
@@ -558,11 +601,18 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
                           style={styles.timePickerInput}
                           value={onDateMinute.toString().padStart(2, '0')}
                           onChangeText={(text) => {
-                            const num = parseInt(text);
-                            if (!isNaN(num) && num >= 0 && num <= 59) {
-                              setOnDateMinute(num);
-                            } else if (text === '') {
+                            // Allow empty string
+                            if (text === '') {
                               setOnDateMinute(0);
+                              return;
+                            }
+                            // Only allow numeric input
+                            if (/^\d{1,2}$/.test(text)) {
+                              const num = parseInt(text, 10);
+                              // Allow any single digit immediately, or two digits if <= 59
+                              if (text.length === 1 || (text.length === 2 && num <= 59)) {
+                                setOnDateMinute(num);
+                              }
                             }
                           }}
                           keyboardType="number-pad"
@@ -636,69 +686,132 @@ const CreateAutomationModal: React.FC<CreateAutomationModalProps> = ({
 
               {callbackEnabled && (
                 <View style={styles.callbackTimeContainer}>
-                  <Text style={styles.callbackTimeLabel}>Call back at:</Text>
-                  <View style={styles.timePickerContainer}>
-                    <View style={styles.timePickerSection}>
-                      <Text style={styles.timePickerLabel}>Hour</Text>
-                      <TextInput
-                        style={styles.timePickerInput}
-                        value={callbackHour.toString()}
-                        onChangeText={(text) => {
-                          if (text === '') {
-                            setCallbackHour(0);
-                            return;
-                          }
-                          const num = parseInt(text);
-                          if (!isNaN(num) && num >= 1 && num <= 12) {
-                            setCallbackHour(num);
-                          }
-                        }}
-                        keyboardType="number-pad"
-                        maxLength={2}
-                        selectTextOnFocus={true}
-                      />
-                    </View>
-
-                    <Text style={styles.timeSeparator}>:</Text>
-
-                    <View style={styles.timePickerSection}>
-                      <Text style={styles.timePickerLabel}>Min</Text>
-                      <TextInput
-                        style={styles.timePickerInput}
-                        value={callbackMinute.toString().padStart(2, '0')}
-                        onChangeText={(text) => {
-                          const num = parseInt(text);
-                          if (!isNaN(num) && num >= 0 && num <= 59) {
-                            setCallbackMinute(num);
-                          } else if (text === '') {
-                            setCallbackMinute(0);
-                          }
-                        }}
-                        keyboardType="number-pad"
-                        maxLength={2}
-                        selectTextOnFocus={true}
-                      />
-                    </View>
-
-                    <View style={styles.periodSelector}>
+                  <Text style={styles.callbackTimeLabel}>Callback timing:</Text>
+                  
+                  {/* Preset Options */}
+                  <View style={styles.presetOptionsContainer}>
+                    {[
+                      { value: '15min', label: '15 minutes' },
+                      { value: '30min', label: '30 minutes' },
+                      { value: '1hr', label: '1 hour' },
+                      { value: '2hr', label: '2 hours' },
+                      { value: '4hr', label: '4 hours' },
+                      { value: '8hr', label: '8 hours' },
+                      { value: '12hr', label: '12 hours' },
+                      { value: '24hr', label: 'Next day' },
+                      { value: 'custom', label: 'Custom time' }
+                    ].map((option) => (
                       <TouchableOpacity
-                        style={[styles.periodButton, callbackPeriod === 'AM' && styles.periodButtonActive]}
-                        onPress={() => setCallbackPeriod('AM')}
+                        key={option.value}
+                        style={[
+                          styles.presetOption,
+                          callbackDelay === option.value && styles.presetOptionActive
+                        ]}
+                        onPress={() => setCallbackDelay(option.value as any)}
                       >
-                        <Text style={[styles.periodText, callbackPeriod === 'AM' && styles.periodTextActive]}>
-                          AM
+                        <Text style={[
+                          styles.presetOptionText,
+                          callbackDelay === option.value && styles.presetOptionTextActive
+                        ]}>
+                          {option.label}
                         </Text>
                       </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.periodButton, callbackPeriod === 'PM' && styles.periodButtonActive]}
-                        onPress={() => setCallbackPeriod('PM')}
-                      >
-                        <Text style={[styles.periodText, callbackPeriod === 'PM' && styles.periodTextActive]}>
-                          PM
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
+                    ))}
                   </View>
+
+                  {/* Custom Time Options */}
+                  {callbackDelay === 'custom' && (
+                    <View style={styles.customTimeContainer}>
+                      <View style={styles.daySelector}>
+                        <TouchableOpacity
+                          style={[styles.dayButton, callbackCustomDay === 'today' && styles.dayButtonActive]}
+                          onPress={() => setCallbackCustomDay('today')}
+                        >
+                          <Text style={[styles.dayText, callbackCustomDay === 'today' && styles.dayTextActive]}>
+                            Today
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.dayButton, callbackCustomDay === 'tomorrow' && styles.dayButtonActive]}
+                          onPress={() => setCallbackCustomDay('tomorrow')}
+                        >
+                          <Text style={[styles.dayText, callbackCustomDay === 'tomorrow' && styles.dayTextActive]}>
+                            Tomorrow
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.timePickerContainer}>
+                        <View style={styles.timePickerSection}>
+                          <Text style={styles.timePickerLabel}>Hour</Text>
+                          <TextInput
+                            style={styles.timePickerInput}
+                            value={callbackCustomHour.toString()}
+                            onChangeText={(text) => {
+                              if (text === '') {
+                                setCallbackCustomHour(0);
+                                return;
+                              }
+                              const num = parseInt(text);
+                              if (!isNaN(num) && num >= 1 && num <= 12) {
+                                setCallbackCustomHour(num);
+                              }
+                            }}
+                            keyboardType="number-pad"
+                            maxLength={2}
+                            selectTextOnFocus={true}
+                          />
+                        </View>
+
+                        <Text style={styles.timeSeparator}>:</Text>
+
+                        <View style={styles.timePickerSection}>
+                          <Text style={styles.timePickerLabel}>Min</Text>
+                          <TextInput
+                            style={styles.timePickerInput}
+                            value={callbackCustomMinute.toString().padStart(2, '0')}
+                            onChangeText={(text) => {
+                              // Allow empty string
+                              if (text === '') {
+                                setCallbackCustomMinute(0);
+                                return;
+                              }
+                              // Only allow numeric input
+                              if (/^\d{1,2}$/.test(text)) {
+                                const num = parseInt(text, 10);
+                                // Allow any single digit immediately, or two digits if <= 59
+                                if (text.length === 1 || (text.length === 2 && num <= 59)) {
+                                  setCallbackCustomMinute(num);
+                                }
+                              }
+                            }}
+                            keyboardType="number-pad"
+                            maxLength={2}
+                            selectTextOnFocus={true}
+                          />
+                        </View>
+
+                        <View style={styles.periodSelector}>
+                          <TouchableOpacity
+                            style={[styles.periodButton, callbackCustomPeriod === 'AM' && styles.periodButtonActive]}
+                            onPress={() => setCallbackCustomPeriod('AM')}
+                          >
+                            <Text style={[styles.periodText, callbackCustomPeriod === 'AM' && styles.periodTextActive]}>
+                              AM
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[styles.periodButton, callbackCustomPeriod === 'PM' && styles.periodButtonActive]}
+                            onPress={() => setCallbackCustomPeriod('PM')}
+                          >
+                            <Text style={[styles.periodText, callbackCustomPeriod === 'PM' && styles.periodTextActive]}>
+                              PM
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  )}
                 </View>
               )}
             </View>
@@ -1081,7 +1194,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     paddingHorizontal: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.background.secondarySecondary,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     borderRadius: HEYWAY_RADIUS.sm,
     borderLeftWidth: 3,
     borderLeftColor: HEYWAY_COLORS.interactive.primary,
@@ -1143,15 +1256,70 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   callbackTimeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingLeft: HEYWAY_SPACING.xl,
+    gap: HEYWAY_SPACING.md,
   },
   callbackTimeLabel: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     color: HEYWAY_COLORS.text.primary,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    marginBottom: HEYWAY_SPACING.sm,
+  },
+  presetOptionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: HEYWAY_SPACING.sm,
+    marginBottom: HEYWAY_SPACING.md,
+  },
+  presetOption: {
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    borderRadius: HEYWAY_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+  },
+  presetOptionActive: {
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderColor: HEYWAY_COLORS.interactive.primary,
+  },
+  presetOptionText: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
+    color: HEYWAY_COLORS.text.primary,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+  },
+  presetOptionTextActive: {
+    color: HEYWAY_COLORS.text.inverse,
+  },
+  customTimeContainer: {
+    gap: HEYWAY_SPACING.md,
+  },
+  daySelector: {
+    flexDirection: 'row',
+    gap: HEYWAY_SPACING.sm,
+    marginBottom: HEYWAY_SPACING.sm,
+  },
+  dayButton: {
+    flex: 1,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    borderRadius: HEYWAY_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    alignItems: 'center',
+  },
+  dayButtonActive: {
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderColor: HEYWAY_COLORS.interactive.primary,
+  },
+  dayText: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    color: HEYWAY_COLORS.text.primary,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+  },
+  dayTextActive: {
+    color: HEYWAY_COLORS.text.inverse,
   },
   // Recording section styles
   recordingSection: {

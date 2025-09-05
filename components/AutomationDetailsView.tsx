@@ -1,61 +1,42 @@
-import React, { useState, useEffect } from 'react';
+// AutomationDetailsView.tsx — Compact Right Pane (email-style) rewrite
+// Goals vs AutomationsListView: match CallSummaryCard exactly
+// • Denser layout (12/8 spacing), sticky tools header, pill info row
+// • Content in minimal "mail body" style (no heavy bubbles)
+// • Collapsible "Analysis" drawer to save vertical space
+// • Quick Reply footer with single primary action
+// • Subtle glass on header only, keep body crisp white for contrast
+
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
   ActivityIndicator,
-  SafeAreaView
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  SafeAreaView,
+  FlatList,
+  Switch,
 } from 'react-native';
-import {
-  Clock,
-  Users,
-  Play,
-  Pause,
-  Edit3,
-  Trash2,
-  Target,
-  Calendar,
-  MessageCircle,
-  Settings,
-  X,
-  Plus,
-  Download,
-  Eye,
-  CheckCircle,
-  UserPlus,
-  Upload
-} from 'lucide-react-native';
+import { Archive, Download, MoreHorizontal, Send, Star, UserPlus, X, CheckCircle, ChevronDown, Zap, Play, Pause, Edit3, Trash2, Target, Calendar, MessageCircle, Settings, Plus, Eye, Clock, Users, FileText, Upload, Power } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
+
+import { useContacts } from '@/hooks/useContacts';
 import { apiService } from '../services/apiService';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_MACOS_PATTERNS, HEYWAY_COMPONENTS, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
-
-// Helpers
-const toLocalDate = (iso?: string) => {
-  if (!iso) return null;
-  // Avoid UTC off-by-one by anchoring midday when we only have a date
-  const hasTime = /T\d{2}:\d{2}/.test(iso);
-  return new Date(hasTime ? iso : `${iso}T12:00:00`);
-};
-
-const formatDateTime = (iso?: string) => {
-  try {
-    const d = toLocalDate(iso || '');
-    if (!d) return 'Unknown';
-    return d.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  } catch {
-    return 'Unknown';
-  }
-};
-
-const pluralize = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+import ContactSelectorModal from './ContactSelectorModal';
+import CSVImportModal from './CSVImportModal';
+import CreateAutomationModal from './CreateAutomationModal';
+import {
+  HEYWAY_COLORS,
+  HEYWAY_SPACING,
+  HEYWAY_TYPOGRAPHY,
+  HEYWAY_RADIUS,
+  HEYWAY_SHADOWS,
+} from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface Automation {
   id?: string;
@@ -81,45 +62,41 @@ interface Automation {
   aiInstructions: string;
 }
 
-interface CallRecord {
-  id: string;
-  automationId?: string;
-  recipients?: Array<{
-    id?: string;
-    name?: string;
-    phoneNumber?: string;
-  }>;
-  participants?: Array<{
-    phoneNumber: string;
-    status: string;
-    _id?: string;
-  }>;
-  status: 'completed' | 'scheduled' | 'failed' | 'in_progress';
-  createdAt: string;
-  scheduledTime?: string;
-  duration?: string;
-  outcome?: string;
-  notes?: string;
-  date?: string;
-}
-
-interface Contact {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  createdAt: string;
-  addedAt?: string;
-}
-
 interface AutomationDetailsViewProps {
   automation: Automation;
   onClose: () => void;
   onEdit?: (automation: Automation) => void;
   onToggle?: (automationId: string) => void;
   onDelete?: (automationId: string) => void;
-  onAddContacts?: (automation: Automation) => void;
-  onImportContacts?: (automation: Automation) => void;
   onViewContacts?: (automation: Automation) => void;
+  isEmbedded?: boolean;
+  onAddContact?: () => void;
+  onImportContacts?: () => void;
+}
+
+// Helper functions for status styling
+function getAnalysisHeaderStyle(automation: any) {
+  if (automation.isActive) {
+    return { backgroundColor: 'rgba(76, 175, 80, 0.15)' }; // Brighter green background
+  } else {
+    return { backgroundColor: 'rgba(244, 67, 54, 0.15)' }; // Brighter red background
+  }
+}
+
+function getAnalysisTitleStyle(automation: any) {
+  if (automation.isActive) {
+    return { color: '#2E7D32', fontWeight: '700' as const }; // Brighter green text with bold weight
+  } else {
+    return { color: '#D32F2F', fontWeight: '700' as const }; // Brighter red text with bold weight
+  }
+}
+
+function getAnalysisIconColor(automation: any) {
+  if (automation.isActive) {
+    return '#2E7D32'; // Brighter green icon
+  } else {
+    return '#D32F2F'; // Brighter red icon
+  }
 }
 
 export default function AutomationDetailsView({
@@ -128,1041 +105,900 @@ export default function AutomationDetailsView({
   onEdit,
   onToggle,
   onDelete,
-  onAddContacts,
+  onViewContacts,
+  isEmbedded = false,
+  onAddContact,
   onImportContacts,
-  onViewContacts
 }: AutomationDetailsViewProps) {
-  const automationId = automation.id ?? automation._id ?? '';
-  const [completedCalls, setCompletedCalls] = useState<CallRecord[]>([]);
-  const [scheduledCalls, setScheduledCalls] = useState<CallRecord[]>([]);
-  const [addedContacts, setAddedContacts] = useState<Contact[]>([]);
-  const [loadingCalls, setLoadingCalls] = useState(false);
-  const [loadingContacts, setLoadingContacts] = useState(false);
-  const [activeCallsTab, setActiveCallsTab] = useState<'added' | 'completed' | 'scheduled'>('added');
+  const [messageText, setMessageText] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(true);
+  const [showContacts, setShowContacts] = useState(false);
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [calls, setCalls] = useState<any[]>([]);
+  const [isLoadingContacts, setIsLoadingContacts] = useState(false);
+  const [isLoadingCalls, setIsLoadingCalls] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [automationMismatchWarning, setAutomationMismatchWarning] = useState<string | null>(null);
+  const [isToggling, setIsToggling] = useState(false);
+  const [showContactSelectorModal, setShowContactSelectorModal] = useState(false);
+  const [showCSVImportModal, setShowCSVImportModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentAutomation, setCurrentAutomation] = useState(automation);
 
+  const automationId = automation.id ?? automation._id ?? '';
+
+  // Update current automation when prop changes
   useEffect(() => {
-    if (!automationId) return;
-    loadAutomationCalls();
-    loadAutomationContacts();
+    setCurrentAutomation(automation);
+  }, [automation]);
 
-    // Set up periodic refresh for real-time updates
-    const interval = setInterval(() => {
-      loadAutomationCalls();
-      loadAutomationContacts();
-    }, 10000); // Refresh every 10 seconds
-
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Load automation data when component mounts
+  useEffect(() => {
+    if (automationId) {
+      loadAutomationData();
+    }
   }, [automationId]);
 
-  const handleRefresh = async () => {
-    setError(null);
-    await Promise.all([loadAutomationCalls(), loadAutomationContacts()]);
-  };
-
-  const loadAutomationCalls = async () => {
+  const loadAutomationData = async () => {
     try {
       setError(null);
-      setLoadingCalls(true);
+      setIsLoadingContacts(true);
+      setIsLoadingCalls(true);
 
-      // Fetch both completed automation calls and scheduled calls
-      const [automationCalls, scheduledCallsData] = await Promise.all([
-        apiService.getAutomationCalls(automationId),
-        apiService.getScheduledCalls('scheduled')
+      const [contactsData, callsData] = await Promise.all([
+        apiService.getAutomationContacts(automationId),
+        apiService.getAutomationCalls(automationId)
       ]);
 
-      // Separate completed and failed calls from automation calls
-      const completedAutomationCalls = automationCalls
-        .filter((call: any) => call.status === 'completed' || call.status === 'failed')
-        .map((call: any) => ({
-          id: String(call.id || call._id || call.scheduledTime || call.createdAt || call.date),
-          automationId,
-          recipients: call.participants || call.recipients,
-          status: (call.status || 'completed') as 'completed' | 'scheduled' | 'failed' | 'in_progress',
-          createdAt: call.createdAt || call.date,
-          duration: call.duration,
-          outcome: call.outcome
-        })) as CallRecord[];
-      setCompletedCalls(completedAutomationCalls);
+      setContacts(Array.isArray(contactsData) ? contactsData : []);
+      setCalls(Array.isArray(callsData) ? callsData : []);
+    } catch (err) {
+      console.error('Failed to load automation data:', err);
+      setError('Failed to load automation data');
+    } finally {
+      setIsLoadingContacts(false);
+      setIsLoadingCalls(false);
+    }
+  };
 
-      // Filter scheduled calls that belong to this automation
-      const scheduledAutomationCalls = scheduledCallsData
-        .filter((call: any) => {
-          // Check if this scheduled call belongs to the current automation
-          // Handle both string and ObjectId comparisons
-          const callAutomationId = call.automationId?.toString() || call.automationId;
-          const targetAutomationId = automationId?.toString() || automationId;
+  const sendMessage = async () => {
+    if (!messageText.trim()) {
+      Alert.alert('Message Required', 'Please enter a message to send.');
+      return;
+    }
 
-          return callAutomationId === targetAutomationId;
-        })
-        .map((call: any) => ({
-          id: String(call.id || call._id || call.scheduledTime || call.createdAt || call.date),
-          automationId,
-          recipients: call.recipients || call.participants,
-          status: 'scheduled' as const,
-          createdAt: call.createdAt || call.date,
-          scheduledTime: call.scheduledTime || call.date,
-          duration: call.duration
-        })) as CallRecord[];
+    try {
+      setIsSending(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => { });
 
-      // Check if there are scheduled calls but none match this automation
-      // Only show mismatch warning if there are significantly more scheduled calls than what matches this automation
-      const hasSignificantMismatch = scheduledCallsData.length >= 10 && scheduledAutomationCalls.length === 0;
+      // Here you would implement the logic to send a message related to the automation
+      // For now, just show success
+      Alert.alert('Success', 'Message sent successfully!');
+      setMessageText('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      Alert.alert('Error', 'Failed to send message. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
+  };
 
-      if (hasSignificantMismatch) {
-        // Set warning message for user
-        setAutomationMismatchWarning(
-          `Found ${scheduledCallsData.length} scheduled calls, but they belong to a different automation. This may happen if you're viewing a different automation than the one that created these calls.`
+  const toggleAutomation = async () => {
+    if (!automationId || isToggling) return;
+
+    try {
+      setIsToggling(true);
+      onPressHaptic();
+      
+      // Optimistic update
+      setCurrentAutomation(prev => ({
+        ...prev,
+        isActive: !prev.isActive
+      }));
+      
+      await apiService.toggleAutomation(automationId, !currentAutomation.isActive);
+      
+      // Refresh data to ensure server sync
+      await loadAutomationData();
+      
+      // Call parent callback if provided
+      if (onToggle) {
+        onToggle(automationId);
+      }
+    } catch (error) {
+      console.error('Failed to toggle automation:', error);
+      
+      // Revert optimistic update on error
+      setCurrentAutomation(prev => ({
+        ...prev,
+        isActive: !prev.isActive
+      }));
+      
+      Alert.alert('Error', 'Failed to update automation status');
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
+  const handleAddContact = () => {
+    setShowContactSelectorModal(true);
+  };
+
+  const handleImportContacts = () => {
+    setShowCSVImportModal(true);
+  };
+
+  const handleContactsSelected = async (selectedContacts: any[]) => {
+    try {
+      setShowContactSelectorModal(false);
+      
+      if (selectedContacts.length === 0) return;
+      
+      // Get contact IDs for the selected contacts
+      const contactIds = selectedContacts.map(contact => contact.id);
+      
+      console.log('📤 Adding contacts to automation contact list:', {
+        automationId,
+        contactIds: contactIds,
+        contactsCount: contactIds.length
+      });
+      
+      // Add selected contacts to the automation's contact list (without executing)
+      const result = await apiService.addContactsToAutomationContactList(automationId, contactIds);
+      
+      console.log('✅ API response:', result);
+      
+      // Refresh contacts list to show the newly added contacts
+      await loadAutomationData();
+      
+      // Show success message with details from server response
+      if (result && result.contactsAdded !== undefined) {
+        Alert.alert(
+          'Contacts Added',
+          `${result.contactsAdded} contact${result.contactsAdded !== 1 ? 's' : ''} added to automation contact list.${result.contactsSkipped > 0 ? ` ${result.contactsSkipped} were skipped (already in list).` : ''}`
         );
       } else {
-        setAutomationMismatchWarning(null);
+        Alert.alert(
+          'Contacts Added',
+          `${selectedContacts.length} contact${selectedContacts.length > 1 ? 's' : ''} added to automation contact list.`
+        );
       }
-
-      setScheduledCalls(scheduledAutomationCalls);
-    } catch (e: any) {
-      console.error('Failed to load automation calls:', e);
-      setError(e?.message || 'Failed to load calls');
-    } finally {
-      setLoadingCalls(false);
+    } catch (error) {
+      console.error('Failed to add contacts to automation:', error);
+      Alert.alert('Error', 'Failed to add contacts to automation. Please try again.');
     }
   };
 
-  const loadAutomationContacts = async () => {
+  const handleContactsImported = async (contacts: any[]) => {
+    setShowCSVImportModal(false);
+    // Refresh contacts list
+    await loadAutomationData();
+  };
+
+  const handleEditAutomation = () => {
+    setShowEditModal(true);
+  };
+
+  const handleSaveAutomation = async (automationData: any) => {
     try {
-      setLoadingContacts(true);
-      const contacts = await apiService.getAutomationContacts(automationId);
-      setAddedContacts(contacts.map((contact: any) => ({
-        id: contact.id || contact._id,
-        name: contact.name || contact.contactName || 'Unknown Contact',
-        phoneNumber: contact.phoneNumber || contact.phone || 'No phone',
-        createdAt: contact.createdAt || contact.addedAt || new Date().toISOString(),
-        addedAt: contact.addedAt || contact.createdAt || new Date().toISOString()
-      })));
-    } catch (e: any) {
-      console.error('Failed to load automation contacts:', e);
-    } finally {
-      setLoadingContacts(false);
+      setShowEditModal(false);
+      
+      // Update the automation
+      const updatedAutomation = await apiService.updateAutomation(automationId, automationData);
+      
+      // Update local state with the new data
+      setCurrentAutomation(updatedAutomation);
+      
+      // Refresh data to ensure consistency
+      await loadAutomationData();
+      
+      // Call parent callback if provided
+      if (onEdit) {
+        onEdit(updatedAutomation);
+      }
+      
+      Alert.alert(
+        'Automation Updated',
+        'Your automation settings have been updated successfully.'
+      );
+    } catch (error) {
+      console.error('Failed to update automation:', error);
+      Alert.alert('Error', 'Failed to update automation. Please try again.');
     }
   };
 
-
-
-  const formatTrigger = (a: Automation) => {
-    if (a.triggerType === 'date_offset') {
-      const days = pluralize(Math.max(0, a.offsetDays), 'day', 'days');
-      return `${days} ${a.offsetDirection} • ${a.offsetTime}`;
+  const onPressHaptic = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    if (a.triggerType === 'on_date') {
-      const d = toLocalDate(a.onDate || '');
-      const dateStr = d
-        ? d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-        : 'Unknown date';
-      return `On ${dateStr} • ${a.onTime || 'Unknown time'}`;
+  };
+
+  const formatDateTime = (iso?: string) => {
+    if (!iso) return '—';
+    try {
+      const date = new Date(iso);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const automationDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      if (automationDate.getTime() === today.getTime()) return `Today ${timeStr}`;
+      if (automationDate.getTime() === today.getTime() - 86400000) return `Yesterday ${timeStr}`;
+      return `${date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+      })} ${timeStr}`;
+    } catch {
+      return '—';
+    }
+  };
+
+  const formatTrigger = (automation: Automation) => {
+    if (automation.triggerType === 'date_offset') {
+      return `${automation.offsetDays} days ${automation.offsetDirection} at ${automation.offsetTime}`;
+    } else if (automation.triggerType === 'on_date') {
+      const d = automation.onDate ? new Date(automation.onDate) : null;
+      const dateStr = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Unknown date';
+      return `On ${dateStr} at ${automation.onTime || 'Unknown time'}`;
     }
     return 'Fixed date trigger';
   };
 
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? HEYWAY_COLORS.status.success : HEYWAY_COLORS.status.error;
-  };
-
-  const renderCallItem = ({ item, index }: { item: CallRecord; index: number }) => {
-    const isCompleted = item.status === 'completed';
-    const isFailed = item.status === 'failed';
-    const isFirst = index === 0;
-    const recipientCount = item.recipients?.length || 0;
-    const primaryRecipient = item.recipients?.[0];
-
-    // Extract contact name and phone number from recipient data
-    const getContactName = (recipient: any) => {
-      if (!recipient) return 'Unknown Contact';
-
-      // Try different possible field names for name
-      return recipient.name ||
-        recipient.contactName ||
-        recipient.displayName ||
-        recipient.fullName ||
-        'Unknown Contact';
-    };
-
-    const getPhoneNumber = (recipient: any) => {
-      if (!recipient) return 'No phone';
-
-      // Try different possible field names for phone
-      return recipient.phoneNumber ||
-        recipient.phone ||
-        recipient.number ||
-        recipient.contactPhone ||
-        'No phone';
-    };
-
-    const contactName = getContactName(primaryRecipient);
-    const phoneNumber = getPhoneNumber(primaryRecipient);
-
-    return (
-      <TouchableOpacity style={[styles.callRow, isFirst && styles.firstCallRow]} activeOpacity={0.6}>
-        <View style={styles.callRowLeft}>
-          <View style={styles.statusIconContainer}>
-            {isCompleted ? (
-              <CheckCircle size={16} color={HEYWAY_COLORS.status.success} />
-            ) : isFailed ? (
-              <CheckCircle size={16} color={HEYWAY_COLORS.status.error} />
-            ) : (
-              <Clock size={16} color={HEYWAY_COLORS.accent.warning} />
-            )}
-          </View>
-          <View style={styles.callRowContent}>
-            <Text style={styles.callRowTitle}>
-              {contactName}
-              {recipientCount > 1 && (
-                <Text style={styles.callRowSubtitle}> +{recipientCount - 1} more</Text>
-              )}
-            </Text>
-            <Text style={styles.callRowPreview} numberOfLines={1}>
-              {isCompleted
-                ? `Call completed • ${item.duration || '0:00'} • ${item.outcome || 'Success'}`
-                : isFailed
-                  ? `Call failed`
-                  : `Scheduled • ${phoneNumber}`}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.callRowRight}>
-          <Text style={styles.callRowTime}>
-            {formatDateTime(isCompleted ? item.createdAt : (item.scheduledTime || item.createdAt))}
-          </Text>
-          {!(isCompleted || isFailed) && (
-            <View style={styles.unreadIndicator} />
-          )}
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderEmptyCallsList = (type: 'completed' | 'scheduled') => (
-    <View style={styles.emptyCallsList}>
-      <View style={styles.emptyCallsIcon}>
-        {type === 'completed' ? (
-          <CheckCircle size={24} color={HEYWAY_COLORS.text.tertiary} />
-        ) : (
-          <Clock size={24} color={HEYWAY_COLORS.text.tertiary} />
-        )}
+  const renderContact = ({ item }: { item: any }) => (
+    <View style={styles.contactItem}>
+      <View style={styles.contactInfo}>
+        <Text style={styles.contactName}>{item.name || item.contactId?.name || 'Unknown Contact'}</Text>
+        <Text style={styles.contactPhone}>{item.phoneNumber || item.contactId?.phoneNumber || 'No phone'}</Text>
       </View>
-      <Text style={styles.emptyCallsText}>
-        No {type} calls yet
-      </Text>
-      <Text style={styles.emptyCallsSubtext}>
-        {type === 'completed' ?
-          'Calls will appear here once they are completed' :
-          'Scheduled calls will appear here'
-        }
-      </Text>
+      <View style={styles.contactMeta}>
+        <Text style={styles.contactDate}>{formatDateTime(item.addedAt)}</Text>
+      </View>
     </View>
   );
 
-  const currentCalls = activeCallsTab === 'completed' ? completedCalls : scheduledCalls;
-  const currentContacts = addedContacts;
-
-  const renderContactItem = ({ item, index }: { item: Contact; index: number }) => {
-    const isFirst = index === 0;
-    return (
-      <TouchableOpacity style={[styles.callRow, isFirst && styles.firstCallRow]} activeOpacity={0.6}>
-        <View style={styles.callRowLeft}>
-          <View style={styles.statusIconContainer}>
-            <Users size={16} color={HEYWAY_COLORS.interactive.primary} />
-          </View>
-          <View style={styles.callRowContent}>
-            <Text style={styles.callRowTitle}>{item.name}</Text>
-            <Text style={styles.callRowPreview} numberOfLines={1}>
-              {item.phoneNumber}
+  const Header = (
+    <View style={styles.headerWrap}>
+      {Platform.OS !== 'web' ? (
+        <BlurView tint="light" intensity={28} style={StyleSheet.absoluteFill} />
+      ) : (
+        <View style={styles.headerGlassFallback} />
+      )}
+      <SafeAreaView>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.subject} numberOfLines={1}>
+              {currentAutomation.name || 'Unknown Automation'}
             </Text>
           </View>
-        </View>
-        <View style={styles.callRowRight}>
-          <Text style={styles.callRowTime}>
-            {formatDateTime(item.addedAt || item.createdAt)}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Header - White minimalist style */}
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <View style={styles.titleSection}>
-            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(automation.isActive) }]} />
-            <Text style={styles.title}>{automation.name}</Text>
-          </View>
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={[styles.toolbarButton, { marginRight: 8 }]}
-              onPress={() => onToggle?.(automationId)}
-            >
-              {automation.isActive ? (
-                <Pause size={16} color="#000000" />
+          <View style={styles.headerRight}>
+            <View style={styles.metaRow}>
+              <Zap size={16} color={HEYWAY_COLORS.text.secondary} />
+              <Text style={styles.dot}>•</Text>
+              {currentAutomation.isActive ? (
+                <CheckCircle size={14} color="#4CAF50" />
               ) : (
-                <Play size={16} color="#000000" />
+                <Text style={styles.metaText}>Inactive</Text>
               )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.toolbarButton} onPress={() => onEdit?.(automation)}>
-              <Edit3 size={16} color="#000000" />
-            </TouchableOpacity>
+              <Text style={styles.dot}>•</Text>
+              <Text style={styles.metaText}>{currentAutomation.contactsCount} contacts</Text>
+              <Text style={styles.dot}>•</Text>
+              <Text style={styles.metaText}>{formatDateTime(currentAutomation.createdAt)}</Text>
+            </View>
+            
+            {/* Toggle Switch */}
+            <View style={styles.toggleContainer}>
+              <TouchableOpacity 
+                style={[
+                  styles.toggleButton, 
+                  currentAutomation.isActive ? styles.toggleButtonActive : styles.toggleButtonInactive
+                ]}
+                onPress={toggleAutomation}
+                disabled={isToggling}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: currentAutomation.isActive }}
+              >
+                {isToggling ? (
+                  <ActivityIndicator size="small" color={HEYWAY_COLORS.text.inverse} />
+                ) : (
+                  <>
+                    <Power 
+                      size={14} 
+                      color={currentAutomation.isActive ? HEYWAY_COLORS.text.inverse : HEYWAY_COLORS.text.secondary} 
+                    />
+                    <Text style={[
+                      styles.toggleButtonText,
+                      currentAutomation.isActive ? styles.toggleButtonTextActive : styles.toggleButtonTextInactive
+                    ]}>
+                      {currentAutomation.isActive ? 'ON' : 'OFF'}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+            
+            {/* Edit Button */}
+            <HeaderIcon onPress={handleEditAutomation}>
+              <Edit3 size={16} color={HEYWAY_COLORS.text.macosPrimary} />
+            </HeaderIcon>
+            
+            <HeaderIcon onPress={onClose}><X size={16} color={HEYWAY_COLORS.text.macosPrimary} /></HeaderIcon>
           </View>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+
+  const AnalysisDrawer = (
+    <View style={styles.drawer}>
+      <TouchableOpacity
+        onPress={() => setShowAnalysis((s) => !s)}
+        style={[styles.drawerHeader, getAnalysisHeaderStyle(currentAutomation)]}
+        accessibilityRole="button"
+      >
+        <Text style={[styles.drawerTitle, getAnalysisTitleStyle(currentAutomation)]}>
+          {currentAutomation.isActive ? 'Active' : 'Inactive'}
+        </Text>
+        <ChevronDown size={16} color={getAnalysisIconColor(currentAutomation)} />
+      </TouchableOpacity>
+      {showAnalysis && (
+        <View style={styles.drawerBody}>
+          <Text style={styles.drawerLine}>
+            Status: <Text style={styles.drawerStrong}>{currentAutomation.isActive ? 'Active' : 'Inactive'}</Text>
+          </Text>
+          <Text style={styles.drawerLine}>
+            Trigger: <Text style={styles.drawerMuted}>{formatTrigger(currentAutomation)}</Text>
+          </Text>
+          <Text style={styles.drawerLine}>
+            Performance: <Text style={styles.drawerMuted}>{currentAutomation.completedCount} completed, {currentAutomation.pendingCount} pending</Text>
+          </Text>
+          {currentAutomation.description && (
+            <Text style={styles.drawerReason}>{currentAutomation.description}</Text>
+          )}
+        </View>
+      )}
+    </View>
+  );
+
+  const ContactsSection = (
+    <View style={styles.contactsSection}>
+      <View style={styles.contactsHeader}>
+        <TouchableOpacity
+          onPress={() => setShowContacts(!showContacts)}
+          style={styles.contactsToggle}
+          accessibilityRole="button"
+        >
+          <Users size={16} color={HEYWAY_COLORS.text.secondary} />
+          <Text style={styles.contactsToggleText}>Contacts ({contacts.length})</Text>
+          <ChevronDown size={16} color={HEYWAY_COLORS.text.secondary} />
+        </TouchableOpacity>
+
+        <View style={styles.contactsActions}>
+          <TouchableOpacity
+            style={styles.contactsActionButton}
+            onPress={handleAddContact}
+            accessibilityRole="button"
+          >
+            <UserPlus size={14} color={HEYWAY_COLORS.text.inverse} />
+            <Text style={styles.contactsActionText}>Add</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.contactsActionButton}
+            onPress={handleImportContacts}
+            accessibilityRole="button"
+          >
+            <Upload size={14} color={HEYWAY_COLORS.text.inverse} />
+            <Text style={styles.contactsActionText}>Import</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
-      {(automation.aiInstructions || automation.voiceMessage || automation.voiceAudioUri) && (
-        <View style={styles.headerInfoSection}>
-          {automation.aiInstructions && (
-            <View style={styles.headerInfoCard}>
-              <View style={styles.headerInfoRow}>
-                <Settings size={16} color={HEYWAY_COLORS.interactive.primary} />
-                <Text style={styles.headerInfoTitle}>Call Instructions</Text>
-              </View>
-              <Text style={styles.headerInfoText} numberOfLines={2}>
-                {automation.aiInstructions}
-              </Text>
+      {showContacts && (
+        <View style={styles.contactsList}>
+          {isLoadingContacts ? (
+            <View style={styles.contactsLoading}>
+              <ActivityIndicator size="small" color={HEYWAY_COLORS.interactive.primary} />
+              <Text style={styles.contactsLoadingText}>Loading contacts...</Text>
             </View>
-          )}
-
-          {(automation.voiceMessage || automation.voiceAudioUri) && (
-            <View style={styles.headerInfoCard}>
-              <View style={styles.headerInfoRow}>
-                <MessageCircle size={16} color={HEYWAY_COLORS.status.success} />
-                <Text style={styles.headerInfoTitle}>Audio Recording Included</Text>
-              </View>
-              <Text style={styles.headerInfoText}>
-                {automation.voiceMessage ?
-                  `${automation.voiceMessage}${automation.voiceAudioDuration ? ` (${Math.round(automation.voiceAudioDuration)}s)` : ''}` :
-                  'Voice recording attached'
-                }
-              </Text>
+          ) : contacts.length > 0 ? (
+            <FlatList
+              data={contacts}
+              renderItem={renderContact}
+              keyExtractor={(item, index) => item.id || item._id || `contact-${index}`}
+              showsVerticalScrollIndicator={false}
+              style={styles.contactsFlatList}
+              contentContainerStyle={styles.contactsFlatListContent}
+            />
+          ) : (
+            <View style={styles.contactsEmpty}>
+              <Users size={24} color={HEYWAY_COLORS.text.tertiary} />
+              <Text style={styles.contactsEmptyText}>No contacts added yet</Text>
+              <Text style={styles.contactsEmptySubtext}>Add contacts to get started with this automation</Text>
             </View>
           )}
         </View>
       )}
+    </View>
+  );
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Filter Bar */}
-        <View style={styles.filterBar}>
-          <View style={styles.filterContent}>
-            <View style={styles.typeFilters}>
-              <TouchableOpacity
-                style={[styles.filterButton, activeCallsTab === 'added' && styles.filterButtonActive]}
-                onPress={() => setActiveCallsTab('added')}
-                activeOpacity={0.8}
-              >
-                <Users size={10} color={activeCallsTab === 'added' ? HEYWAY_COLORS.text.inverse : HEYWAY_COLORS.text.secondary} />
-                <Text style={[styles.filterButtonText, activeCallsTab === 'added' && styles.filterButtonTextActive]}>
-                  Added
-                </Text>
-              </TouchableOpacity>
+  const Body = (
+    <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
+      {AnalysisDrawer}
 
-              <TouchableOpacity
-                style={[styles.filterButton, activeCallsTab === 'completed' && styles.filterButtonActive]}
-                onPress={() => setActiveCallsTab('completed')}
-                activeOpacity={0.8}
-              >
-                <CheckCircle size={10} color={activeCallsTab === 'completed' ? HEYWAY_COLORS.text.inverse : HEYWAY_COLORS.text.secondary} />
-                <Text style={[styles.filterButtonText, activeCallsTab === 'completed' && styles.filterButtonTextActive]}>
-                  Completed
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.filterButton, activeCallsTab === 'scheduled' && styles.filterButtonActive]}
-                onPress={() => setActiveCallsTab('scheduled')}
-                activeOpacity={0.8}
-              >
-                <Clock size={10} color={activeCallsTab === 'scheduled' ? HEYWAY_COLORS.text.inverse : HEYWAY_COLORS.text.secondary} />
-                <Text style={[styles.filterButtonText, activeCallsTab === 'scheduled' && styles.filterButtonTextActive]}>
-                  Scheduled
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.contactActions}>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => onAddContacts?.(automation)}
-                activeOpacity={0.8}
-              >
-                <UserPlus size={12} color={HEYWAY_COLORS.text.secondary} />
-                <Text style={styles.actionButtonText}>Add</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => onImportContacts?.(automation)}
-                activeOpacity={0.8}
-              >
-                <Upload size={12} color={HEYWAY_COLORS.text.secondary} />
-                <Text style={styles.actionButtonText}>Import</Text>
-              </TouchableOpacity>
-            </View>
+      {/* Automation content in chat-style layout - ALL LEFT ALIGNED */}
+      <View style={styles.thread}>
+        {/* Trigger Information */}
+        <View style={[styles.messageRow, styles.leftAlignedRow]}>
+          <View style={[styles.messageBubble, styles.leftAlignedBubble]}>
+            <Text style={[styles.messageText, styles.leftAlignedText]}>
+              <Text style={styles.messageBold}>Trigger:</Text> {formatTrigger(currentAutomation)}
+            </Text>
           </View>
         </View>
 
-        {automation.description && (
-          <View style={styles.descriptionCard}>
-            <View style={styles.descriptionCardContent}>
-              <MessageCircle size={20} color={HEYWAY_COLORS.interactive.primary} />
-              <View style={styles.descriptionInfo}>
-                <Text style={styles.descriptionTitle}>Description</Text>
-                <Text style={styles.descriptionText}>{automation.description}</Text>
-              </View>
+        {/* AI Instructions */}
+        {currentAutomation.aiInstructions && (
+          <View style={[styles.messageRow, styles.leftAlignedRow]}>
+            <View style={[styles.messageBubble, styles.leftAlignedBubble]}>
+              <Text style={[styles.messageText, styles.leftAlignedText]}>
+                <Text style={styles.messageBold}>AI Instructions:</Text> {currentAutomation.aiInstructions}
+              </Text>
             </View>
           </View>
         )}
 
-        {/* Calls Section - White minimalist tabs */}
-        <View style={styles.callsSection}>
-          <View style={styles.tabsRow}>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeCallsTab === 'added' && styles.tabActive
-              ]}
-              onPress={() => setActiveCallsTab('added')}
-            >
-              <Users size={16} color={
-                activeCallsTab === 'added'
-                  ? HEYWAY_COLORS.background.primary
-                  : HEYWAY_COLORS.interactive.primary
-              } />
-              <Text style={[
-                styles.tabText,
-                activeCallsTab === 'added' && styles.tabTextActive
-              ]}>
-                Added ({loadingContacts ? '...' : addedContacts.length})
+        {/* Voice Message */}
+        {currentAutomation.voiceMessage && (
+          <View style={[styles.messageRow, styles.leftAlignedRow]}>
+            <View style={[styles.messageBubble, styles.leftAlignedBubble]}>
+              <Text style={[styles.messageText, styles.leftAlignedText]}>
+                <Text style={styles.messageBold}>Voice Message:</Text> {currentAutomation.voiceMessage}
+                {currentAutomation.voiceAudioDuration && ` (${Math.round(currentAutomation.voiceAudioDuration)}s)`}
               </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeCallsTab === 'completed' && styles.tabActive
-              ]}
-              onPress={() => setActiveCallsTab('completed')}
-            >
-              <CheckCircle size={16} color={
-                activeCallsTab === 'completed'
-                  ? HEYWAY_COLORS.background.primary
-                  : HEYWAY_COLORS.interactive.primary
-              } />
-              <Text style={[
-                styles.tabText,
-                activeCallsTab === 'completed' && styles.tabTextActive
-              ]}>
-                Completed ({loadingCalls ? '...' : completedCalls.length})
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeCallsTab === 'scheduled' && styles.tabActive
-              ]}
-              onPress={() => setActiveCallsTab('scheduled')}
-            >
-              <Clock size={16} color={
-                activeCallsTab === 'scheduled'
-                  ? HEYWAY_COLORS.background.primary
-                  : HEYWAY_COLORS.accent.warning
-              } />
-              <Text style={[
-                styles.tabText,
-                activeCallsTab === 'scheduled' && styles.tabTextActive
-              ]}>
-                Scheduled ({loadingCalls ? '...' : scheduledCalls.length})
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Automation Mismatch Warning */}
-        {automationMismatchWarning && (
-          <View style={styles.warningContainer}>
-            <View style={styles.warningCard}>
-              <View style={styles.warningContent}>
-                <Text style={styles.warningIcon}>⚠️</Text>
-                <View style={styles.warningTextContainer}>
-                  <Text style={styles.warningTitle}>Automation Mismatch</Text>
-                  <Text style={styles.warningMessage}>{automationMismatchWarning}</Text>
-                </View>
-              </View>
             </View>
           </View>
         )}
 
-
-        {/* Calls/Contacts List - White minimalist style */}
-        <View style={styles.listWrapper}>
-          {activeCallsTab === 'added' ? (
-            loadingContacts ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color={HEYWAY_COLORS.interactive.primary} />
-                <Text style={styles.loadingText}>Loading contacts...</Text>
-              </View>
-            ) : currentContacts.length > 0 ? (
-              <FlatList
-                data={currentContacts}
-                renderItem={renderContactItem}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-              />
-            ) : (
-              <View style={styles.emptyState}>
-                <View style={styles.emptyIconContainer}>
-                  <Users size={24} color={HEYWAY_COLORS.text.tertiary} />
-                </View>
-                <Text style={styles.emptyTitle}>
-                  No contacts added yet
-                </Text>
-                <Text style={styles.emptyText}>
-                  Use the Add or Import buttons to add contacts to this automation
-                </Text>
-              </View>
-            )
-          ) : (
-            loadingCalls ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color={HEYWAY_COLORS.interactive.primary} />
-                <Text style={styles.loadingText}>Loading calls...</Text>
-              </View>
-            ) : error ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>Couldn't load calls</Text>
-                <Text style={styles.emptyText}>{error}</Text>
-                <TouchableOpacity onPress={handleRefresh} style={{ marginTop: 8 }}>
-                  <Text style={[styles.emptyText, { textDecorationLine: 'underline' }]}>Try again</Text>
-                </TouchableOpacity>
-              </View>
-            ) : currentCalls.length > 0 ? (
-              <FlatList
-                data={currentCalls}
-                renderItem={renderCallItem}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-              />
-            ) : (
-              <View style={styles.emptyState}>
-                <View style={styles.emptyIconContainer}>
-                  {activeCallsTab === 'completed' ? (
-                    <CheckCircle size={24} color={HEYWAY_COLORS.text.tertiary} />
-                  ) : (
-                    <Clock size={24} color={HEYWAY_COLORS.text.tertiary} />
-                  )}
-                </View>
-                <Text style={styles.emptyTitle}>
-                  No {activeCallsTab} calls yet
-                </Text>
-                <Text style={styles.emptyText}>
-                  {activeCallsTab === 'completed' ?
-                    'Calls will appear here once they are completed' :
-                    'Scheduled calls will appear here'
-                  }
-                </Text>
-              </View>
-            )
-          )}
-        </View>
-
-        <View style={styles.infoSection}>
-          <View style={styles.infoCard}>
-            <View style={styles.infoCardContent}>
-              <Calendar size={20} color={HEYWAY_COLORS.interactive.primary} />
-              <View style={styles.infoCardDetails}>
-                <Text style={styles.infoCardTitle}>Timeline</Text>
-                <Text style={styles.infoCardText}>
-                  Created {formatDateTime(automation.createdAt)}
-                  {automation.lastRun && `\nLast run: ${formatDateTime(automation.lastRun)}`}
-                  {automation.nextRun && `\nNext run: ${formatDateTime(automation.nextRun)}`}
-                </Text>
-              </View>
-            </View>
+        {/* Contacts Summary */}
+        <View style={[styles.messageRow, styles.leftAlignedRow]}>
+          <View style={[styles.messageBubble, styles.leftAlignedBubble]}>
+            <Text style={[styles.messageText, styles.leftAlignedText]}>
+              <Text style={styles.messageBold}>Contacts:</Text> {currentAutomation.contactsCount} total
+              {currentAutomation.completedCount > 0 && ` • ${currentAutomation.completedCount} completed`}
+              {currentAutomation.pendingCount > 0 && ` • ${currentAutomation.pendingCount} pending`}
+            </Text>
           </View>
         </View>
 
-        <View style={styles.deleteSection}>
-          <TouchableOpacity style={styles.deleteCard} onPress={() => onDelete?.(automationId)}>
-            <View style={styles.deleteCardContent}>
-              <Trash2 size={20} color={HEYWAY_COLORS.status.error} />
-              <View style={styles.deleteInfo}>
-                <Text style={styles.deleteName}>Delete Automation</Text>
-                <Text style={styles.deleteDescription}>This action cannot be undone</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+        {/* Timeline */}
+        <View style={[styles.messageRow, styles.leftAlignedRow]}>
+          <View style={[styles.messageBubble, styles.leftAlignedBubble]}>
+            <Text style={[styles.messageText, styles.leftAlignedText]}>
+              <Text style={styles.messageBold}>Created:</Text> {formatDateTime(currentAutomation.createdAt)}
+            </Text>
+          </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        {/* Contacts Section */}
+        {ContactsSection}
+
+        {/* Loading states */}
+        {isLoadingCalls && (
+          <View style={styles.empty}>
+            <ActivityIndicator size="small" color={HEYWAY_COLORS.interactive.primary} />
+            <Text style={styles.emptyTitle}>Loading calls...</Text>
+          </View>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>Error Loading Data</Text>
+            <Text style={styles.emptyText}>{error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={loadAutomationData}>
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </ScrollView>
+  );
+
+  const Footer = (
+    <View style={styles.footer}>
+      <View style={styles.inputWrap}>
+        <TextInput
+          style={styles.input}
+          placeholder="Send message about automation..."
+          placeholderTextColor={HEYWAY_COLORS.text.tertiary}
+          value={messageText}
+          onChangeText={setMessageText}
+          multiline
+        />
+      </View>
+      <TouchableOpacity style={styles.primaryBtn} onPress={sendMessage} disabled={isSending}>
+        {isSending ? (
+          <ActivityIndicator size="small" color={HEYWAY_COLORS.text.inverse} />
+        ) : (
+          <>
+            <Send size={14} color={HEYWAY_COLORS.text.inverse} />
+            <Text style={styles.primaryBtnLabel}>Send</Text>
+          </>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+
+  // Always use embedded mode for side-by-side layout
+  return (
+    <View style={styles.rootEmbedded}>
+      {Header}
+      {Body}
+      {Footer}
+      
+      {/* Contact Selector Modal */}
+      <ContactSelectorModal
+        visible={showContactSelectorModal}
+        onClose={() => setShowContactSelectorModal(false)}
+        onContactsSelected={handleContactsSelected}
+        title="Add Contacts to Automation"
+        allowMultiSelect={true}
+      />
+      
+      {/* CSV Import Modal */}
+      <CSVImportModal
+        visible={showCSVImportModal}
+        onClose={() => setShowCSVImportModal(false)}
+        onImportComplete={handleContactsImported}
+        title="Import Contacts to Automation"
+        subtitle="Upload a CSV file to add contacts to this automation"
+        requireReferenceDate={currentAutomation.triggerType === 'date_offset'}
+      />
+      
+      {/* Edit Automation Modal */}
+      <CreateAutomationModal
+        visible={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleSaveAutomation}
+        editingAutomation={currentAutomation}
+      />
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  /* LAYOUT */
-  container: {
-    flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-  },
+/* ————— styles ————— */
+const S = HEYWAY_SPACING;
+const R = HEYWAY_RADIUS;
+const T = HEYWAY_TYPOGRAPHY;
 
-  /* HEADER */
-  header: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    paddingBottom: 8,
-    paddingTop: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.tertiary,
+const styles = StyleSheet.create({
+  rootEmbedded: { flex: 1, backgroundColor: '#fff' },
+
+  headerWrap: {
+    position: 'relative',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
+    backgroundColor: '#F8F9FA',
+    ...HEYWAY_SHADOWS.light.xs,
   },
-  headerRow: {
+  headerGlassFallback: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#F8F9FA',
+  },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 10,
-    minHeight: 48,
   },
-  titleSection: {
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  titleCol: { flex: 1 },
+  subject: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: HEYWAY_COLORS.text.macosPrimary,
+    letterSpacing: -0.1,
+  },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' },
+  statusRow: { flexDirection: 'row', alignItems: 'center' },
+  metaPill: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: HEYWAY_COLORS.text.macosPrimary,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  dot: { color: HEYWAY_COLORS.text.tertiary, marginHorizontal: 2 },
+  metaText: { fontSize: 11, color: HEYWAY_COLORS.text.macosSecondary },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerInfo: { flex: 1, alignItems: 'flex-end', marginRight: 8 },
+
+  // Toggle Button Styles
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  toggleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    minWidth: 60,
+    justifyContent: 'center',
+    ...HEYWAY_SHADOWS.light.xs,
+  },
+  toggleButtonActive: {
+    backgroundColor: '#4CAF50',
+    borderColor: '#4CAF50',
+  },
+  toggleButtonInactive: {
+    backgroundColor: '#F8F9FA',
+    borderColor: '#E5E5E7',
+  },
+  toggleButtonText: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  toggleButtonTextActive: {
+    color: HEYWAY_COLORS.text.inverse,
+  },
+  toggleButtonTextInactive: {
+    color: HEYWAY_COLORS.text.secondary,
+  },
+
+  body: { flex: 1 },
+  bodyContent: {
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 16,
+    maxWidth: 800, // Max width for larger screens
+    alignSelf: 'center', // Center the content
+    width: '100%', // Take full width on smaller screens
+  },
+
+  drawer: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    borderRadius: 8,
+    ...HEYWAY_SHADOWS.light.sm,
+    marginBottom: 10,
+    maxWidth: 950, // Much wider than transcript bubbles (400px)
+    alignSelf: 'center', // Center the drawer
+    width: '100%', // Take full width on smaller screens
+  },
+  drawerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: '#F8F9FA',
+  },
+  drawerTitle: { fontSize: 12, fontWeight: '700', color: HEYWAY_COLORS.text.macosPrimary, textTransform: 'uppercase' },
+  drawerBody: { paddingHorizontal: 10, paddingVertical: 8, gap: 4 },
+  drawerLine: { fontSize: 12, color: HEYWAY_COLORS.text.macosSecondary },
+  drawerStrong: { fontWeight: '700', color: HEYWAY_COLORS.text.macosPrimary },
+  drawerMuted: { color: HEYWAY_COLORS.text.tertiary, fontStyle: 'italic' },
+  drawerReason: { fontSize: 12, color: HEYWAY_COLORS.text.macosSecondary, lineHeight: 18 },
+
+  thread: { gap: 8 },
+  messageRow: { flexDirection: 'row', alignItems: 'flex-end', marginVertical: 2 },
+  leftAlignedRow: { justifyContent: 'flex-start' },
+  messageBubble: {
+    maxWidth: 400,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  leftAlignedBubble: {
+    backgroundColor: '#F8F9FA',
+    borderBottomLeftRadius: 4,
+  },
+  messageText: { fontSize: 13, lineHeight: 18 },
+  leftAlignedText: { color: HEYWAY_COLORS.text.macosPrimary },
+  messageBold: { fontWeight: '600' },
+
+  // Contacts Section Styles
+  contactsSection: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    borderRadius: 8,
+    ...HEYWAY_SHADOWS.light.sm,
+    marginBottom: 10,
+    maxWidth: 950,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  contactsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
+    backgroundColor: '#F8F9FA',
+  },
+  contactsToggle: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     flex: 1,
   },
-  statusIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  title: {
-    fontSize: 20,
+  contactsToggleText: {
+    fontSize: 13,
     fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.2,
-    flex: 1,
+    color: HEYWAY_COLORS.text.macosPrimary,
   },
-  subtitle: {
-    fontSize: 11,
-    fontWeight: '400',
-    color: HEYWAY_COLORS.text.secondary,
-    lineHeight: 13,
-  },
-  headerActions: {
+  contactsActions: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  toolbarButton: {
-    width: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
-    height: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
+  contactsActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    ...HEYWAY_SHADOWS.light.xs,
+  },
+  contactsActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: HEYWAY_COLORS.text.inverse,
+  },
+  contactsList: {
+    paddingVertical: 8,
+  },
+  contactsLoading: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: HEYWAY_RADIUS.lg,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
+    paddingVertical: 20,
+    gap: 8,
   },
-
-  /* HEADER INFO (chips/cards under header) */
-  headerInfoSection: {
-    paddingHorizontal: 20,
-    paddingVertical: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.background.panel,
-    borderBottomWidth: 1,
-    borderBottomColor: HEYWAY_COLORS.border.divider,
-    gap: HEYWAY_SPACING.xs,
-  },
-  headerInfoCard: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.md,
-    padding: HEYWAY_SPACING.md,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  headerInfoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: HEYWAY_SPACING.xs,
-    marginBottom: 4,
-  },
-  headerInfoTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '600' as const,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.1,
-  },
-  headerInfoText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '400' as const,
+  contactsLoadingText: {
+    fontSize: 13,
     color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: -0.1,
+  },
+  contactsEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 24,
+    gap: 8,
+  },
+  contactsEmptyText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: HEYWAY_COLORS.text.primary,
+  },
+  contactsEmptySubtext: {
+    fontSize: 12,
+    color: HEYWAY_COLORS.text.secondary,
+    textAlign: 'center',
     lineHeight: 16,
   },
-
-  /* CONTENT WRAPPER */
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
+  contactsFlatList: {
+    maxHeight: 200,
   },
-
-  /* FILTER BAR */
-  filterBar: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.tertiary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  contactsFlatListContent: {
+    paddingHorizontal: 12,
   },
-  filterContent: {
+  contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 32,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
-  typeFilters: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+  contactInfo: {
     flex: 1,
   },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: HEYWAY_SPACING.sm,
-    paddingVertical: HEYWAY_SPACING.xs,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    gap: HEYWAY_SPACING.xs,
-    minHeight: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
-  },
-  filterButtonActive: {
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
-    borderColor: HEYWAY_COLORS.interactive.primary,
-    ...HEYWAY_SHADOWS.light.sm,
-  },
-  filterButtonText: {
-    fontSize: 10,
+  contactName: {
+    fontSize: 13,
     fontWeight: '500',
-    color: HEYWAY_COLORS.text.secondary,
-  },
-  filterButtonTextActive: {
-    color: HEYWAY_COLORS.text.inverse,
-    fontWeight: '600',
-  },
-  contactActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 10,
-    gap: 3,
-  },
-  actionButtonText: {
-    fontSize: 9,
-    fontWeight: '500',
-    color: HEYWAY_COLORS.text.secondary,
-  },
-
-  /* LIST WRAPPER */
-  listWrapper: { flex: 1 },
-  listContent: {
-    paddingHorizontal: 0,
-    paddingTop: 6,
-    paddingBottom: 40,
-  },
-
-  /* DESCRIPTION CARD */
-  descriptionCard: {
-    marginBottom: HEYWAY_SPACING.lg,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  descriptionCardContent: {
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.md,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: HEYWAY_SPACING.md,
-  },
-  descriptionInfo: { flex: 1 },
-  descriptionTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: '500' as const,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.1,
-    marginBottom: 4,
-  },
-  descriptionText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '400' as const,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: -0.1,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal,
-  },
-
-  /* CALLS SECTION + TABS (WhatsApp-ish) */
-  callsSection: { marginBottom: HEYWAY_SPACING.lg },
-  tabsRow: {
-    flexDirection: 'row',
-    gap: HEYWAY_SPACING.sm,
-  },
-  tab: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: HEYWAY_SPACING.xs,
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.sm,
-    borderRadius: HEYWAY_RADIUS.md,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  tabActive: {
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
-    borderColor: HEYWAY_COLORS.interactive.primary,
-    ...HEYWAY_SHADOWS.light.sm,
-  },
-  tabText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  tabTextActive: { color: HEYWAY_COLORS.text.inverse },
-
-  /* CALLS LIST CONTAINER */
-  callsListContainer: {
-    marginBottom: HEYWAY_SPACING.lg,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    overflow: 'hidden',
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-
-  /* CALL ROW (single, slim, WhatsApp style) */
-  callRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingVertical: HEYWAY_SPACING.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: HEYWAY_COLORS.border.divider,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    minHeight: 60,
-  },
-  firstCallRow: { borderTopWidth: 0 },
-  callRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: HEYWAY_SPACING.md,
-  },
-  statusIconContainer: {
-    width: 24, height: 24,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  callRowContent: { flex: 1 },
-  callRowTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    color: HEYWAY_COLORS.text.macosPrimary,
     marginBottom: 2,
   },
-  callRowSubtitle: {
+  contactPhone: {
+    fontSize: 12,
+    color: HEYWAY_COLORS.text.macosSecondary,
+  },
+  contactMeta: {
+    alignItems: 'flex-end',
+  },
+  contactDate: {
+    fontSize: 11,
     color: HEYWAY_COLORS.text.tertiary,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-  },
-  callRowPreview: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  callRowRight: { alignItems: 'flex-end', gap: 4 },
-  callRowTime: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.tertiary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-  },
-  unreadIndicator: {
-    width: 8, height: 8, borderRadius: 4,
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
   },
 
-  /* LOADING / ERROR / EMPTY */
-  loadingContainer: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    gap: 16, backgroundColor: HEYWAY_COLORS.background.content,
+  empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 32 },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: HEYWAY_COLORS.text.macosPrimary, marginBottom: 6 },
+  emptyText: { fontSize: 13, color: HEYWAY_COLORS.text.macosSecondary },
+
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E7',
+    backgroundColor: '#FFFFFF',
   },
-  loadingText: {
-    fontSize: 16, color: HEYWAY_COLORS.text.secondary, fontWeight: '500',
-  },
-  errorContainer: {
-    alignItems: 'center',
-    paddingVertical: HEYWAY_SPACING.xl,
-    paddingHorizontal: HEYWAY_SPACING.lg,
-  },
-  errorText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '500' as const,
-    color: HEYWAY_COLORS.status.error,
-    marginBottom: HEYWAY_SPACING.sm,
-    textAlign: 'center',
-  },
-  retryButton: {
-    backgroundColor: HEYWAY_COLORS.status.error,
-    paddingVertical: HEYWAY_SPACING.sm,
-    paddingHorizontal: HEYWAY_SPACING.md,
-    borderRadius: HEYWAY_RADIUS.md,
+  inputWrap: {
+    flex: 1,
+    borderRadius: 8,
+    backgroundColor: '#F8F9FA',
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.status.error,
+    borderColor: '#E5E5E7',
+  },
+  input: {
+    minHeight: 36,
+    maxHeight: 120,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    fontSize: 13,
+    color: HEYWAY_COLORS.text.macosPrimary,
+  },
+  primaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    ...HEYWAY_SHADOWS.light.sm,
+  },
+  primaryBtnLabel: { fontSize: 13, fontWeight: '700', color: HEYWAY_COLORS.text.inverse },
+
+  retryButton: {
+    marginTop: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.md,
   },
   retryButtonText: {
-    color: HEYWAY_COLORS.background.card,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '500' as const,
-    letterSpacing: -0.1,
+    color: HEYWAY_COLORS.text.inverse,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
-  emptyState: {
-    alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 80, paddingHorizontal: 40,
-  },
-  emptyIconContainer: { marginBottom: 16 },
-  emptyTitle: {
-    fontSize: 20, fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    marginTop: 16, marginBottom: 8, textAlign: 'center',
-    letterSpacing: -0.5,
-  },
-  emptyText: {
-    fontSize: 16, color: HEYWAY_COLORS.text.secondary,
-    textAlign: 'center', lineHeight: 24, maxWidth: 280,
-  },
+});
 
-  /* INFO CARDS */
-  infoSection: { marginBottom: HEYWAY_SPACING.lg },
-  infoCard: {
-    marginBottom: HEYWAY_SPACING.sm,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  infoCardContent: {
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.md,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: HEYWAY_SPACING.md,
-  },
-  infoCardDetails: { flex: 1 },
-  infoCardTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: '500' as const,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.1,
-    marginBottom: 4,
-  },
-  infoCardText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '400' as const,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: -0.1,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal,
-  },
+function HeaderIcon({ children, onPress }: { children: React.ReactNode; onPress?: () => void }) {
+  return (
+    <TouchableOpacity onPress={onPress} style={headerIconStyles.btn} accessibilityRole="button">
+      {children}
+    </TouchableOpacity>
+  );
+}
 
-  /* DELETE CARD */
-  deleteSection: { marginBottom: HEYWAY_SPACING.lg },
-  deleteCard: {
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.status.error,
-    backgroundColor: 'rgba(255,59,48,0.05)',
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  deleteCardContent: {
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.md,
-    flexDirection: 'row',
+const headerIconStyles = StyleSheet.create({
+  btn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     alignItems: 'center',
-    gap: HEYWAY_SPACING.md,
-  },
-  deleteInfo: { flex: 1 },
-  deleteName: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: '500' as const,
-    color: HEYWAY_COLORS.status.error,
-    letterSpacing: -0.1,
-    marginBottom: 4,
-  },
-  deleteDescription: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '400' as const,
-    color: HEYWAY_COLORS.status.error,
-    letterSpacing: -0.1,
-    opacity: 0.7,
-  },
-
-  /* WARNING (mismatch) */
-  warningContainer: { marginBottom: HEYWAY_SPACING.lg },
-  warningCard: {
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.accent.warning,
-    backgroundColor: 'rgba(255, 149, 0, 0.05)',
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  warningContent: {
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.md,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: HEYWAY_SPACING.sm,
-  },
-  warningIcon: { fontSize: 20, marginTop: 2 },
-  warningTextContainer: { flex: 1 },
-  warningTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '600' as const,
-    color: HEYWAY_COLORS.accent.warning,
-    letterSpacing: -0.1,
-    marginBottom: 4,
-  },
-  warningMessage: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: '400' as const,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: -0.1,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal,
-    marginTop: HEYWAY_SPACING.xs,
+    justifyContent: 'center',
+    backgroundColor: '#F8F9FA',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
   },
 });

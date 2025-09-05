@@ -5,11 +5,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  TextInput,
+  Platform,
 } from 'react-native';
-import { Phone, ArrowRight, Target, Users } from 'lucide-react-native';
+import { Phone, ArrowRight, Target, Users, Search } from 'lucide-react-native';
 
 // Import HEYWAY Style Guide
 import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_LAYOUT, HEYWAY_COMPONENTS } from '../styles/HEYWAY_STYLE_GUIDE';
+
+// web-only style helpers (typed)
+const webView = (obj: any): any =>
+  Platform.OS === 'web' ? obj : {};
+
+const webText = (obj: any): any =>
+  Platform.OS === 'web' ? obj : {};
 
 // Lazy loaded components
 const CallSummaryCard = React.lazy(() => import('@/components/CallSummaryCard'));
@@ -27,10 +36,14 @@ interface HomeContentAreaProps {
   selectedCall: any;
   onCallSelect: (call: any) => void;
   onBackToCalls: () => void;
+  // Search props
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   // Calls section props
   callsActiveSection: string;
   showScheduledActivityBanner: boolean;
   onScheduledActivityDataChange?: () => void;
+  onNewCall?: () => void;
   // Groups props
   groups?: Array<{ id: string; name: string; calls: any[] }>;
   onAddCallToGroup?: (callId: string, groupId: string) => void;
@@ -69,9 +82,12 @@ const HomeContentArea: React.FC<HomeContentAreaProps> = ({
   selectedCall,
   onCallSelect,
   onBackToCalls,
+  searchQuery,
+  onSearchChange,
   callsActiveSection,
   showScheduledActivityBanner,
   onScheduledActivityDataChange,
+  onNewCall,
   groups = [],
   onAddCallToGroup,
   contactsActiveSection,
@@ -110,6 +126,21 @@ const HomeContentArea: React.FC<HomeContentAreaProps> = ({
     </View>
   );
 
+  const SearchBar = () => (
+    <View style={styles.searchBarContainer}>
+      <View style={styles.searchBarWrapper}>
+        <Search size={16} color={HEYWAY_COLORS.text.macosSecondary} style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder={`Search ${activeNavItem}...`}
+          placeholderTextColor={HEYWAY_COLORS.text.macosSecondary}
+          value={searchQuery}
+          onChangeText={onSearchChange}
+        />
+      </View>
+    </View>
+  );
+
   const renderRecentsContent = () => (
     <>
       {/* Left Half - Calls List */}
@@ -136,6 +167,7 @@ const HomeContentArea: React.FC<HomeContentAreaProps> = ({
             }}
             groups={groups}
             onAddCallToGroup={onAddCallToGroup}
+            onNewCall={onNewCall}
           />
         </Suspense>
       </View>
@@ -188,123 +220,30 @@ const HomeContentArea: React.FC<HomeContentAreaProps> = ({
     </>
   );
 
+  const renderContactsContent = () => (
+    <View style={[
+      styles.fullWidthPanel,
+      isMobile && styles.mobileFullWidthPanel
+    ]}>
+      <Suspense fallback={<LoadingFallback message="Loading..." />}>
+        <ContactsCardView
+          activeSection={contactsActiveSection}
+          onAddToCallList={onAddToCallList}
+          onSectionChange={onContactsSectionChange}
+          onImportContacts={onImportContacts}
+          onAddContact={onAddContact}
+          selectedAutomation={selectedAutomation}
+        />
+      </Suspense>
+    </View>
+  );
+
   const renderOtherContent = () => (
     <View style={[
       styles.fullWidthPanel,
       isMobile && styles.mobileFullWidthPanel
     ]}>
-      {activeNavItem === 'contacts' ? (
-        <Suspense fallback={<LoadingFallback message="Loading..." />}>
-          <ContactsCardView
-            activeSection={contactsActiveSection}
-            onAddToCallList={onAddToCallList}
-            onSectionChange={onContactsSectionChange}
-            onImportContacts={onImportContacts}
-            onAddContact={onAddContact}
-            selectedAutomation={selectedAutomation}
-          />
-        </Suspense>
-      ) : activeNavItem === 'business' ? (
-        <Suspense fallback={<LoadingFallback message="Loading..." />}>
-          <BusinessSearchSection
-            activeSection={businessActiveSection}
-            onSectionChange={onBusinessSectionChange}
-            searchQuery={businessSearchQuery}
-            onSearchQueryChange={onBusinessSearchQueryChange}
-            locationQuery={businessLocationQuery}
-            onLocationQueryChange={onBusinessLocationQueryChange}
-            onSearch={onBusinessSearch}
-            isLoading={isBusinessSearchLoading}
-            onSearchComplete={onBusinessSearchComplete}
-            onAddToCallList={onAddToCallList}
-          />
-        </Suspense>
-      ) : activeNavItem === 'keypad' ? (
-        <Suspense fallback={<LoadingFallback message="Loading..." />}>
-          <KeypadContent
-            onContactsSelected={() => { }}
-            onDone={() => { }}
-          />
-        </Suspense>
-      ) : activeNavItem === 'automations' ? (
-        <View style={styles.twoSectionContainer}>
-          {/* Left Half - Automations List */}
-          <View style={[
-            styles.leftHalfPanel,
-            isMobile && styles.mobileLeftHalf,
-            isMobile && selectedAutomation && styles.mobileHiddenPanel,
-            !isMobile && !selectedAutomation && styles.desktopFullWidthPanel
-          ]}>
-            <Suspense fallback={<LoadingFallback message="Loading..." />}>
-              <AutomationsListView
-                activeSection={automationsActiveSection}
-                onAutomationSelect={onAutomationSelect}
-                onCreateAutomation={onCreateAutomation}
-                onEditAutomation={onEditAutomation}
-                selectedAutomationId={selectedAutomation?.id}
-              />
-            </Suspense>
-          </View>
-
-          {/* Right Half - Automation Details */}
-          <View style={[
-            styles.rightHalfPanel,
-            isMobile && styles.mobileRightHalf,
-            isMobile && !selectedAutomation && styles.mobileHiddenPanel,
-            !isMobile && !selectedAutomation && styles.desktopHiddenPanel
-          ]}>
-            {isMobile && selectedAutomation && (
-              <View style={styles.mobileBackButton}>
-                <TouchableOpacity
-                  onPress={() => onAutomationSelect(null)}
-                  style={styles.backButtonContainer}
-                  activeOpacity={0.7}
-                >
-                  <ArrowRight size={20} color={HEYWAY_COLORS.text.inverse} style={{ transform: [{ rotate: '180deg' }] }} />
-                  <Text style={styles.backButtonText}>Back to Automations</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            {selectedAutomation ? (
-              <Suspense fallback={<LoadingFallback message="Loading..." />}>
-                <AutomationDetailsView
-                  automation={selectedAutomation}
-                  onClose={() => onAutomationSelect(null)}
-                  onEdit={onEditAutomation}
-                  onToggle={onAutomationToggle}
-                  onDelete={onAutomationDelete}
-                  onAddContacts={onAutomationAddContacts}
-                  onImportContacts={onAutomationImportContacts}
-                  onViewContacts={onAutomationViewContacts}
-                />
-              </Suspense>
-            ) : (
-              !isMobile && (
-                <View style={styles.detailsPlaceholder}>
-                  <View style={styles.placeholderCard}>
-                    <Target size={48} color={HEYWAY_COLORS.text.tertiary} />
-                    <Text style={styles.detailsPlaceholderText}>Select an automation to view details</Text>
-                    <Text style={styles.detailsPlaceholderSubtext}>
-                      Choose an automation from the list to see its configuration and call history
-                    </Text>
-                  </View>
-                </View>
-              )
-            )}
-          </View>
-        </View>
-      ) : activeNavItem === 'contacts' ? (
-        <Suspense fallback={<LoadingFallback message="Loading..." />}>
-          <ContactsCardView
-            activeSection={contactsActiveSection}
-            onAddToCallList={onAddToCallList}
-            onSectionChange={onContactsSectionChange}
-            onImportContacts={onImportContacts}
-            onAddContact={onAddContact}
-            selectedAutomation={selectedAutomation}
-          />
-        </Suspense>
-      ) : activeNavItem === 'business' ? (
+      {activeNavItem === 'business' ? (
         <Suspense fallback={<LoadingFallback message="Loading..." />}>
           <BusinessSearchSection
             activeSection={businessActiveSection}
@@ -340,12 +279,85 @@ const HomeContentArea: React.FC<HomeContentAreaProps> = ({
       styles.mainContentArea,
       isMobile && styles.mobileMainContent
     ]}>
+      {/* Search Bar Overlay - Desktop Only */}
+      {!isMobile && (activeNavItem === 'recents' || activeNavItem === 'automations' || activeNavItem === 'contacts') && (
+        <SearchBar />
+      )}
+
       {/* Responsive Content Layout */}
       <View style={[
         styles.twoSectionLayout,
         isMobile && styles.mobileTwoSectionLayout
       ]}>
-        {activeNavItem === 'recents' ? renderRecentsContent() : renderOtherContent()}
+        {activeNavItem === 'recents' ? renderRecentsContent() :
+          activeNavItem === 'automations' ? (
+            <View style={styles.twoSectionContainer}>
+              {/* Left Half - Automations List */}
+              <View style={[
+                styles.leftHalfPanel,
+                isMobile && styles.mobileLeftHalf,
+                isMobile && selectedAutomation && styles.mobileHiddenPanel,
+                !isMobile && !selectedAutomation && styles.desktopFullWidthPanel
+              ]}>
+                <Suspense fallback={<LoadingFallback message="Loading..." />}>
+                  <AutomationsListView
+                    activeSection={automationsActiveSection}
+                    onAutomationSelect={onAutomationSelect}
+                    onCreateAutomation={onCreateAutomation}
+                    onEditAutomation={onEditAutomation}
+                    selectedAutomationId={selectedAutomation?.id}
+                    isFullWidth={!selectedAutomation}
+                  />
+                </Suspense>
+              </View>
+
+              {/* Right Half - Automation Details */}
+              <View style={[
+                styles.rightHalfPanel,
+                isMobile && styles.mobileRightHalf,
+                isMobile && !selectedAutomation && styles.mobileHiddenPanel,
+                !isMobile && !selectedAutomation && styles.desktopHiddenPanel
+              ]}>
+                {isMobile && selectedAutomation && (
+                  <View style={styles.mobileBackButton}>
+                    <TouchableOpacity
+                      onPress={() => onAutomationSelect(null)}
+                      style={styles.backButtonContainer}
+                      activeOpacity={0.7}
+                    >
+                      <ArrowRight size={20} color={HEYWAY_COLORS.text.inverse} style={{ transform: [{ rotate: '180deg' }] }} />
+                      <Text style={styles.backButtonText}>Back to Automations</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {selectedAutomation ? (
+                  <Suspense fallback={<LoadingFallback message="Loading..." />}>
+                    <AutomationDetailsView
+                      automation={selectedAutomation}
+                      onClose={() => onAutomationSelect(null)}
+                      onEdit={onEditAutomation}
+                      onToggle={onAutomationToggle}
+                      onDelete={onAutomationDelete}
+                      onImportContacts={onAutomationImportContacts}
+                      onViewContacts={onAutomationViewContacts}
+                    />
+                  </Suspense>
+                ) : (
+                  !isMobile && (
+                    <View style={styles.detailsPlaceholder}>
+                      <View style={styles.placeholderCard}>
+                        <Target size={48} color={HEYWAY_COLORS.text.tertiary} />
+                        <Text style={styles.detailsPlaceholderText}>Select an automation to view details</Text>
+                        <Text style={styles.detailsPlaceholderSubtext}>
+                          Choose an automation from the list to see its configuration and call history
+                        </Text>
+                      </View>
+                    </View>
+                  )
+                )}
+              </View>
+            </View>
+          ) : activeNavItem === 'contacts' ? renderContactsContent() : renderOtherContent()}
       </View>
     </View>
   );
@@ -355,7 +367,7 @@ const styles = StyleSheet.create({
   /* --- ROOT CANVAS ------------------------------------------------------ */
   mainContentArea: {
     flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
+    backgroundColor: '#FFFFFF', // Clean white background
     position: 'relative',
     overflow: 'hidden',
   },
@@ -365,8 +377,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     marginLeft: 0,
     paddingLeft: 0,
-    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
-    paddingBottom: 72,
+    backgroundColor: '#FFFFFF', // Clean white background
+    paddingBottom: 0,
   },
 
   /* --- LAYOUT ----------------------------------------------------------- */
@@ -381,60 +393,60 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
-  /* Left list pane (Calls list) - WhatsApp-inspired */
+  /* Left list pane (Calls list) - Clean minimalist */
   leftHalfPanel: {
-    width: HEYWAY_LAYOUT.chatList.width,
-    padding: HEYWAY_SPACING.lg,
-    minWidth: HEYWAY_LAYOUT.chatList.minWidth,
-    maxWidth: HEYWAY_LAYOUT.chatList.maxWidth,
-    backgroundColor: HEYWAY_COLORS.background.primary,
+    width: 420,
+    minWidth: 360,
+    maxWidth: 460,
+    backgroundColor: '#FFFFFF',
     borderRightWidth: 1,
-    borderRightColor: HEYWAY_COLORS.border.secondary,
+    borderRightColor: '#E5E5E7', // Clean sharp border
     ...HEYWAY_SHADOWS.light.xs,
+    paddingTop: 60, // Space for search bar overlay
   },
 
-  /* Right details pane (Call details) - WhatsApp-inspired */
+  /* Right details pane (Call details) - Clean minimalist */
   rightHalfPanel: {
     flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.md,
-    padding: HEYWAY_SPACING.lg,
-
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8, // Clean rounded corners
     ...HEYWAY_SHADOWS.light.sm,
   },
 
-  /* Single-pane modes (Contacts, Business, Keypad, Automations, etc.) - WhatsApp-inspired */
+  /* Single-pane modes (Contacts, Business, Keypad, Automations, etc.) - Clean minimalist */
   fullWidthPanel: {
     flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8, // Clean rounded corners
     ...HEYWAY_SHADOWS.light.xs,
   },
 
-  /* --- MOBILE STACKING - WhatsApp-inspired ----------------------------- */
+  /* --- MOBILE STACKING - Clean minimalist ----------------------------- */
   mobileLeftHalf: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
     borderRightWidth: 0,
-    backgroundColor: HEYWAY_COLORS.background.primary,
+    backgroundColor: '#FFFFFF',
     borderRadius: 0, // No radius on mobile for full coverage
+    paddingTop: 0, // Remove desktop search bar padding on mobile
   },
 
   mobileRightHalf: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: HEYWAY_COLORS.background.primary,
+    backgroundColor: '#FFFFFF',
     borderRadius: 0, // No radius on mobile for full coverage
   },
 
   mobileFullWidthPanel: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
+    backgroundColor: '#FFFFFF',
   },
 
   mobileHiddenPanel: { display: 'none' },
 
   desktopFullWidthPanel: {
-    flex: 2,
+    flex: 1,
+    width: '100%',
     borderRightWidth: 0,
   },
 
@@ -446,24 +458,24 @@ const styles = StyleSheet.create({
   twoSectionContainer: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
+    backgroundColor: '#FFFFFF',
   },
 
-  /* --- OPTIONAL PANE TOOLBARS (WhatsApp-style) ------------------------- */
+  /* --- OPTIONAL PANE TOOLBARS (Clean minimalist) ------------------------- */
   paneToolbar: {
     height: 48,
     paddingHorizontal: HEYWAY_SPACING.lg,
     alignItems: 'center',
     flexDirection: 'row',
     gap: HEYWAY_SPACING.md,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
     ...HEYWAY_SHADOWS.light.xs,
   },
   paneTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontWeight: '600',
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
@@ -473,13 +485,13 @@ const styles = StyleSheet.create({
     color: HEYWAY_COLORS.text.tertiary,
   },
 
-  /* --- MOBILE BACK (WhatsApp-style) ------------------------------------ */
+  /* --- MOBILE BACK (Clean minimalist) ------------------------------------ */
   mobileBackButton: {
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.lg,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.interactive.whatsappDark,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
+    backgroundColor: '#F8F9FA', // Clean light background
     ...HEYWAY_SHADOWS.light.xs,
   },
   backButtonContainer: {
@@ -488,9 +500,9 @@ const styles = StyleSheet.create({
     gap: HEYWAY_SPACING.sm,
   },
   backButtonText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-    color: HEYWAY_COLORS.text.inverse, // White text for dark background
+    fontSize: 17,
+    fontWeight: '500',
+    color: '#1D1D1F', // Clean dark text
   },
 
   /* --- EMPTY / LOADING STATES ------------------------------------------ */
@@ -504,72 +516,110 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 
-  // wrapper card to use around placeholders or Suspense fallbacks (WhatsApp-inspired)
+  // wrapper card to use around placeholders or Suspense fallbacks (Clean minimalist)
   placeholderCard: {
     alignItems: 'center',
     justifyContent: 'center',
     gap: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.xl,
     paddingHorizontal: HEYWAY_SPACING.xl,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.secondary,
-    borderRadius: HEYWAY_RADIUS.lg,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    borderRadius: 8,
     ...HEYWAY_SHADOWS.light.md,
   },
 
   detailsPlaceholderText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontSize: 15,
+    fontWeight: '600',
     color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
     marginBottom: HEYWAY_SPACING.xs,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    letterSpacing: -0.3,
   },
 
   detailsPlaceholderSubtext: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    fontSize: 17,
+    fontWeight: '400',
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    lineHeight:
-      HEYWAY_TYPOGRAPHY.lineHeight.relaxed *
-      HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    lineHeight: 24,
     maxWidth: 360,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    letterSpacing: -0.15,
   },
 
   /* --- LIST / DETAILS INNER SURFACES ----------------------------------- */
-  // use for inner scroll regions in list/detail children to get a subtle inset look (WhatsApp-inspired)
+  // use for inner scroll regions in list/detail children to get a subtle inset look (Clean minimalist)
   insetSurface: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderTopWidth: 0.5,
-    borderBottomWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.secondary,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E5E5E7',
   },
 
-  // card shells for child rows (calls, contacts, etc.) - WhatsApp-inspired
+  // card shells for child rows (calls, contacts, etc.) - Clean minimalist
   rowCard: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.secondary,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
     ...HEYWAY_SHADOWS.light.xs,
   },
 
-  // minimal section headers inside panes - WhatsApp-inspired
+  // minimal section headers inside panes - Clean minimalist
   sectionHeader: {
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
+    backgroundColor: '#F8F9FA',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
   },
   sectionHeaderText: {
     color: HEYWAY_COLORS.text.tertiary,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    fontWeight: '600',
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
+  },
+
+  /* --- SEARCH BAR STYLES ------------------------------------------ */
+  searchBarContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 420,
+    minWidth: 360,
+    maxWidth: 460,
+    zIndex: 100,
+    backgroundColor: '#F8F9FA',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: 10,
+    ...HEYWAY_SHADOWS.light.sm,
+  },
+  searchBarWrapper: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: 12,
+    zIndex: 1,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingLeft: 36,
+    fontSize: 14,
+    color: '#1D1D1F',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    height: 36,
   },
 });
 

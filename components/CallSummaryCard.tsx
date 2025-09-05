@@ -1,13 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Platform, Modal, TextInput, Alert, ActivityIndicator } from 'react-native';
-import { X, ArrowLeft, Send } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+// CallSummaryCard.tsx — Compact Right Pane (email-style) rewrite
+// Goals vs CallsListView/ContactListView:
+// • Denser layout (12/8 spacing), sticky tools header, pill info row
+// • Transcript in minimal "mail body" style (no heavy bubbles)
+// • Collapsible "Analysis" drawer to save vertical space
+// • Quick Reply footer with single primary action
+// • Subtle glass on header only, keep body crisp white for contrast
+
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  SafeAreaView,
+} from 'react-native';
+import { Archive, Download, MoreHorizontal, Send, Star, UserPlus, X, CheckCircle, ChevronDown, PhoneOutgoing, PhoneIncoming } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
+
 import { useContacts } from '@/hooks/useContacts';
 import { useCallAnalysis } from '@/hooks/useCallAnalysis';
 import { apiService } from '../services/apiService';
-import { HEYWAY_COLORS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_LAYOUT, HEYWAY_COMPONENTS, HEYWAY_CHAT_PATTERNS } from '../styles/HEYWAY_STYLE_GUIDE';
-import { aiGradient, aiInset } from '@/ts/utils/theme';
-import CallAnalysisTag from '@/components/CallAnalysisTag';
+import {
+  HEYWAY_COLORS,
+  HEYWAY_SPACING,
+  HEYWAY_TYPOGRAPHY,
+  HEYWAY_RADIUS,
+  HEYWAY_SHADOWS,
+} from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface CallSummaryCardProps {
   call?: any;
@@ -24,61 +50,151 @@ interface CallSummaryCardProps {
   onClose?: () => void;
 }
 
-export default function CallSummaryCard({ call, callId, sessionId, transcript, isInbound = false, isEmbedded = false, onClose }: CallSummaryCardProps) {
+// Helper functions for analysis styling
+function getAnalysisHeaderStyle(analysis: any) {
+  switch (analysis.category) {
+    case 'good':
+      return { backgroundColor: 'rgba(76, 175, 80, 0.1)' };
+    case 'bad':
+      return { backgroundColor: 'rgba(244, 67, 54, 0.1)' };
+    case 'opportunity':
+      return { backgroundColor: 'rgba(255, 152, 0, 0.1)' };
+    default:
+      return { backgroundColor: '#F8F9FA' };
+  }
+}
+
+function getAnalysisTitleStyle(analysis: any) {
+  switch (analysis.category) {
+    case 'good':
+      return { color: '#2D5A2D' };
+    case 'bad':
+      return { color: '#B71C1C' };
+    case 'opportunity':
+      return { color: '#E65100' };
+    default:
+      return { color: HEYWAY_COLORS.text.macosPrimary };
+  }
+}
+
+function getAnalysisIconColor(analysis: any) {
+  switch (analysis.category) {
+    case 'good':
+      return '#2D5A2D';
+    case 'bad':
+      return '#B71C1C';
+    case 'opportunity':
+      return '#E65100';
+    default:
+      return HEYWAY_COLORS.text.macosSecondary;
+  }
+}
+
+export default function CallSummaryCard({
+  call,
+  callId,
+  sessionId,
+  transcript: initialTranscript,
+  isInbound = false,
+  isEmbedded = false,
+  onClose,
+}: CallSummaryCardProps) {
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(true);
+  const [transcript, setTranscript] = useState(initialTranscript || []);
+  const [isLoadingTranscript, setIsLoadingTranscript] = useState(false);
+  const [transcriptError, setTranscriptError] = useState<string | null>(null);
 
-  // Initialize call analysis
   const { getCallAnalysis } = useCallAnalysis(call ? [call] : []);
   const analysis = call ? getCallAnalysis(call) : null;
 
-  const closeModal = () => {
-    onClose?.();
-  };
+  const contacts = useContacts();
 
-  // Send message functionality
+  const otherPartyName = useMemo(() => getDisplayNameForCall(call, contacts), [call, contacts]);
+
+  const phoneNumber = isInbound
+    ? call?.fromNumber
+    : call?.recipients?.[0]?.number || call?.recipients?.[0]?.phoneNumber;
+
+  const status = getCallStatus(call);
+  const prettyDate = formatCallDateTime(call?.date || call?.createdAt);
+  const prettyDuration = formatCallDuration(call?.duration);
+
+  // Fetch transcript when call changes
+  const fetchTranscript = useCallback(async () => {
+    const currentCallId = callId || call?.callId || call?.id;
+    const currentSessionId = sessionId || call?.sessionId || call?.id;
+
+    if (!currentSessionId && !currentCallId) {
+      console.warn('No sessionId or callId provided for transcript fetch');
+      return;
+    }
+
+    // If we already have a transcript from props, don't fetch unless it's empty
+    if (initialTranscript && initialTranscript.length > 0) {
+      setTranscript(initialTranscript);
+      return;
+    }
+
+    setIsLoadingTranscript(true);
+    setTranscriptError(null);
+
+    try {
+      // Try to fetch transcript using sessionId first, then callId
+      const transcriptData = await apiService.getCallTranscript(
+        currentSessionId || currentCallId
+      );
+
+      if (transcriptData && Array.isArray(transcriptData)) {
+        setTranscript(transcriptData);
+      } else {
+        console.warn('No transcript data received or invalid format');
+        setTranscript([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch transcript:', error);
+      setTranscriptError('Failed to load transcript');
+      setTranscript([]);
+    } finally {
+      setIsLoadingTranscript(false);
+    }
+  }, [callId, sessionId, call?.callId, call?.id, call?.sessionId, initialTranscript]);
+
+  // Effect to fetch transcript when call changes
+  useEffect(() => {
+    if (call) {
+      fetchTranscript();
+    } else {
+      setTranscript([]);
+      setTranscriptError(null);
+      setIsLoadingTranscript(false);
+    }
+  }, [call, fetchTranscript]);
+
   const sendMessage = async () => {
     if (!messageText.trim()) {
       Alert.alert('Message Required', 'Please enter a message to send.');
       return;
     }
-
-    const phoneNumber = isInbound ? call?.fromNumber : (call?.recipients?.[0]?.number || call?.recipients?.[0]?.phoneNumber);
     if (!phoneNumber) {
       Alert.alert('Error', 'Unable to determine recipient phone number.');
       return;
     }
-
     try {
       setIsSending(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => { });
 
-      // Prepare transcript context for AI
-      const transcriptContext = transcript.map(entry => {
-        const speaker = entry.isAgent || entry.speaker === 'agent' || entry.speaker === 'Heyway' ? 'HeyWay' : 'Customer';
-        return `${speaker}: ${entry.text}`;
-      }).join('\n');
+      const transcriptContext = (transcript || [])
+        .map((entry) => {
+          const speaker = entry.isAgent || entry.speaker === 'agent' || entry.speaker === 'Heyway' ? 'HeyWay' : 'Customer';
+          return `${speaker}: ${entry.text}`;
+        })
+        .join('\n');
 
-      // Create context message for AI
-      const contextMessage = `Previous conversation transcript:\n${transcriptContext}\n\nUser wants to send this message: "${messageText.trim()}"`;
+      const notes = `Continue previous conversation. Context:\n${transcriptContext}\n\nUser wants to send: "${messageText.trim()}"`;
 
-      // Log the context being sent to AI for verification
-      console.log('🤖 AI Context being sent:');
-      console.log('📞 Phone number:', phoneNumber);
-      console.log('📝 Transcript lines:', transcript.length);
-      console.log('📋 Full context message:');
-      console.log(contextMessage);
-      console.log('💬 User message:', messageText.trim());
-
-      // Send message with AI context
-      const callPayload = {
-        recipients: [phoneNumber],
-        callMode: 'ai-only' as const,
-        notes: `You are continuing a previous conversation. Here's the context: ${contextMessage}. Use this context to have a natural follow-up conversation.`
-      };
-
-      console.log('🚀 Sending call payload:', callPayload);
-      await apiService.initiateCall(callPayload);
-
+      await apiService.initiateCall({ recipients: [phoneNumber], callMode: 'ai-only' as const, notes });
       Alert.alert('Success', 'Message sent successfully!');
       setMessageText('');
     } catch (error) {
@@ -89,585 +205,476 @@ export default function CallSummaryCard({ call, callId, sessionId, transcript, i
     }
   };
 
-  // Helper functions for call info
-  const formatCallDuration = (duration?: number | string) => {
-    if (!duration) return 'Unknown';
-    const durationNum = typeof duration === 'string' ? parseInt(duration) : duration;
-    if (isNaN(durationNum)) return 'Unknown';
-
-    const minutes = Math.floor(durationNum / 60);
-    const seconds = durationNum % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const formatCallDateTime = (dateString?: string) => {
-    if (!dateString) return 'Unknown';
+  // ...existing code...
+  const addToContacts = async () => {
+    if (!phoneNumber) {
+      Alert.alert('Error', 'Unable to determine phone number.');
+      return;
+    }
     try {
-      const date = new Date(dateString);
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const callDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const payload = {
+        name: otherPartyName?.startsWith('+') ? '' : otherPartyName,
+        phoneNumber,
+        source: 'call_summary',
+      };
 
-      const timeStr = date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-
-      if (callDate.getTime() === today.getTime()) {
-        return `Today at ${timeStr}`;
-      } else if (callDate.getTime() === today.getTime() - 86400000) {
-        return `Yesterday at ${timeStr}`;
+      // Prefer contacts hook; fall back if needed
+      if ((contacts as any)?.addContact) {
+        await (contacts as any).addContact(payload);
+      } else if ((apiService as any)?.createContact) {
+        await (apiService as any).createContact(payload);
+      } else if ((apiService as any)?.upsertContact) {
+        await (apiService as any).upsertContact(payload);
       } else {
-        return `${date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-        })} at ${timeStr}`;
+        throw new Error('No contact creation method available');
       }
+
+      Alert.alert('Success', 'Contact added successfully!');
     } catch (error) {
-      return 'Unknown';
+      console.error('Failed to add contact:', error);
+      Alert.alert('Error', 'Failed to add contact. Please try again.');
     }
   };
+  // ...existing code...
 
-  const getCallStatus = () => {
-    if (call?.status) return call.status;
-    if (call?.duration && parseInt(call.duration) > 0) return 'completed';
-    return 'unknown';
+  const exportConversation = () => {
+    const t = (transcript || [])
+      .map((entry) => {
+        const speaker = entry.isAgent || entry.speaker === 'agent' || entry.speaker === 'Heyway' ? 'HeyWay' : otherPartyName;
+        return `${speaker}: ${entry.text}`;
+      })
+      .join('\n');
+
+    const exportData = `Call Summary\n===========\nDate: ${prettyDate}\nDuration: ${prettyDuration}\nDirection: ${isInbound ? 'Incoming' : 'Outgoing'}\nContact: ${otherPartyName}\nPhone: ${phoneNumber}\n\nTranscript:\n${t}\n`;
+    console.log('Export Data:', exportData);
+    Alert.alert('Export', 'Conversation exported to console (replace with file save in prod).');
   };
 
-  const contacts = useContacts();
-  // Helper to get display name for the other party
-  const getDisplayNameForCall = (call: any) => {
-    const isInbound = call.isInbound === true || call.isInbound === 'true';
-    const recipientObj = call.recipients && call.recipients.length > 0 ? call.recipients[0] : null;
-    if (isInbound) {
-      const inboundNumber = call.fromNumber || call.caller;
-      if (inboundNumber) {
-        const found = contacts.contacts.find(
-          (c: any) => c.number === inboundNumber || c.phone === inboundNumber
-        );
-        if (found && found.name) return found.name;
-        return inboundNumber;
-      }
-      return 'Unknown Caller';
-    } else {
-      if (recipientObj?.name) return recipientObj.name;
-      if (recipientObj?.number) {
-        const found = contacts.contacts.find(
-          (c: any) => c.number === recipientObj.number || c.phone === recipientObj.number
-        );
-        if (found && found.name) return found.name;
-        return recipientObj.number;
-      }
-      return 'Unknown Recipient';
-    }
-  };
-
-  // Get the other party's name for the header and transcript
-  const otherPartyName = getDisplayNameForCall(call);
-
-  const renderContent = () => (
-    <View style={isEmbedded ? styles.embeddedContainer : styles.container}>
-      <SafeAreaView style={isEmbedded ? styles.embeddedSafeArea : styles.safeArea}>
-        {/* Header - WhatsApp chat style */}
-        <View style={isEmbedded ? styles.embeddedHeader : styles.whatsappHeader}>
-          <View style={styles.headerLeftContainer}>
-            <TouchableOpacity onPress={closeModal} style={styles.headerButton}>
-              {isEmbedded ? (
-                <ArrowLeft size={24} color={HEYWAY_COLORS.text.primary} />
+  const Header = (
+    <View style={styles.headerWrap}>
+      {Platform.OS !== 'web' ? (
+        <BlurView tint="light" intensity={28} style={StyleSheet.absoluteFill} />
+      ) : (
+        <View style={styles.headerGlassFallback} />
+      )}
+      <SafeAreaView>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.subject} numberOfLines={1}>
+              {otherPartyName || phoneNumber || 'Unknown'}
+            </Text>
+          </View>
+          <View style={styles.headerRight}>
+            <View style={styles.metaRow}>
+              {isInbound ? (
+                <PhoneIncoming size={16} color={HEYWAY_COLORS.text.secondary} />
               ) : (
-                <X size={24} color={HEYWAY_COLORS.text.primary} />
+                <PhoneOutgoing size={16} color={HEYWAY_COLORS.text.secondary} />
               )}
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>{otherPartyName}</Text>
-          </View>
-
-          <View style={styles.headerRightContainer}>
-            {/* Empty for symmetry */}
-          </View>
-        </View>
-
-        {/* Content matching list page scroll style */}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.contentContainer}>
-            {/* Call Info Section - Compact Single Row */}
-            <View style={styles.compactInfoContainer}>
-              <View style={styles.compactInfoItem}>
-                <Text style={styles.compactInfoValue}>
-                  {formatCallDuration(call?.duration)}
-                </Text>
-              </View>
-              <View style={styles.compactInfoSeparator} />
-              <View style={styles.compactInfoItem}>
-                <Text style={styles.compactInfoValue}>
-                  {formatCallDateTime(call?.date || call?.createdAt)}
-                </Text>
-              </View>
-              <View style={styles.compactInfoSeparator} />
-              <View style={styles.compactInfoItem}>
-                <Text style={styles.compactInfoValue}>
-                  {isInbound ? 'Incoming' : 'Outgoing'}
-                </Text>
-              </View>
-              <View style={styles.compactInfoSeparator} />
-              <View style={styles.compactInfoItem}>
-                <Text style={[styles.compactInfoValue, styles.statusText]}>
-                  {getCallStatus().charAt(0).toUpperCase() + getCallStatus().slice(1)}
-                </Text>
-              </View>
-              {(call?.fromNumber || (call?.recipients && call.recipients.length > 0)) && (
-                <>
-                  <View style={styles.compactInfoSeparator} />
-                  <View style={styles.compactInfoItem}>
-                    <Text style={styles.compactInfoValue}>
-                      {isInbound ? call?.fromNumber : (call.recipients[0]?.number || call.recipients[0]?.phoneNumber)}
-                    </Text>
-                  </View>
-                </>
+              <Text style={styles.dot}>•</Text>
+              {status === 'completed' ? (
+                <CheckCircle size={14} color="#4CAF50" />
+              ) : (
+                <Text style={styles.metaText}>{status}</Text>
               )}
+              <Text style={styles.dot}>•</Text>
+              <Text style={styles.metaText}>{prettyDuration}</Text>
+              <Text style={styles.dot}>•</Text>
+              <Text style={styles.metaText}>{prettyDate}</Text>
             </View>
-
-            {/* Analysis Section */}
-            {analysis && (
-              <View style={styles.analysisSection}>
-                <Text style={styles.analysisSectionTitle}>Call Analysis</Text>
-                <View style={styles.analysisContent}>
-                  <CallAnalysisTag
-                    analysis={analysis}
-                    size="large"
-                    showIcon={true}
-                    showScore={true}
-                  />
-                  {analysis.followUpNeeded && (
-                    <View style={styles.followUpNotice}>
-                      <Text style={styles.followUpNoticeText}>⚠️ Follow-up recommended</Text>
-                    </View>
-                  )}
-                </View>
-                <Text style={styles.analysisReasoning}>{analysis.reasoning}</Text>
-                {analysis.keywords.length > 0 && (
-                  <View style={styles.keywordsSection}>
-                    <Text style={styles.keywordsTitle}>Key indicators:</Text>
-                    <Text style={styles.keywordsList}>
-                      {analysis.keywords.slice(0, 5).join(', ')}
-                      {analysis.keywords.length > 5 ? '...' : ''}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )}
-
-            {/* Transcript Section */}
-            <View style={styles.transcriptSection}>
-
-              {/* Check if this is a multi-recipient call with separated transcripts */}
-              {call?.participants && call.participants.length > 1 && call.participants.some((p: any) => p.transcription && p.transcription.length > 0) ? (
-                // Multi-recipient call with separated transcripts
-                call.participants.map((participant: any, participantIndex: number) => {
-                  const participantTranscript = participant.transcription || [];
-                  if (participantTranscript.length === 0) return null;
-
-                  const participantName = participant.name || participant.phoneNumber || `Participant ${participantIndex + 1}`;
-
-                  return (
-                    <View key={participantIndex} style={styles.participantSection}>
-                      <Text style={styles.participantHeader}>Conversation with {participantName}</Text>
-                      {participantTranscript.map((entry: any, index: number) => {
-                        const isAgent = entry.isAgent || entry.speaker === 'agent' || entry.speaker === 'Heyway';
-                        return (
-                          <View
-                            key={`${participantIndex}-${index}`}
-                            style={[
-                              styles.whatsappMessageContainer,
-                              isAgent ? styles.whatsappAgentContainer : styles.whatsappUserContainer
-                            ]}
-                          >
-                            <View
-                              style={[
-                                styles.whatsappBubble,
-                                isAgent ? styles.whatsappAgentBubble : styles.whatsappUserBubble
-                              ]}
-                            >
-                              <Text style={[styles.whatsappMessageText, isAgent ? styles.whatsappAgentText : styles.whatsappUserText]}>
-                                {entry.text}
-                              </Text>
-                            </View>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  );
-                })
-              ) : transcript && transcript.length > 0 ? (
-                // Single recipient call or legacy format
-                transcript.map((entry, index) => {
-                  const isAgent = entry.isAgent || entry.speaker === 'agent' || entry.speaker === 'Heyway';
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        styles.whatsappMessageContainer,
-                        isAgent ? styles.whatsappAgentContainer : styles.whatsappUserContainer
-                      ]}
-                    >
-                      <View
-                        style={[
-                          styles.whatsappBubble,
-                          isAgent ? styles.whatsappAgentBubble : styles.whatsappUserBubble
-                        ]}
-                      >
-                        <Text style={[styles.whatsappMessageText, isAgent ? styles.whatsappAgentText : styles.whatsappUserText]}>
-                          {entry.text}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })
-              ) : (
-                <View style={styles.emptyState}>
-                  <Text style={styles.emptyTitle}>No Transcript Available</Text>
-                  <Text style={styles.emptyText}>
-                    This call doesn't have a transcript to display
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-        </ScrollView>
-
-        {/* WhatsApp Message Input Section */}
-        <View style={styles.whatsappInputSection}>
-          <View style={styles.whatsappInputContainer}>
-            <TextInput
-              style={styles.whatsappInput}
-              placeholder="Type a message..."
-              placeholderTextColor={HEYWAY_COLORS.text.tertiary}
-              value={messageText}
-              onChangeText={setMessageText}
-              multiline
-              maxLength={500}
-            />
-            <TouchableOpacity
-              style={[styles.whatsappSendButton, !messageText.trim() && styles.whatsappSendButtonDisabled]}
-              onPress={sendMessage}
-              disabled={isSending || !messageText.trim()}
-              activeOpacity={0.7}
-            >
-              {isSending ? (
-                <ActivityIndicator size="small" color={HEYWAY_COLORS.text.inverse} />
-              ) : (
-                <Send size={18} color={HEYWAY_COLORS.text.inverse} />
-              )}
-            </TouchableOpacity>
+            <HeaderIcon onPress={onClose}><X size={16} color={HEYWAY_COLORS.text.macosPrimary} /></HeaderIcon>
           </View>
         </View>
       </SafeAreaView>
     </View>
   );
 
-  // Render conditionally based on isEmbedded prop
+  const AnalysisDrawer = analysis ? (
+    <View style={styles.drawer}>
+      <TouchableOpacity
+        onPress={() => setShowAnalysis((s) => !s)}
+        style={[styles.drawerHeader, getAnalysisHeaderStyle(analysis)]}
+        accessibilityRole="button"
+      >
+        <Text style={[styles.drawerTitle, getAnalysisTitleStyle(analysis)]}>Analysis</Text>
+        <ChevronDown size={16} color={getAnalysisIconColor(analysis)} />
+      </TouchableOpacity>
+      {showAnalysis && (
+        <View style={styles.drawerBody}>
+          <Text style={styles.drawerLine}>
+            Sentiment: <Text style={styles.drawerStrong}>{analysis.sentiment || 'n/a'}</Text>
+          </Text>
+          {Array.isArray(analysis.keywords) && analysis.keywords.length > 0 && (
+            <Text style={styles.drawerLine}>
+              Keywords: <Text style={styles.drawerMuted}>{analysis.keywords.slice(0, 6).join(', ')}</Text>
+            </Text>
+          )}
+          {analysis.reasoning && (
+            <Text style={styles.drawerReason}>{analysis.reasoning}</Text>
+          )}
+        </View>
+      )}
+    </View>
+  ) : null;
+
+  const Body = (
+    <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
+      {AnalysisDrawer}
+
+      {/* Chat-style transcript: messages on left and right */}
+      <View style={styles.thread}>
+        {(transcript || []).map((entry, idx) => {
+          const isAgent = entry.isAgent || entry.speaker === 'agent' || entry.speaker === 'Heyway';
+          // For better UX: Heyway (user's AI) messages on right in blue, recipient on left in off-white
+          const isUserMessage = isAgent; // Heyway represents the user
+          return (
+            <View key={idx} style={[styles.messageRow, isUserMessage ? styles.userRow : styles.agentRow]}>
+              <View style={[styles.messageBubble, isUserMessage ? styles.userBubble : styles.agentBubble]}>
+                <Text style={[styles.messageText, isUserMessage ? styles.userText : styles.agentText]}>
+                  {entry.text}
+                </Text>
+              </View>
+            </View>
+          );
+        })}
+        {isLoadingTranscript && (
+          <View style={styles.empty}>
+            <ActivityIndicator size="small" color={HEYWAY_COLORS.interactive.primary} />
+            <Text style={styles.emptyTitle}>Loading Transcript...</Text>
+            <Text style={styles.emptyText}>Please wait while we load the call transcript.</Text>
+          </View>
+        )}
+        {!isLoadingTranscript && transcriptError && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>Error Loading Transcript</Text>
+            <Text style={styles.emptyText}>{transcriptError}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={fetchTranscript}>
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {!isLoadingTranscript && !transcriptError && (!transcript || transcript.length === 0) && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>No Transcript</Text>
+            <Text style={styles.emptyText}>There's nothing to show for this call yet.</Text>
+          </View>
+        )}
+      </View>
+    </ScrollView>
+  );
+
+  const Footer = (
+    <View style={styles.footer}>
+      <View style={styles.inputWrap}>
+        <TextInput
+          style={styles.input}
+          placeholder="Call with a reply..."
+          placeholderTextColor={HEYWAY_COLORS.text.tertiary}
+          value={messageText}
+          onChangeText={setMessageText}
+          multiline
+        />
+      </View>
+      <TouchableOpacity style={styles.primaryBtn} onPress={sendMessage} disabled={isSending}>
+        {isSending ? (
+          <ActivityIndicator size="small" color={HEYWAY_COLORS.text.inverse} />
+        ) : (
+          <>
+            <Send size={14} color={HEYWAY_COLORS.text.inverse} />
+            <Text style={styles.primaryBtnLabel}>Send</Text>
+          </>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+
   if (isEmbedded) {
-    return renderContent();
+    return (
+      <View style={styles.rootEmbedded}>
+        {Header}
+        {Body}
+        {Footer}
+      </View>
+    );
   }
 
   return (
-    <Modal visible={true} animationType="slide" presentationStyle="fullScreen">
-      {renderContent()}
+    <Modal visible animationType="slide" presentationStyle="fullScreen">
+      <View style={styles.rootModal}>{Header}{Body}{Footer}</View>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
-  /* ROOT */
-  container: {
-    flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
-  },
-  safeArea: { flex: 1, backgroundColor: 'transparent' },
+/* ————— helpers ————— */
+function getDisplayNameForCall(call: any, contacts: any) {
+  try {
+    const inbound = call?.isInbound === true || call?.isInbound === 'true';
+    const recipientObj = call?.recipients && call.recipients.length > 0 ? call.recipients[0] : null;
+    if (inbound) {
+      const inboundNumber = call?.fromNumber || call?.caller;
+      if (!inboundNumber) return 'Unknown Caller';
+      const found = contacts?.contacts?.find((c: any) => c.number === inboundNumber || c.phone === inboundNumber);
+      return (found && found.name) || inboundNumber;
+    } else {
+      if (recipientObj?.name) return recipientObj.name;
+      const num = recipientObj?.number || recipientObj?.phoneNumber;
+      if (!num) return 'Unknown Recipient';
+      const found = contacts?.contacts?.find((c: any) => c.number === num || c.phone === num);
+      return (found && found.name) || num;
+    }
+  } catch {
+    return 'Unknown';
+  }
+}
 
-  /* EMBEDDED (right pane) */
-  embeddedContainer: {
-    flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
+function formatCallDuration(duration?: number | string) {
+  if (!duration) return '—';
+  const n = typeof duration === 'string' ? parseInt(duration, 10) : duration;
+  if (!Number.isFinite(n)) return '—';
+  const m = Math.floor(n / 60);
+  const s = n % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function formatCallDateTime(dateString?: string) {
+  if (!dateString) return '—';
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const callDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    if (callDate.getTime() === today.getTime()) return `Today ${timeStr}`;
+    if (callDate.getTime() === today.getTime() - 86400000) return `Yesterday ${timeStr}`;
+    return `${date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+    })} ${timeStr}`;
+  } catch {
+    return '—';
+  }
+}
+
+function getCallStatus(call?: any) {
+  if (call?.status) return String(call.status).toLowerCase();
+  if (call?.duration && parseInt(String(call.duration), 10) > 0) return 'completed';
+  return 'unknown';
+}
+
+/* ————— styles ————— */
+const S = HEYWAY_SPACING;
+const R = HEYWAY_RADIUS;
+const T = HEYWAY_TYPOGRAPHY;
+
+const styles = StyleSheet.create({
+  rootEmbedded: { flex: 1, backgroundColor: '#fff' },
+  rootModal: { flex: 1, backgroundColor: '#fff' },
+
+  headerWrap: {
+    position: 'relative',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7',
+    backgroundColor: '#F8F9FA',
+    ...HEYWAY_SHADOWS.light.xs,
   },
-  embeddedSafeArea: { flex: 1, backgroundColor: 'transparent' },
-  embeddedHeader: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
+  headerGlassFallback: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#F8F9FA',
+  },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 10,
   },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  avatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: HEYWAY_COLORS.fill.quaternary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.tertiary,
+  },
+  avatarText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: HEYWAY_COLORS.text.macosSecondary,
+  },
+  titleCol: { flex: 1 },
+  subject: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: HEYWAY_COLORS.text.macosPrimary,
+    letterSpacing: -0.1,
+  },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' },
+  statusRow: { flexDirection: 'row', alignItems: 'center' },
+  metaPill: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    color: HEYWAY_COLORS.text.macosPrimary,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  dot: { color: HEYWAY_COLORS.text.tertiary, marginHorizontal: 2 },
+  metaText: { fontSize: 11, color: HEYWAY_COLORS.text.macosSecondary },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  headerInfo: { flex: 1, alignItems: 'flex-end', marginRight: 8 },
 
-  /* HEADER - WHATSAPP STYLE */
-  whatsappHeader: {
-    backgroundColor: HEYWAY_COLORS.interactive.whatsappDark,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
+  body: { flex: 1 },
+  bodyContent: {
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 16,
+    maxWidth: 800, // Max width for larger screens
+    alignSelf: 'center', // Center the content
+    width: '100%', // Take full width on smaller screens
+  },
+
+  drawer: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    borderRadius: 8,
+    ...HEYWAY_SHADOWS.light.sm,
+    marginBottom: 10,
+    maxWidth: 950, // Much wider than transcript bubbles (400px)
+    alignSelf: 'center', // Center the drawer
+    width: '100%', // Take full width on smaller screens
+  },
+  drawerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingVertical: HEYWAY_SPACING.md,
-    paddingTop: Platform.OS === 'ios' ? 56 : 36,
-    ...HEYWAY_SHADOWS.light.sm,
-  },
-  headerLeftContainer: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerCenter: { flexDirection: 'column', alignItems: 'center', gap: 4 },
-  headerRightContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    width: 44,
-  },
-  headerButton: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
-    color: HEYWAY_COLORS.text.inverse,
-    textAlign: 'center',
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
-  },
-
-  /* SCROLLER */
-  scrollView: { flex: 1 },
-  scrollContent: { paddingBottom: 120 },
-  contentContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-  },
-
-  /* INFO BAR (pill segmented, Apple-y) */
-  compactInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 8,
-    marginBottom: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
+    backgroundColor: '#F8F9FA',
   },
-  compactInfoItem: { alignItems: 'center', flex: 1 },
-  compactInfoValue: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: 0.2,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  statusText: { color: HEYWAY_COLORS.text.secondary },
-  compactInfoSeparator: {
-    width: 1,
-    height: 16,
-    backgroundColor: HEYWAY_COLORS.border.divider,
-    marginHorizontal: 8,
-  },
+  drawerTitle: { fontSize: 12, fontWeight: '700', color: HEYWAY_COLORS.text.macosPrimary, textTransform: 'uppercase' },
+  drawerBody: { paddingHorizontal: 10, paddingVertical: 8, gap: 4 },
+  drawerLine: { fontSize: 12, color: HEYWAY_COLORS.text.macosSecondary },
+  drawerStrong: { fontWeight: '700', color: HEYWAY_COLORS.text.macosPrimary },
+  drawerMuted: { color: HEYWAY_COLORS.text.tertiary, fontStyle: 'italic' },
+  drawerReason: { fontSize: 12, color: HEYWAY_COLORS.text.macosSecondary, lineHeight: 18 },
 
-  /* ANALYSIS CARD */
-  analysisSection: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: 14,
-    marginBottom: 16,
-    padding: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  analysisSectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    marginBottom: 10,
-    letterSpacing: -0.1,
-  },
-  analysisContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 10,
-  },
-  followUpNotice: {
-    backgroundColor: 'rgba(255,193,7,0.14)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,193,7,0.32)',
-  },
-  followUpNoticeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.accent.warning,
-    letterSpacing: 0.1,
-  },
-  analysisReasoning: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: HEYWAY_COLORS.text.secondary,
-    lineHeight: 20,
-    marginBottom: 6,
-    letterSpacing: -0.1,
-  },
-  keywordsSection: { marginTop: 4 },
-  keywordsTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.secondary,
-    marginBottom: 2,
-    letterSpacing: 0.1,
-  },
-  keywordsList: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: HEYWAY_COLORS.text.tertiary,
-    lineHeight: 16,
-    fontStyle: 'italic',
-  },
-
-  /* TRANSCRIPT */
-  transcriptSection: { flex: 1 },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    marginBottom: 12,
-    letterSpacing: -0.1,
-  },
-
-  /* WHATSAPP MESSAGE BUBBLES */
-  whatsappMessageContainer: {
-    marginVertical: HEYWAY_SPACING.xs,
-    paddingHorizontal: HEYWAY_SPACING.sm
-  },
-  whatsappAgentContainer: { alignItems: 'flex-end' },
-  whatsappUserContainer: { alignItems: 'flex-start' },
-  whatsappBubble: {
-    ...HEYWAY_CHAT_PATTERNS.bubble,
-    maxWidth: HEYWAY_CHAT_PATTERNS.bubble.maxWidth,
-    marginVertical: HEYWAY_SPACING.xs,
-    ...HEYWAY_SHADOWS.balloon,
-  },
-  whatsappAgentBubble: {
-    backgroundColor: HEYWAY_COLORS.background.whatsappChat,
-    borderBottomRightRadius: HEYWAY_RADIUS.xs,
-  },
-  whatsappUserBubble: {
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderBottomLeftRadius: HEYWAY_RADIUS.xs,
-    borderWidth: HEYWAY_CHAT_PATTERNS.avatar.border.width,
-    borderColor: HEYWAY_COLORS.border.secondary,
-  },
-  whatsappMessageText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-  },
-  whatsappAgentText: { color: HEYWAY_COLORS.text.primary },
-  whatsappUserText: { color: HEYWAY_COLORS.text.primary },
-
-  /* MULTI-PARTICIPANT */
-  participantSection: {
-    marginBottom: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: HEYWAY_COLORS.border.divider,
-    paddingBottom: 10,
-  },
-  participantHeader: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    marginBottom: 8,
+  thread: { gap: 8 },
+  messageRow: { flexDirection: 'row', alignItems: 'flex-end', marginVertical: 2 },
+  agentRow: { justifyContent: 'flex-start' },
+  userRow: { justifyContent: 'flex-end' },
+  messageBubble: {
+    maxWidth: 400,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: HEYWAY_COLORS.background.content,
-    borderRadius: 8,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
+    borderRadius: 12,
   },
+  agentBubble: {
+    backgroundColor: '#F8F9FA',
+    borderBottomLeftRadius: 4,
+  },
+  userBubble: {
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderBottomRightRadius: 4,
+  },
+  messageText: { fontSize: 13, lineHeight: 18 },
+  agentText: { color: HEYWAY_COLORS.text.macosPrimary },
+  userText: { color: HEYWAY_COLORS.text.inverse },
 
-  /* EMPTY */
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 48,
-    paddingHorizontal: 40,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    marginTop: 12,
-    marginBottom: 6,
-    letterSpacing: -0.1,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: HEYWAY_COLORS.text.secondary,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
+  empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 32 },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: HEYWAY_COLORS.text.macosPrimary, marginBottom: 6 },
+  emptyText: { fontSize: 13, color: HEYWAY_COLORS.text.macosSecondary },
 
-  /* WHATSAPP COMPOSER */
-  whatsappInputSection: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: HEYWAY_COLORS.border.secondary,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-  },
-  whatsappInputContainer: {
+  footer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    borderRadius: 22,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    maxHeight: 120,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.secondary,
     gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E7',
+    backgroundColor: '#FFFFFF',
   },
-  whatsappInput: {
+  inputWrap: {
     flex: 1,
-    color: HEYWAY_COLORS.text.primary,
-    fontSize: 16,
-    lineHeight: 20,
-    paddingVertical: 2,
-    textAlignVertical: 'top',
-    fontWeight: '400',
+    borderRadius: 8,
+    backgroundColor: '#F8F9FA',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
   },
-  whatsappSendButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: HEYWAY_COLORS.interactive.whatsappGreen,
+  input: {
+    minHeight: 36,
+    maxHeight: 120,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    fontSize: 13,
+    color: HEYWAY_COLORS.text.macosPrimary,
+  },
+  primaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    ...HEYWAY_SHADOWS.light.sm,
+  },
+  primaryBtnLabel: { fontSize: 13, fontWeight: '700', color: HEYWAY_COLORS.text.inverse },
+
+  retryButton: {
+    marginTop: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+  },
+  retryButtonText: {
+    color: HEYWAY_COLORS.text.inverse,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+});
+
+function HeaderIcon({ children, onPress }: { children: React.ReactNode; onPress?: () => void }) {
+  return (
+    <TouchableOpacity onPress={onPress} style={headerIconStyles.btn} accessibilityRole="button">
+      {children}
+    </TouchableOpacity>
+  );
+}
+
+const headerIconStyles = StyleSheet.create({
+  btn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: HEYWAY_COLORS.interactive.whatsappGreen,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: '#F8F9FA',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
   },
-  whatsappSendButtonDisabled: {
-    backgroundColor: HEYWAY_COLORS.interactive.primaryDisabled,
-    opacity: 0.5,
+
+  retryButton: {
+    marginTop: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+  },
+
+  retryButtonText: {
+    color: HEYWAY_COLORS.text.inverse,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

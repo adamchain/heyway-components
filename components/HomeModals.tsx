@@ -22,6 +22,7 @@ const CSVImportModal = React.lazy(() => import('@/components/CSVImportModal'));
 const AddContactModal = React.lazy(() => import('@/components/AddContactModal'));
 const NewUserOnboarding = React.lazy(() => import('@/components/NewUserOnboarding'));
 const CallerIdPromptBanner = React.lazy(() => import('@/components/CallerIdPromptBanner'));
+const CallerIdSetup = React.lazy(() => import('@/components/CallerIdSetup'));
 const ContactsCardView = React.lazy(() => import('@/components/ContactsCardView'));
 const CreateGroupModal = React.lazy(() => import('@/components/CreateGroupModal'));
 
@@ -37,6 +38,7 @@ interface HomeModalsProps {
   showAutomationContactsModal: boolean;
   showOnboarding: boolean;
   showCallerIdBanner: boolean;
+  showCallerIdSetup: boolean;
   showCreateGroupModal: boolean;
 
   // Modal data
@@ -55,6 +57,7 @@ interface HomeModalsProps {
   onCloseAutomationContactsModal: () => void;
   onCloseOnboarding: () => void;
   onDismissCallerIdBanner: () => void;
+  onCloseCallerIdSetup: () => void;
   onCloseCreateGroupModal: () => void;
 
   // Action handlers
@@ -81,6 +84,7 @@ const HomeModals: React.FC<HomeModalsProps> = ({
   showAutomationContactsModal,
   showOnboarding,
   showCallerIdBanner,
+  showCallerIdSetup,
   showCreateGroupModal,
   selectedContacts,
   editingAutomation,
@@ -95,6 +99,7 @@ const HomeModals: React.FC<HomeModalsProps> = ({
   onCloseAutomationContactsModal,
   onCloseOnboarding,
   onDismissCallerIdBanner,
+  onCloseCallerIdSetup,
   onCloseCreateGroupModal,
   onCreateAutomation,
   onEditAutomation,
@@ -175,6 +180,15 @@ const HomeModals: React.FC<HomeModalsProps> = ({
           visible={showSettingsSidebar}
           onClose={onCloseSettingsSidebar}
           onCallerIdSetup={onCallerIdSetup}
+        />
+      </Suspense>
+
+      {/* Caller ID Setup Modal */}
+      <Suspense fallback={null}>
+        <CallerIdSetup
+          visible={showCallerIdSetup}
+          onClose={onCloseCallerIdSetup}
+          initialShowAddModal={true}
         />
       </Suspense>
 

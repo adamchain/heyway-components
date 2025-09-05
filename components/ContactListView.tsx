@@ -1,34 +1,49 @@
-import React, { useState, useEffect } from 'react';
+// ContactListView.tsx — Liquid-Glass pass to match HomeSidebar vibe
+// - Floating frosted container with BlurView (web fallback)
+// - Semi-transparent panels, soft shadows, rounded rims
+// - Typography & color tokens aligned with HEYWAY_STYLE_GUIDE
+
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-  TextInput,
-  Alert,
   ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  ScrollView,
   Share,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
-  Users,
-  Search,
-  X,
-  Trash2,
-  Share2,
-  UserPlus,
-  Phone,
-  Mail,
   ChevronLeft,
-  Star,
-  StarOff,
+  Mail,
+  Phone,
+  Search,
+  Share2,
+  Trash2,
+  Users,
 } from 'lucide-react-native';
-import { HEYWAY_COLORS } from '../styles/HEYWAY_STYLE_GUIDE';
-import { SPACING, TYPOGRAPHY, RADIUS } from '@/components/designSystem';
-import { apiService } from '../services/apiService';
+import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 
-import { HEYWAY_COLORS, HEYWAY_RADIUS, HEYWAY_SHADOWS, HEYWAY_SPACING, HEYWAY_TYPOGRAPHY, HEYWAY_ACCESSIBILITY } from '../styles/HEYWAY_STYLE_GUIDE';
+import { apiService } from '../services/apiService';
+import {
+  HEYWAY_COLORS,
+  HEYWAY_RADIUS,
+  HEYWAY_SHADOWS,
+  HEYWAY_SPACING,
+  HEYWAY_TYPOGRAPHY,
+} from '../styles/HEYWAY_STYLE_GUIDE';
+
+// --- Web-only style helpers (typed) to mirror HomeSidebar
+import type { ViewStyle, TextStyle } from 'react-native';
+const webView = (obj: Partial<ViewStyle>): Partial<ViewStyle> =>
+  Platform.OS === 'web' ? obj : {};
+const webText = (obj: Partial<TextStyle>): Partial<TextStyle> =>
+  Platform.OS === 'web' ? obj : {};
 
 interface ContactListViewProps {
   visible: boolean;
@@ -36,7 +51,7 @@ interface ContactListViewProps {
   listId: string;
   listName: string;
   listColor: string;
-  onContactSelect?: (contact: any) => void;
+  onContactSelect?: (contact: Contact) => void;
   allowMultiSelect?: boolean;
 }
 
@@ -45,7 +60,7 @@ interface Contact {
   name: string;
   phoneNumber: string;
   email?: string;
-  addedAt: string;
+  addedAt?: string;
 }
 
 interface ContactListData {
@@ -53,10 +68,7 @@ interface ContactListData {
   name: string;
   description: string;
   color: string;
-  contacts: {
-    contactId: Contact;
-    addedAt: string;
-  }[];
+  contacts: { contactId: Contact; addedAt: string }[];
   contactsCount: number;
   isSystem: boolean;
 }
@@ -76,9 +88,8 @@ export default function ContactListView({
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
 
   useEffect(() => {
-    if (visible && listId) {
-      loadListData();
-    }
+    if (visible && listId) loadListData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, listId]);
 
   const loadListData = async () => {
@@ -95,70 +106,58 @@ export default function ContactListView({
   };
 
   const handleRemoveContact = (contactId: string, contactName: string) => {
-    Alert.alert(
-      'Remove Contact',
-      `Remove ${contactName} from this list?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiService.removeContactFromList(listId, contactId);
-              await loadListData();
-            } catch (error) {
-              console.error('Error removing contact:', error);
-              Alert.alert('Error', 'Failed to remove contact');
-            }
-          },
+    Alert.alert('Remove Contact', `Remove ${contactName} from this list?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await apiService.removeContactFromList(listId, contactId);
+            await loadListData();
+          } catch (error) {
+            console.error('Error removing contact:', error);
+            Alert.alert('Error', 'Failed to remove contact');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleContactPress = (contact: Contact) => {
     if (allowMultiSelect) {
-      setSelectedContacts(prev => {
-        if (prev.includes(contact._id)) {
-          return prev.filter(id => id !== contact._id);
-        } else {
-          return [...prev, contact._id];
-        }
-      });
+      setSelectedContacts((prev) =>
+        prev.includes(contact._id)
+          ? prev.filter((id) => id !== contact._id)
+          : [...prev, contact._id]
+      );
     } else if (onContactSelect) {
       onContactSelect(contact);
     }
   };
 
   const handleCall = (contact: Contact) => {
-    // This would integrate with the calling system
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     Alert.alert('Call', `Call ${contact.name} at ${contact.phoneNumber}?`);
   };
 
   const handleShareList = async () => {
     if (!listData) return;
-
     const contactsText = listData.contacts
       .map(({ contactId }) => `${contactId.name}: ${contactId.phoneNumber}`)
       .join('\n');
-
     const shareContent = `${listData.name}\n${listData.description}\n\nContacts:\n${contactsText}`;
-
     try {
-      await Share.share({
-        message: shareContent,
-        title: listData.name,
-      });
+      await Share.share({ message: shareContent, title: listData.name });
     } catch (error) {
       console.error('Error sharing list:', error);
     }
   };
 
   const getColorValue = (colorKey: string) => {
-    const colorMap: { [key: string]: string } = {
+    const colorMap: Record<string, string> = {
       blue: HEYWAY_COLORS.interactive.primary,
-      green: HEYWAY_COLORS.status.success,
+      green: HEYWAY_COLORS.accent.success,
       purple: '#AF52DE',
       orange: HEYWAY_COLORS.accent.warning,
       red: HEYWAY_COLORS.status.error,
@@ -169,178 +168,230 @@ export default function ContactListView({
     return colorMap[colorKey] || HEYWAY_COLORS.interactive.primary;
   };
 
-  const filteredContacts = listData?.contacts.filter(({ contactId }) =>
-    contactId.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contactId.phoneNumber.includes(searchQuery) ||
-    (contactId.email && contactId.email.toLowerCase().includes(searchQuery.toLowerCase()))
-  ) || [];
+  const filteredContacts =
+    listData?.contacts.filter(({ contactId }) => {
+      const q = searchQuery.toLowerCase();
+      return (
+        contactId.name.toLowerCase().includes(q) ||
+        contactId.phoneNumber.includes(searchQuery) ||
+        (!!contactId.email && contactId.email.toLowerCase().includes(q))
+      );
+    }) || [];
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-            <ChevronLeft size={24} color={IOS_COLORS.text.primary} />
-          </TouchableOpacity>
-
-          <View style={styles.headerInfo}>
-            <View style={styles.headerTitleRow}>
-              <View style={[styles.colorIndicator, { backgroundColor: getColorValue(listColor) }]} />
-              <Text style={styles.headerTitle} numberOfLines={1}>{listName}</Text>
-            </View>
-            <Text style={styles.headerSubtitle}>
-              {listData?.contactsCount || 0} contact{(listData?.contactsCount || 0) !== 1 ? 's' : ''}
-            </Text>
-          </View>
-
-          <TouchableOpacity onPress={handleShareList} style={styles.headerButton}>
-            <Share2 size={24} color={IOS_COLORS.accent} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Search size={16} color={IOS_COLORS.text.secondary} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search contacts..."
-            placeholderTextColor={IOS_COLORS.text.tertiary}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-
-        {/* Selected Contacts Info (for multi-select) */}
-        {allowMultiSelect && selectedContacts.length > 0 && (
-          <View style={styles.selectedInfo}>
-            <Text style={styles.selectedInfoText}>
-              {selectedContacts.length} contact{selectedContacts.length !== 1 ? 's' : ''} selected
-            </Text>
-            <TouchableOpacity
-              style={styles.clearSelectionButton}
-              onPress={() => setSelectedContacts([])}
-            >
-              <Text style={styles.clearSelectionText}>Clear</Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.outerWrapper}>
+        {/* Liquid Glass layer */}
+        {Platform.OS !== 'web' ? (
+          <BlurView tint="light" intensity={40} style={StyleSheet.absoluteFill} />
+        ) : (
+          <View style={styles.webGlassFallback} />
         )}
+        {/* Inner highlight (glass rim) */}
+        <View pointerEvents="none" style={styles.innerHighlight} />
 
         {/* Content */}
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={IOS_COLORS.accent} />
-              <Text style={styles.loadingText}>Loading contacts...</Text>
-            </View>
-          ) : filteredContacts.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Users size={48} color={IOS_COLORS.text.tertiary} />
-              <Text style={styles.emptyTitle}>
-                {searchQuery ? 'No matching contacts' : 'No contacts in this list'}
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.headerButton}
+              accessibilityRole="button"
+              accessibilityLabel="Back"
+            >
+              <ChevronLeft size={22} color={HEYWAY_COLORS.text.macosPrimary} />
+            </TouchableOpacity>
+
+            <View style={styles.headerInfo}>
+              <View style={styles.headerTitleRow}>
+                <View
+                  style={[styles.colorIndicator, { backgroundColor: getColorValue(listColor) }]}
+                />
+                <Text style={styles.headerTitle} numberOfLines={1}>
+                  {listName}
+                </Text>
+              </View>
+              <Text style={styles.headerSubtitle}>
+                {listData?.contactsCount || 0} contact
+                {(listData?.contactsCount || 0) !== 1 ? 's' : ''}
               </Text>
-              <Text style={styles.emptySubtitle}>
-                {searchQuery
-                  ? 'Try adjusting your search terms'
-                  : 'Add contacts to this list to see them here'
-                }
-              </Text>
             </View>
-          ) : (
-            filteredContacts.map(({ contactId, addedAt }) => {
-              const isSelected = selectedContacts.includes(contactId._id);
 
-              return (
-                <TouchableOpacity
-                  key={contactId._id}
-                  style={[
-                    styles.contactCard,
-                    isSelected && styles.contactCardSelected
-                  ]}
-                  onPress={() => handleContactPress(contactId)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.contactCardMain}>
-                    <View style={styles.contactAvatar}>
-                      <Text style={styles.contactAvatarText}>
-                        {contactId.name.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
+            <TouchableOpacity
+              onPress={handleShareList}
+              style={styles.headerButton}
+              accessibilityRole="button"
+              accessibilityLabel="Share list"
+            >
+              <Share2 size={20} color={HEYWAY_COLORS.text.macosSecondary} />
+            </TouchableOpacity>
+          </View>
 
-                    <View style={styles.contactInfo}>
-                      <Text style={styles.contactName}>{contactId.name}</Text>
-                      <Text style={styles.contactPhone}>{contactId.phoneNumber}</Text>
-                      {contactId.email && (
-                        <Text style={styles.contactEmail} numberOfLines={1}>
-                          {contactId.email}
-                        </Text>
-                      )}
-                      <Text style={styles.contactAddedDate}>
-                        Added {new Date(addedAt).toLocaleDateString()}
-                      </Text>
-                    </View>
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <Search size={16} color={HEYWAY_COLORS.text.tertiary} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search contacts..."
+              placeholderTextColor={HEYWAY_COLORS.text.tertiary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
 
-                    {allowMultiSelect && (
-                      <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
-                        {isSelected && <Text style={styles.checkmark}>✓</Text>}
-                      </View>
-                    )}
-                  </View>
-
-                  {/* Action Buttons */}
-                  <View style={styles.contactActions}>
-                    <TouchableOpacity
-                      style={styles.actionButton}
-                      onPress={() => handleCall(contactId)}
-                    >
-                      <Phone size={16} color={IOS_COLORS.accent} />
-                    </TouchableOpacity>
-
-                    {contactId.email && (
-                      <TouchableOpacity style={styles.actionButton}>
-                        <Mail size={16} color={IOS_COLORS.text.secondary} />
-                      </TouchableOpacity>
-                    )}
-
-                    {!listData?.isSystem && (
-                      <TouchableOpacity
-                        style={styles.actionButton}
-                        onPress={() => handleRemoveContact(contactId._id, contactId.name)}
-                      >
-                        <Trash2 size={16} color="#FF3B30" />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              );
-            })
+          {/* Selected Contacts Info (for multi-select) */}
+          {allowMultiSelect && selectedContacts.length > 0 && (
+            <View style={styles.selectedInfo}>
+              <Text style={styles.selectedInfoText}>
+                {selectedContacts.length} contact
+                {selectedContacts.length !== 1 ? 's' : ''} selected
+              </Text>
+              <TouchableOpacity
+                style={styles.clearSelectionButton}
+                onPress={() => setSelectedContacts([])}
+              >
+                <Text style={styles.clearSelectionText}>Clear</Text>
+              </TouchableOpacity>
+            </View>
           )}
-        </ScrollView>
+
+          {/* Content */}
+          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={HEYWAY_COLORS.interactive.primary} />
+                <Text style={styles.loadingText}>Loading contacts...</Text>
+              </View>
+            ) : filteredContacts.length === 0 ? (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIconWrap}>
+                  <Users size={32} color={HEYWAY_COLORS.text.tertiary} />
+                </View>
+                <Text style={styles.emptyTitle}>
+                  {searchQuery ? 'No matching contacts' : 'No contacts in this list'}
+                </Text>
+                <Text style={styles.emptySubtitle}>
+                  {searchQuery
+                    ? 'Try adjusting your search terms'
+                    : 'Add contacts to this list to see them here'}
+                </Text>
+              </View>
+            ) : (
+              filteredContacts.map(({ contactId, addedAt }) => {
+                const isSelected = selectedContacts.includes(contactId._id);
+                return (
+                  <TouchableOpacity
+                    key={contactId._id}
+                    style={[styles.contactCard, isSelected && styles.contactCardSelected]}
+                    onPress={() => handleContactPress(contactId)}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isSelected }}
+                  >
+                    <View style={styles.contactCardMain}>
+                      <View style={styles.contactAvatar}>
+                        <Text style={styles.contactAvatarText}>
+                          {contactId.name.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+
+                      <View style={styles.contactInfo}>
+                        <Text style={styles.contactName}>{contactId.name}</Text>
+                        <Text style={styles.contactPhone}>{contactId.phoneNumber}</Text>
+                        {!!contactId.email && (
+                          <Text style={styles.contactEmail} numberOfLines={1}>
+                            {contactId.email}
+                          </Text>
+                        )}
+                        {!!addedAt && (
+                          <Text style={styles.contactAddedDate}>
+                            Added {new Date(addedAt).toLocaleDateString()}
+                          </Text>
+                        )}
+                      </View>
+
+                      {/* Actions */}
+                      <View style={styles.contactActions}>
+                        <TouchableOpacity
+                          style={styles.actionButton}
+                          onPress={() => handleCall(contactId)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Call ${contactId.name}`}
+                        >
+                          <Phone size={16} color={HEYWAY_COLORS.text.macosPrimary} />
+                        </TouchableOpacity>
+
+                        {!!contactId.email && (
+                          <TouchableOpacity style={styles.actionButton} accessibilityRole="button">
+                            <Mail size={16} color={HEYWAY_COLORS.text.macosSecondary} />
+                          </TouchableOpacity>
+                        )}
+
+                        {!listData?.isSystem && (
+                          <TouchableOpacity
+                            style={styles.actionButton}
+                            onPress={() => handleRemoveContact(contactId._id, contactId.name)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Remove ${contactId.name}`}
+                          >
+                            <Trash2 size={16} color={HEYWAY_COLORS.status.error} />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </View>
       </View>
     </Modal>
   );
 }
 
+// --- Styles (glass + Tahoe)
 const styles = StyleSheet.create({
+  outerWrapper: {
+    flex: 1,
+    margin: 8,
+    borderRadius: 8,
+    overflow: 'hidden',
+    ...HEYWAY_SHADOWS.light.sm,
+    backgroundColor: '#FFFFFF',
+  },
+  webGlassFallback: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#FFFFFF',
+  },
+  innerHighlight: {
+    ...StyleSheet.absoluteFillObject,
+    shadowColor: '#FFFFFF',
+    shadowOpacity: 0.55,
+    shadowRadius: 0,
+  },
   container: {
     flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.whatsappPanel,
+    backgroundColor: 'transparent',
   },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.md,
-    paddingTop: 60,
+    paddingTop: 56,
     borderBottomWidth: 1,
-    borderBottomColor: HEYWAY_COLORS.border.primary,
-    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderBottomColor: '#E5E5E7',
+    backgroundColor: '#FFFFFF',
   },
   headerButton: {
     width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    ...webView({ cursor: 'pointer' as any }),
   },
   headerInfo: {
     flex: 1,
@@ -362,9 +413,8 @@ const styles = StyleSheet.create({
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
     color: HEYWAY_COLORS.text.primary,
-    maxWidth: 200,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    maxWidth: 220,
+    ...webText({ userSelect: 'none' as any }),
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   headerSubtitle: {
@@ -372,73 +422,69 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
+
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.component.input.md,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 8,
     marginHorizontal: HEYWAY_SPACING.lg,
     marginVertical: HEYWAY_SPACING.md,
     paddingHorizontal: HEYWAY_SPACING.md,
     gap: HEYWAY_SPACING.sm,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-    borderColor: HEYWAY_COLORS.border.primary,
+    borderColor: '#E5E5E7',
+    ...HEYWAY_SHADOWS.light.xs,
   },
   searchInput: {
     flex: 1,
     paddingVertical: HEYWAY_SPACING.md,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.primary,
+    color: HEYWAY_COLORS.text.macosPrimary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
+
   selectedInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: HEYWAY_COLORS.interactive.selected,
-    borderRadius: HEYWAY_RADIUS.component.card.sm,
+    backgroundColor: '#F0F9FF',
+    borderRadius: 8,
     paddingHorizontal: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.sm,
     marginHorizontal: HEYWAY_SPACING.lg,
     marginBottom: HEYWAY_SPACING.md,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.interactive.primary,
+    borderColor: '#007AFF',
   },
   selectedInfoText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
-    color: HEYWAY_COLORS.interactive.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    color: '#007AFF',
   },
   clearSelectionButton: {
     paddingHorizontal: HEYWAY_SPACING.sm,
     paddingVertical: HEYWAY_SPACING.xs,
+    ...webView({ cursor: 'pointer' as any }),
   },
   clearSelectionText: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.interactive.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    color: '#007AFF',
   },
+
   scrollView: {
     flex: 1,
     paddingHorizontal: HEYWAY_SPACING.lg,
   },
+
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: HEYWAY_SPACING.xxxxl + HEYWAY_SPACING.xl,
+    paddingVertical: HEYWAY_SPACING.xxxxl,
   },
   loadingText: {
     marginTop: HEYWAY_SPACING.md,
@@ -446,47 +492,57 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
+
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: HEYWAY_SPACING.xxxxl * 2,
+    paddingVertical: HEYWAY_SPACING.xxxxl * 1.6,
     paddingHorizontal: HEYWAY_SPACING.xxxl,
+  },
+  emptyIconWrap: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F8F9FA',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    ...HEYWAY_SHADOWS.light.xs,
   },
   emptyTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     marginTop: HEYWAY_SPACING.lg,
-    marginBottom: HEYWAY_SPACING.sm,
+    marginBottom: HEYWAY_SPACING.xs,
     textAlign: 'center',
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    ...webText({ userSelect: 'none' as any }),
   },
   emptySubtitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
     lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
+
   contactCard: {
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     marginBottom: HEYWAY_SPACING.md,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
+    borderColor: '#E5E5E7',
     overflow: 'hidden',
-    ...HEYWAY_SHADOWS.light.xs,
+    ...HEYWAY_SHADOWS.light.sm,
   },
   contactCardSelected: {
-    borderColor: HEYWAY_COLORS.interactive.primary,
-    backgroundColor: HEYWAY_COLORS.interactive.selected,
-    ...HEYWAY_SHADOWS.light.sm,
+    backgroundColor: '#F0F9FF',
+    borderColor: '#007AFF',
+    ...HEYWAY_SHADOWS.light.md,
   },
   contactCardMain: {
     flexDirection: 'row',
@@ -497,8 +553,8 @@ const styles = StyleSheet.create({
   contactAvatar: {
     width: 44,
     height: 44,
-    borderRadius: HEYWAY_RADIUS.component.avatar.lg,
-    backgroundColor: HEYWAY_COLORS.background.tertiary,
+    borderRadius: 22,
+    backgroundColor: '#F8F9FA',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -507,77 +563,45 @@ const styles = StyleSheet.create({
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
-  contactInfo: {
-    flex: 1,
-  },
+  contactInfo: { flex: 1 },
   contactName: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.primary,
+    color: HEYWAY_COLORS.text.macosPrimary,
     marginBottom: HEYWAY_SPACING.xs,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactPhone: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.interactive.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    color: HEYWAY_COLORS.text.macosPrimary,
   },
   contactEmail: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    color: HEYWAY_COLORS.text.macosSecondary,
   },
   contactAddedDate: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.tertiary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: HEYWAY_RADIUS.component.button.lg,
-    borderWidth: 2,
-    borderColor: HEYWAY_COLORS.border.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxSelected: {
-    borderColor: HEYWAY_COLORS.interactive.primary,
-    backgroundColor: HEYWAY_COLORS.interactive.primary,
-  },
-  checkmark: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: 600,
-    color: HEYWAY_COLORS.text.inverse,
-  },
+
   contactActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingBottom: HEYWAY_SPACING.md,
     gap: HEYWAY_SPACING.sm,
   },
   actionButton: {
     width: 32,
     height: 32,
-    borderRadius: HEYWAY_RADIUS.component.button.lg,
-    backgroundColor: HEYWAY_COLORS.interactive.hover,
+    borderRadius: 8,
+    backgroundColor: '#F8F9FA',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
     ...HEYWAY_SHADOWS.light.xs,
+    ...webView({ cursor: 'pointer' as any }),
   },
 });

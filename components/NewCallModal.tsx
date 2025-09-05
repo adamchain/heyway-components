@@ -486,12 +486,18 @@ export default function NewCallModal({ visible, onClose, preSelectedContacts = [
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
       >
-        {/* Apple Mail-style Header */}
+        {/* CreateGroupModal-style Header */}
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.composeLabel}>New Call</Text>
+          <View style={styles.headerContent}>
+            <View style={styles.iconContainer}>
+              <Phone size={20} color={HEYWAY_COLORS.interactive.primary} />
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>New Call</Text>
+              <Text style={styles.subtitle}>Make AI-powered calls to contacts</Text>
+            </View>
           </View>
-          <View style={styles.headerRight}>
+          <View style={styles.headerActions}>
             <TouchableOpacity
               style={styles.headerButton}
               activeOpacity={0.7}
@@ -511,15 +517,15 @@ export default function NewCallModal({ visible, onClose, preSelectedContacts = [
 
         {!isMinimized && (
           <>
-            {/* Apple Mail-style Form */}
+            {/* CreateGroupModal-style Form */}
             <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
-              <View style={styles.form}>
-                {/* To Field */}
-                <View style={styles.formRow}>
-                  <Text style={styles.fieldLabel}>To:</Text>
-                  <View style={styles.fieldInput}>
+              <View style={styles.content}>
+                {/* Recipients Field */}
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Recipients</Text>
+                  <View style={styles.searchFieldContainer}>
                     <TextInput
-                      style={styles.recipientInput}
+                      style={styles.textInput}
                       placeholder="Add contacts, phone numbers, or businesses..."
                       placeholderTextColor={HEYWAY_COLORS.text.tertiary}
                       value={searchQuery}
@@ -527,7 +533,7 @@ export default function NewCallModal({ visible, onClose, preSelectedContacts = [
                       onFocus={() => setIsSearchFocused(true)}
                       onBlur={() => setIsSearchFocused(false)}
                     />
-
+                    
                     {/* Mode Selector */}
                     <TouchableOpacity
                       style={styles.modeSelector}
@@ -586,26 +592,24 @@ export default function NewCallModal({ visible, onClose, preSelectedContacts = [
                   </View>
                 </View>
 
-                {/* Call Prompt */}
-                <View style={styles.formRow}>
-                  <Text style={styles.fieldLabel}>Prompt:</Text>
-                  <View style={styles.fieldInput}>
-                    <TextInput
-                      style={styles.promptInput}
-                      placeholder="Enter your call prompt..."
-                      placeholderTextColor={HEYWAY_COLORS.text.tertiary}
-                      value={callPrompt}
-                      onChangeText={setCallPrompt}
-                      multiline
-                      textAlignVertical="top"
-                    />
-                  </View>
+                {/* Call Prompt Field */}
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Call Prompt</Text>
+                  <TextInput
+                    style={[styles.textInput, styles.textArea]}
+                    placeholder="Enter your call prompt..."
+                    placeholderTextColor={HEYWAY_COLORS.text.tertiary}
+                    value={callPrompt}
+                    onChangeText={setCallPrompt}
+                    multiline
+                    textAlignVertical="top"
+                  />
                 </View>
 
                 {/* Selected Recipients Display */}
                 {selectedCallList.length > 0 && (
                   <View style={styles.recipientsDisplay}>
-                    <Text style={styles.recipientsTitle}>Recipients:</Text>
+                    <Text style={styles.recipientsTitle}>Selected Recipients:</Text>
                     <View style={styles.recipientsChips}>
                       {selectedCallList.map((item) => (
                         <View key={item.phoneNumber} style={styles.recipientChip}>
@@ -625,8 +629,16 @@ export default function NewCallModal({ visible, onClose, preSelectedContacts = [
               </View>
             </ScrollView>
 
-            {/* Action Buttons */}
-            <View style={styles.actionButtons}>
+            {/* CreateGroupModal-style Footer */}
+            <View style={styles.footer}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={handleClose}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
               <TouchableOpacity
                 style={styles.scheduleButton}
                 onPress={() => setShowScheduler(true)}
@@ -639,17 +651,17 @@ export default function NewCallModal({ visible, onClose, preSelectedContacts = [
               <Animated.View style={{ transform: [{ scale: fabPulseAnim }] }}>
                 <TouchableOpacity
                   style={[
-                    styles.callButton,
-                    selectedCallList.length === 0 && styles.callButtonDisabled
+                    styles.createButton,
+                    selectedCallList.length === 0 && styles.createButtonDisabled
                   ]}
                   onPress={handleMakeCall}
                   disabled={aiCallerPrompts.isLoading || selectedCallList.length === 0}
-                  activeOpacity={0.9}
+                  activeOpacity={0.8}
                 >
-                  <Phone size={18} color={HEYWAY_COLORS.text.inverse} />
+                  <Phone size={18} color={HEYWAY_COLORS.text.white} />
                   <Text style={[
-                    styles.callButtonText,
-                    selectedCallList.length === 0 && styles.callButtonTextDisabled
+                    styles.createButtonText,
+                    selectedCallList.length === 0 && styles.createButtonTextDisabled
                   ]}>
                     Call Now
                   </Text>
@@ -709,26 +721,47 @@ const styles = StyleSheet.create({
   },
   keyboardContainer: { flex: 1 },
 
-  /* HEADER — quiet, Mail-like */
+  /* HEADER — CreateGroupModal-style */
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingVertical: HEYWAY_SPACING.md,
-    backgroundColor: '#F8F9FA',
+    padding: HEYWAY_SPACING.xl,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E3E5E8',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
     borderTopLeftRadius: HEYWAY_RADIUS.xxl,
   },
-  headerLeft: { flex: 1 },
-  composeLabel: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-    fontWeight: '700' as const,
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.3,
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+    gap: HEYWAY_SPACING.md,
   },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: HEYWAY_SPACING.xs },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: HEYWAY_COLORS.background.intelligenceSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    flex: 1,
+    gap: HEYWAY_SPACING.xs,
+  },
+  title: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+  },
+  subtitle: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+  },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: HEYWAY_SPACING.xs },
   headerButton: {
     width: 34,
     height: 34,
@@ -741,54 +774,39 @@ const styles = StyleSheet.create({
     ...HEYWAY_SHADOWS.light.xs,
   },
 
-  /* FORM AREA */
+  /* FORM AREA — CreateGroupModal-style */
   formContainer: { flex: 1 },
-  form: {
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingTop: HEYWAY_SPACING.md,
-    paddingBottom: HEYWAY_SPACING.lg,
-    gap: HEYWAY_SPACING.lg,
+  content: {
+    padding: HEYWAY_SPACING.xl,
   },
-  formRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: HEYWAY_SPACING.md,
+  inputContainer: {
+    gap: HEYWAY_SPACING.sm,
+    marginBottom: HEYWAY_SPACING.lg,
   },
-  fieldLabel: {
-    width: 60,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+  inputLabel: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.primary,
-    paddingTop: HEYWAY_SPACING.sm,
-    letterSpacing: -0.1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
-  fieldInput: { flex: 1, position: 'relative' },
+  searchFieldContainer: { position: 'relative' },
 
-  /* INPUTS — capsule underlines → subtle bordered fields */
-  recipientInput: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    color: HEYWAY_COLORS.text.primary,
-    paddingVertical: HEYWAY_SPACING.sm,
-    borderBottomWidth: 0,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: 12,
-    paddingHorizontal: HEYWAY_SPACING.md,
+  /* INPUTS — CreateGroupModal-style */
+  textInput: {
+    backgroundColor: HEYWAY_COLORS.background.content,
+    borderRadius: HEYWAY_RADIUS.md,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.md,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    color: HEYWAY_COLORS.text.primary,
+    minHeight: 44,
   },
-  promptInput: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    color: HEYWAY_COLORS.text.primary,
-    paddingVertical: HEYWAY_SPACING.sm,
-    paddingHorizontal: HEYWAY_SPACING.md,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: 12,
-    minHeight: 96,
+  textArea: {
+    minHeight: 100,
     textAlignVertical: 'top',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-    ...HEYWAY_SHADOWS.light.xs,
+    lineHeight: 20,
   },
 
   /* MODE SELECTOR — subtle capsule */
@@ -923,60 +941,69 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
   },
 
-  /* FOOTER ACTIONS — quiet card bar */
-  actionButtons: {
+  /* FOOTER — CreateGroupModal-style */
+  footer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingVertical: HEYWAY_SPACING.lg,
-    backgroundColor: '#F8F9FA',
+    gap: HEYWAY_SPACING.md,
+    padding: HEYWAY_SPACING.xl,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#E3E5E8',
+    borderTopColor: HEYWAY_COLORS.border.divider,
     borderBottomLeftRadius: HEYWAY_RADIUS.xxl,
+  },
+  cancelButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: HEYWAY_SPACING.md,
+    borderRadius: HEYWAY_RADIUS.md,
+    backgroundColor: HEYWAY_COLORS.background.content,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+  },
+  cancelButtonText: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   scheduleButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: HEYWAY_SPACING.sm,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    paddingHorizontal: HEYWAY_SPACING.xl,
     paddingVertical: HEYWAY_SPACING.md,
-    minHeight: 44,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    borderRadius: HEYWAY_RADIUS.md,
+    backgroundColor: HEYWAY_COLORS.background.content,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#E3E5E8',
-    ...HEYWAY_SHADOWS.light.sm,
+    borderColor: HEYWAY_COLORS.border.primary,
   },
   scheduleButtonText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: '600' as const,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
     color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.1,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
-
-  /* PRIMARY CTA — capsule */
-  callButton: {
+  createButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.status.success,
-    borderRadius: 999,
-    paddingHorizontal: HEYWAY_SPACING.xxl,
     paddingVertical: HEYWAY_SPACING.md,
-    minHeight: 44,
-    borderWidth: 0,
-    ...HEYWAY_SHADOWS.light.md,
+    borderRadius: HEYWAY_RADIUS.md,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
   },
-  callButtonDisabled: {
-    opacity: 0.55,
-    backgroundColor: HEYWAY_COLORS.interactive.disabled,
+  createButtonDisabled: {
+    backgroundColor: HEYWAY_COLORS.background.content,
   },
-  callButtonText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
-    fontWeight: '700' as const,
-    color: HEYWAY_COLORS.text.inverse,
-    letterSpacing: -0.1,
+  createButtonText: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.white,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
-  callButtonTextDisabled: { color: HEYWAY_COLORS.text.tertiary },
+  createButtonTextDisabled: {
+    color: HEYWAY_COLORS.text.tertiary,
+  },
 });

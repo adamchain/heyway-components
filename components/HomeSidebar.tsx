@@ -1,39 +1,35 @@
+// HomeSidebar.tsx — Liquid-Glass Sidebar (left panel only)
 import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Platform,
   ScrollView,
-  SectionList,
   TextInput,
   Alert,
 } from 'react-native';
+import type { ViewStyle, TextStyle } from 'react-native';
+
 import {
-  Search,
   Plus,
   Phone,
   Users,
   Briefcase,
   Hash,
   Zap,
-  Settings,
   PhoneIncoming,
   FolderPlus,
   Folder,
-  User,
-  CreditCard,
-  LogOut,
-  Trash2,
-  MoreHorizontal,
+  ChevronDown,
 } from 'lucide-react-native';
+
+// web-only style helpers (typed)
+const webView = (obj: Record<string, any>): Partial<ViewStyle> =>
+  Platform.OS === 'web' ? obj : {};
 import * as Haptics from 'expo-haptics';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCallerId } from '@/hooks/useCallerId';
-import { apiService } from '../services/apiService';
-// Style guide
+import { BlurView } from 'expo-blur';
 import {
   HEYWAY_COLORS,
   HEYWAY_SPACING,
@@ -41,20 +37,11 @@ import {
   HEYWAY_RADIUS,
   HEYWAY_SHADOWS,
   HEYWAY_LAYOUT,
-  HEYWAY_ACCESSIBILITY,
-  HEYWAY_COMPONENTS,
   HEYWAY_CHAT_PATTERNS
 } from '../styles/HEYWAY_STYLE_GUIDE';
 
-interface Group {
-  id: string;
-  name: string;
-  calls: any[];
-}
-
+interface Group { id: string; name: string; calls: any[]; }
 interface HomeSidebarProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
   showPlusDropdown: boolean;
   onPlusToggle: () => void;
   activeNavItem: string;
@@ -74,19 +61,7 @@ interface HomeSidebarProps {
   selectedGroupId?: string;
 }
 
-/**
- * Upgrades:
- * - Flexbox layout instead of absolute positioning (everything scrolls naturally)
- * - Extracted SidebarItem / GroupRow for readability + consistent hit targets
- * - Built-in badges + active indicator
- * - Collapsible Groups section when empty/large
- * - Safer dropdown placement and tap-outside dismissal via overlay layer (controlled externally)
- * - Better accessibility: role-like hints, larger touch targets, semantic labels
- * - Works for narrow/expanded widths; no hard-coded tops/lefts
- */
 const HomeSidebar: React.FC<HomeSidebarProps> = ({
-  searchQuery,
-  onSearchChange,
   showPlusDropdown,
   onPlusToggle,
   activeNavItem,
@@ -105,12 +80,7 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
   onCreateGroup,
   selectedGroupId,
 }) => {
-  const { user, logout, updateProfile } = useAuth();
-  const callerId = useCallerId();
-  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   const [groupsExpanded, setGroupsExpanded] = useState(true);
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editedFirstName, setEditedFirstName] = useState(user?.profile?.firstName || '');
 
   const topNavItems = useMemo(
     () => [
@@ -119,7 +89,6 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
     ],
     []
   );
-
   const mainNavItems = useMemo(
     () => [
       { key: 'contacts', icon: Users, label: 'Contacts' },
@@ -129,455 +98,390 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
     []
   );
 
-  const onPressHaptic = useCallback((style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light) => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(style);
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
-  const handleSaveFirstName = async () => {
-    if (!editedFirstName.trim()) {
-      Alert.alert('Error', 'First name cannot be empty');
-      return;
-    }
-
-    try {
-      await updateProfile({ firstName: editedFirstName.trim() });
-      setIsEditingName(false);
-      Alert.alert('Success', 'Your name has been updated! This is what the AI caller will refer to you as.');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update your name. Please try again.');
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditedFirstName(user?.profile?.firstName || '');
-    setIsEditingName(false);
-  };
-
-  const handleDeleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'This will permanently delete your account and all associated data. This action cannot be undone.\n\nType "DELETE" to confirm:',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiService.deleteUserAccount();
-              Alert.alert('Account Deleted', 'Your account has been deleted successfully.');
-              await logout();
-            } catch (error) {
-              console.error('Delete account error:', error);
-              Alert.alert('Error', 'Failed to delete account. Please try again.');
-            }
-          }
-        }
-      ]
-    );
-  };
+  const onPressHaptic = useCallback(
+    (style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light) => {
+      if (Platform.OS === 'ios') Haptics.impactAsync(style);
+    },
+    []
+  );
 
   const sections = useMemo(
-    () => [
-      { title: 'Top', data: topNavItems },
-      { title: 'Main', data: mainNavItems },
-    ],
+    () => [{ title: 'Top', data: topNavItems }, { title: 'Main', data: mainNavItems }],
     [topNavItems, mainNavItems]
   );
 
   return (
     <View
       style={[
-        styles.sidebar,
-        isMobile && styles.mobileSidebar,
-        isMobile && !showMobileMenu && styles.hiddenMobileSidebar,
-      ]}
+        styles.sidebarContainer,
+        isMobile ? (styles.mobileSidebar as ViewStyle) : undefined,
+        isMobile && !showMobileMenu ? (styles.hiddenMobileSidebar as ViewStyle) : undefined,
+      ].filter(Boolean) as ViewStyle[]}
       accessibilityRole="menu"
       accessibilityLabel="Primary navigation"
     >
-      {/* Header / Branding */}
-      <View style={styles.logoSection}>
-        <View style={styles.logoRow}>
-          <View style={styles.logoAndText}>
-            <Image source={require('../assets/images/logo.webp')} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.logoText}>Heyway</Text>
-          </View>
-          {/* New + icon button */}
-          <TouchableOpacity
-            style={styles.newIconButton}
-            onPress={() => {
-              onPressHaptic(Haptics.ImpactFeedbackStyle.Medium);
-              onPlusToggle();
-            }}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            accessibilityLabel="Create new"
-          >
-            <Plus size={16} color={HEYWAY_COLORS.text.primary} />
-          </TouchableOpacity>
-        </View>
-        {/* Search field (optional) */}
-        <View style={styles.searchField}>
-          <Search size={16} color={HEYWAY_COLORS.text.tertiary} />
-          {/* You can switch to TextInput if you want actual search typing here */}
-          <Text style={styles.searchPlaceholder} numberOfLines={1}>
-            {searchQuery?.length ? searchQuery : 'Search…'}
-          </Text>
-        </View>
+      {/* Liquid Glass layer */}
+      {Platform.OS !== 'web' ? (
+        <BlurView tint="light" intensity={40} style={StyleSheet.absoluteFill} />
+      ) : (
+        <View style={styles.webGlassFallback} />
+      )}
+      {/* Inner highlight (glass rim) */}
+      <View pointerEvents="none" style={styles.innerHighlight} />
 
-        {showPlusDropdown && (
-          <View style={styles.dropdownCard}>
-            <DropdownItem icon={Phone} label="New Call" onPress={() => { onPressHaptic(); onNewCall(); }} />
-            <DropdownItem icon={Zap} label="New Automation" onPress={() => { onPressHaptic(); onNewAutomation(); }} />
-            <DropdownItem icon={User} label="New Contact" onPress={() => { onPressHaptic(); onNewContact(); }} />
-            <DropdownItem icon={FolderPlus} label="Import List" onPress={() => { onPressHaptic(); onNewList(); }} />
-          </View>
-        )}
-      </View>
-
-      {/* Body (scrollable) */}
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
-        {/* Top + Main nav */}
-        {sections.map((section) => (
-          <View key={section.title}>
-            {section.data.map((item) => (
-              <SidebarItem
-                key={item.key}
-                icon={item.icon}
-                label={item.label}
-                active={activeNavItem === item.key}
-                onPress={() => {
-                  onPressHaptic(Haptics.ImpactFeedbackStyle.Medium);
-                  onNavItemPress(item.key);
-                }}
-              />
-            ))}
-          </View>
-        ))}
-
-        {/* Groups */}
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionLabel}>Groups</Text>
-          {!!onCreateGroup && (
+      {/* Content */}
+      <View style={styles.sidebarContent}>
+        {/* Header with New Button */}
+        <View style={styles.header}>
+          <View style={styles.newButtonContainer}>
             <TouchableOpacity
-              onPress={() => { onPressHaptic(); onCreateGroup?.(); }}
-              style={styles.createBtn}
+              style={styles.newButton}
+              onPress={() => { onPressHaptic(Haptics.ImpactFeedbackStyle.Medium); onPlusToggle(); }}
+              activeOpacity={0.7}
               accessibilityRole="button"
-              accessibilityLabel="Create group"
+              accessibilityLabel="New"
             >
-              <Plus size={12} color={HEYWAY_COLORS.text.tertiary} />
+              <Plus size={16} color={HEYWAY_COLORS.text.inverse} />
+              <Text style={styles.newButtonText}>New</Text>
+              <ChevronDown
+                size={12}
+                color={HEYWAY_COLORS.text.inverse}
+                style={[
+                  styles.chevronIcon,
+                  showPlusDropdown && { transform: [{ rotate: '180deg' }] },
+                  { opacity: 0.9 }
+                ]}
+              />
             </TouchableOpacity>
-          )}
+
+            {showPlusDropdown && (
+              <View style={styles.dropdown}>
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => { onPressHaptic(); onNewCall(); }}
+                  activeOpacity={0.7}
+                >
+                  <Phone size={16} color={HEYWAY_COLORS.text.primary} />
+                  <Text style={styles.dropdownItemText}>New Call</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => { onPressHaptic(); onNewAutomation(); }}
+                  activeOpacity={0.7}
+                >
+                  <Zap size={16} color={HEYWAY_COLORS.text.primary} />
+                  <Text style={styles.dropdownItemText}>New Automation</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => { onPressHaptic(); onNewContact(); }}
+                  activeOpacity={0.7}
+                >
+                  <Users size={16} color={HEYWAY_COLORS.text.primary} />
+                  <Text style={styles.dropdownItemText}>New Contact</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => { onPressHaptic(); onNewList(); }}
+                  activeOpacity={0.7}
+                >
+                  <Hash size={16} color={HEYWAY_COLORS.text.primary} />
+                  <Text style={styles.dropdownItemText}>New List</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
 
-        {(!groups || groups.length === 0) ? (
-          <View style={styles.emptyGroupsState}>
-            <FolderPlus size={24} color={HEYWAY_COLORS.text.tertiary} />
-            <Text style={styles.emptyGroupsText}>No groups yet</Text>
-            <Text style={styles.emptyGroupsSubtext}>Create groups to organize your calls</Text>
-          </View>
-        ) : (
-          <View>
-            <TouchableOpacity style={styles.collapseRow} onPress={() => setGroupsExpanded((v) => !v)}>
-              <Text style={styles.collapseText}>{groupsExpanded ? 'Hide' : 'Show'} groups</Text>
-            </TouchableOpacity>
-            {groupsExpanded && groups.map((g) => (
-              <GroupRow
-                key={g.id}
-                name={g.name}
-                count={g.calls?.length ?? 0}
-                active={selectedGroupId === g.id}
-                onPress={() => { onPressHaptic(); onGroupSelect?.(g); }}
-              />
-            ))}
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Footer (fixed) */}
-      <View style={styles.footer}>
-        <View style={styles.accountRow}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarInitial}>{(user?.profile?.firstName || 'U').slice(0, 1)}</Text>
-          </View>
-          <View style={styles.accountTextCol}>
-            {isEditingName ? (
-              <View style={styles.editNameContainer}>
-                <TextInput
-                  style={styles.nameInput}
-                  value={editedFirstName}
-                  onChangeText={setEditedFirstName}
-                  placeholder="Enter your first name"
-                  placeholderTextColor={HEYWAY_COLORS.text.tertiary}
-                  autoFocus
-                  maxLength={30}
+        {/* Body */}
+        <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
+          {sections.map((section) => (
+            <View key={section.title}>
+              {section.data.map((item) => (
+                <SidebarItem
+                  key={item.key}
+                  icon={item.icon}
+                  label={item.label}
+                  active={activeNavItem === item.key}
+                  onPress={() => { onPressHaptic(Haptics.ImpactFeedbackStyle.Medium); onNavItemPress(item.key); }}
                 />
-                <View style={styles.editButtons}>
-                  <TouchableOpacity
-                    style={styles.saveButton}
-                    onPress={handleSaveFirstName}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.saveButtonText}>Save</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={handleCancelEdit}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.cancelButtonText}>Cancel</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
+              ))}
+            </View>
+          ))}
+
+          {/* Groups */}
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionLabel}>Groups</Text>
+            {!!onCreateGroup && (
               <TouchableOpacity
-                onPress={() => setIsEditingName(true)}
-                style={styles.nameContainer}
-                activeOpacity={0.7}
+                onPress={() => { onPressHaptic(); onCreateGroup?.(); }}
+                style={styles.createBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Create group"
               >
-                <Text style={styles.userName}>
-                  {user?.profile?.firstName || 'Tap to set your name'}
-                </Text>
-                <Text style={styles.callerIdText} numberOfLines={1}>
-                  Caller ID: {callerId?.callerIdInfo?.last4Digits ? `***-***-${callerId.callerIdInfo.last4Digits}` : 'Set up your caller ID'}
-                </Text>
+                <Plus size={12} color={HEYWAY_COLORS.text.tertiary} />
               </TouchableOpacity>
             )}
           </View>
-          <TouchableOpacity
-            style={styles.settingsIconBtn}
-            onPress={() => setShowSettingsDropdown((s) => !s)}
-            accessibilityRole="button"
-            accessibilityLabel="Open account menu"
-          >
-            <MoreHorizontal size={16} color={HEYWAY_COLORS.text.tertiary} />
-          </TouchableOpacity>
-        </View>
 
-        {showSettingsDropdown && (
-          <View style={styles.dropdownCard}>
-            <DropdownItem icon={CreditCard} label="Upgrade to Pro" onPress={() => { onPressHaptic(); onSettingsPress(); setShowSettingsDropdown(false); }} />
-            <DropdownItem icon={LogOut} label="Sign Out" onPress={() => { onPressHaptic(); handleLogout(); setShowSettingsDropdown(false); }} />
-            <DropdownItem icon={Trash2} label="Delete Account" destructive onPress={() => { onPressHaptic(); handleDeleteAccount(); setShowSettingsDropdown(false); }} />
+          {(!groups || groups.length === 0) ? (
+            <View style={styles.emptyGroupsState}>
+              <FolderPlus size={24} color={HEYWAY_COLORS.text.tertiary} />
+              <Text style={styles.emptyGroupsText}>No groups yet</Text>
+            </View>
+          ) : (
+            <View>
+              <TouchableOpacity style={styles.collapseRow} onPress={() => setGroupsExpanded((v) => !v)}>
+                <Text style={styles.collapseText}>{groupsExpanded ? 'Hide' : 'Show'} groups</Text>
+              </TouchableOpacity>
+              {groupsExpanded && groups.map((g) => (
+                <GroupRow
+                  key={g.id}
+                  name={g.name}
+                  count={g.calls?.length ?? 0}
+                  active={selectedGroupId === g.id}
+                  onPress={() => { onPressHaptic(); onGroupSelect?.(g); }}
+                />
+              ))}
+            </View>
+          )}
+        </ScrollView>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          {Platform.OS !== 'web' && (
+            <TouchableOpacity
+              style={styles.answeringBtn}
+              onPress={() => { onPressHaptic(); onInboundPress(); }}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: inboundActive }}
+            >
+              <PhoneIncoming size={16} color={inboundActive ? HEYWAY_COLORS.accent.success : HEYWAY_COLORS.text.secondary} />
+              <Text style={[styles.answeringText, { color: inboundActive ? HEYWAY_COLORS.accent.success : HEYWAY_COLORS.text.secondary }]}>
+                Answering {inboundActive ? 'On' : 'Off'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Legal Links */}
+          <View style={styles.legalLinksContainer}>
+            <View style={styles.legalLinksRow}>
+              <TouchableOpacity
+                style={styles.legalLink}
+                onPress={() => {/* Open privacy statement */ }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.legalLinkText}>Privacy Statement</Text>
+              </TouchableOpacity>
+              <Text style={styles.legalSeparator}>•</Text>
+              <TouchableOpacity
+                style={styles.legalLink}
+                onPress={() => {/* Open terms & conditions */ }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.legalLinkText}>Terms & Conditions</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.copyrightText}>Heyway Technologies, Inc. All rights reserved</Text>
           </View>
-        )}
-
-        {Platform.OS !== 'web' && (
-          <TouchableOpacity
-            style={styles.answeringBtn}
-            onPress={() => { onPressHaptic(); onInboundPress(); }}
-            accessibilityRole="switch"
-            accessibilityState={{ checked: inboundActive }}
-          >
-            <PhoneIncoming size={16} color={inboundActive ? HEYWAY_COLORS.accent.success : HEYWAY_COLORS.text.secondary} />
-            <Text style={[styles.answeringText, { color: inboundActive ? HEYWAY_COLORS.accent.success : HEYWAY_COLORS.text.secondary }]}>Answering {inboundActive ? 'On' : 'Off'}</Text>
-          </TouchableOpacity>
-        )}
+        </View>
       </View>
     </View>
   );
 };
 
-/*************************
- * Subcomponents
- *************************/
+/************** Subcomponents **************/
 const SidebarItem = ({
   icon: Icon,
   label,
   active,
   onPress,
-}: {
-  icon: any;
-  label: string;
-  active?: boolean;
-  onPress: () => void;
-}) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.navItem, active && styles.navItemActive]}
-      activeOpacity={0.85}
-      accessibilityRole="menuitem"
-      accessibilityState={{ selected: !!active }}
-    >
-      <View style={[styles.navIconWrap, active && styles.navIconWrapActive]}>
-        <Icon size={16} color={active ? HEYWAY_COLORS.accent.success : HEYWAY_COLORS.text.primary} />
-      </View>
-      <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
-      {active && <View style={styles.activeBar} />}
-    </TouchableOpacity>
-  );
-};
-
-const GroupRow = ({ name, count, active, onPress }: { name: string; count: number; active?: boolean; onPress: () => void }) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.groupRow, active && styles.groupRowActive]}
-      activeOpacity={0.85}
-      accessibilityRole="button"
-      accessibilityState={{ selected: !!active }}
-    >
-      <View style={styles.groupIconWrap}>
-        <Folder size={16} color={active ? HEYWAY_COLORS.accent.success : HEYWAY_COLORS.text.secondary} />
-      </View>
-      <Text style={[styles.groupName, active && styles.groupNameActive]} numberOfLines={1}>{name}</Text>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>{count}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-const DropdownItem = ({ icon: Icon, label, onPress, destructive }: { icon: any; label: string; onPress: () => void; destructive?: boolean }) => (
-  <TouchableOpacity style={styles.dropdownItem} onPress={onPress} activeOpacity={0.85}>
-    <Icon size={16} color={destructive ? HEYWAY_COLORS.status.error : HEYWAY_COLORS.text.secondary} />
-    <Text style={[styles.dropdownText, destructive && { color: HEYWAY_COLORS.status.error }]}>{label}</Text>
+}: { icon: any; label: string; active?: boolean; onPress: () => void }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[styles.navItem, active && styles.navItemActive]}
+    activeOpacity={0.85}
+    accessibilityRole="menuitem"
+    accessibilityState={{ selected: !!active }}
+  >
+    <View style={styles.navIconWrap}>
+      <Icon size={18} color={active ? HEYWAY_COLORS.text.macosPrimary : HEYWAY_COLORS.text.macosSecondary} />
+    </View>
+    <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
   </TouchableOpacity>
 );
 
-/*************************
- * Styles
- *************************/
-const SIDEBAR_WIDTH = 224; // slightly roomier than before
+const GroupRow = ({ name, count, active, onPress }: { name: string; count: number; active?: boolean; onPress: () => void }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[styles.groupRow, active && styles.groupRowActive]}
+    activeOpacity={0.85}
+    accessibilityRole="button"
+    accessibilityState={{ selected: !!active }}
+  >
+    <View style={styles.groupIconWrap}>
+      <Folder size={16} color={active ? '#6B6B6B' : HEYWAY_COLORS.text.secondary} />
+    </View>
+    <Text style={[styles.groupName, active && styles.groupNameActive]} numberOfLines={1}>{name}</Text>
+    <View style={styles.badge}>
+      <Text style={styles.badgeText}>{count}</Text>
+    </View>
+  </TouchableOpacity>
+);
+
+
+/************** Styles **************/
+const SIDEBAR_WIDTH = 224;
 
 const styles = StyleSheet.create({
-  sidebar: {
+  // Clean sidebar container with sharp borders
+  sidebarContainer: {
     width: SIDEBAR_WIDTH,
     height: '100%',
-    backgroundColor: HEYWAY_COLORS.background.secondary,
     borderRightWidth: 1,
-    borderRightColor: HEYWAY_COLORS.border.secondary,
+    borderRightColor: '#d1d1d6', // Clean sharp border
+    ...HEYWAY_SHADOWS.light.sm, // Subtle shadow
+    overflow: 'hidden', // clips blur & highlight to rounded edge
+    backgroundColor: '#F1F3F4', // Slightly darker gray background
   },
+  // Web fallback when BlurView isn't available
+  webGlassFallback: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#F1F3F4', // Slightly darker gray background
+  },
+  // inner highlight ring for glass rim
+  innerHighlight: {
+    ...StyleSheet.absoluteFillObject,
+    borderRightWidth: 0,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    // subtle inner top highlight
+    shadowColor: '#FFFFFF',
+    shadowOpacity: 0.55,
+    shadowRadius: 0,
+  },
+  // actual content wrapper to restore solid padding
+  sidebarContent: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+
   mobileSidebar: {
     position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
+    left: 8,
+    top: 8,
+    bottom: 8,
+    right: 8,
     zIndex: 20,
+    borderRadius: HEYWAY_RADIUS.lg, // Add curved corners for mobile too
   },
-  hiddenMobileSidebar: { transform: [{ translateX: -SIDEBAR_WIDTH }] },
+  hiddenMobileSidebar: { transform: [{ translateX: -(SIDEBAR_WIDTH + 16) }] }, // Account for margins
 
-  logoSection: {
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingTop: HEYWAY_SPACING.lg,
-    paddingBottom: HEYWAY_SPACING.md,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
+  header: {
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E7', // Clean border
+    backgroundColor: '#F1F3F4', // Slightly darker gray background
     alignItems: 'center',
   },
-  logoRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 12 },
-  logoAndText: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logo: { width: 36, height: 36 },
-  logoText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.2,
-  },
-  searchField: {
-    height: 32,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.secondary,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    paddingHorizontal: HEYWAY_SPACING.sm,
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: HEYWAY_SPACING.sm,
+
+  newButtonContainer: {
     width: '100%',
+    position: 'relative',
   },
-  searchPlaceholder: {
-    flex: 1,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    color: HEYWAY_COLORS.text.tertiary,
-  },
-
-  newIconButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
+  newButton: {
+    width: '100%',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.secondary,
+    height: 34,
+    backgroundColor: '#007AFF', // Clean blue
+    shadowColor: '#007AFF',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    flexDirection: 'row',
+    gap: 6,
   },
-
-  dropdownCard: {
-    marginTop: HEYWAY_SPACING.sm,
-    borderRadius: HEYWAY_RADIUS.md,
-    borderWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.primary,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    ...HEYWAY_SHADOWS.light.md,
-    paddingVertical: HEYWAY_SPACING.xs,
+  newButtonText: {
+    color: HEYWAY_COLORS.text.inverse,
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: -0.2,
+  },
+  chevronIcon: {
+    marginLeft: 2,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 42,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingVertical: HEYWAY_SPACING.sm,
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    zIndex: 1000,
+    ...webView({
+      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)'
+    } as any),
   },
   dropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.md,
-    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    gap: HEYWAY_SPACING.sm,
+    ...webView({ cursor: 'pointer' as any }),
   },
-  dropdownText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+  dropdownItemText: {
+    fontSize: 14,
+    fontWeight: '500',
     color: HEYWAY_COLORS.text.primary,
+    letterSpacing: -0.2,
   },
 
   body: { flex: 1 },
-  bodyContent: { paddingVertical: HEYWAY_SPACING.sm },
+  bodyContent: { paddingVertical: HEYWAY_SPACING.xs },
 
   navItem: {
-    marginHorizontal: HEYWAY_SPACING.sm,
-    height: HEYWAY_ACCESSIBILITY.touchTarget.minimum,
-    borderRadius: HEYWAY_RADIUS.sm,
+    height: 32,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 40,
-    paddingRight: HEYWAY_SPACING.sm,
+    paddingLeft: 16,
+    paddingRight: 12,
+    backgroundColor: 'transparent',
+    borderRadius: 8, // Rounder corners for consistency
+    ...webView({ cursor: 'pointer' as any }),
   },
   navItemActive: {
-    backgroundColor: HEYWAY_COLORS.background.intelligenceSubtle,
-    borderLeftWidth: 3,
-    borderLeftColor: HEYWAY_COLORS.interactive.whatsappGreen,
-    paddingLeft: 37,
+    backgroundColor: '#E5E7EB', // Darker gray background
+    borderRadius: 8, // Rounder corners
   },
   navIconWrap: {
-    position: 'absolute',
-    left: 12,
     width: 20,
     height: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 8,
   },
-  navIconWrapActive: {},
   navLabel: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    color: HEYWAY_COLORS.text.primary,
+    fontSize: 16,
+    color: HEYWAY_COLORS.text.macosPrimary,
   },
-  navLabelActive: {
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium as any,
-  },
-  activeBar: {
-    position: 'absolute',
-    left: 0,
-    top: 6,
-    bottom: 6,
-    width: 3,
-    backgroundColor: HEYWAY_COLORS.interactive.whatsappGreen,
-    borderTopRightRadius: 1,
-    borderBottomRightRadius: 1,
-  },
+  navLabelActive: { fontWeight: '600' },
 
   sectionHeaderRow: {
     marginTop: HEYWAY_SPACING.lg,
@@ -595,19 +499,11 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   createBtn: {
-    width: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 20, height: 20, alignItems: 'center', justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderWidth: 0.5,
-    borderColor: HEYWAY_COLORS.border.tertiary,
-  },
-  createText: {
-    fontSize: 10,
-    color: HEYWAY_COLORS.text.tertiary,
-    fontWeight: '500',
+    backgroundColor: HEYWAY_COLORS.fill.quaternary,
+    borderWidth: 0.5, borderColor: HEYWAY_COLORS.border.tertiary,
+    ...webView({ cursor: 'pointer' as any }),
   },
 
   emptyGroupsState: {
@@ -618,158 +514,61 @@ const styles = StyleSheet.create({
     gap: HEYWAY_SPACING.xs,
   },
   emptyGroupsText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold as any,
+    fontSize: 13,
+    fontWeight: '600',
     color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+    letterSpacing: -0.2,
   },
-  emptyGroupsSubtext: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    color: HEYWAY_COLORS.text.secondary,
-  },
+  emptyGroupsSubtext: { fontSize: 15, color: HEYWAY_COLORS.text.secondary },
 
   collapseRow: {
     paddingHorizontal: HEYWAY_SPACING.sm,
     paddingVertical: HEYWAY_SPACING.xs,
+    ...webView({ cursor: 'pointer' as any }),
   },
-  collapseText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
-    color: HEYWAY_COLORS.text.tertiary,
-  },
+  collapseText: { fontSize: 12, color: HEYWAY_COLORS.text.tertiary },
 
   groupRow: {
     marginHorizontal: HEYWAY_SPACING.sm,
     height: 28,
-    borderRadius: 4,
+    borderRadius: 6,
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 40,
     paddingRight: HEYWAY_SPACING.sm,
+    backgroundColor: 'transparent',
+    ...webView({ cursor: 'pointer' as any }),
   },
-  groupRowActive: {
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-  },
+  groupRowActive: { backgroundColor: 'rgba(255,255,255,0.12)' },
   groupIconWrap: {
     position: 'absolute',
     left: 12,
-    width: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 20, height: 20,
+    alignItems: 'center', justifyContent: 'center',
   },
-  groupName: {
-    flex: 1,
-    fontSize: 12,
-    color: HEYWAY_COLORS.text.secondary,
-  },
-  groupNameActive: {
-    color: HEYWAY_COLORS.text.primary,
-    fontWeight: '500',
-  },
+  groupName: { flex: 1, fontSize: 12, color: HEYWAY_COLORS.text.secondary },
+  groupNameActive: { color: HEYWAY_COLORS.text.primary, fontWeight: '500' },
   badge: {
-    ...HEYWAY_CHAT_PATTERNS.badge,
-    backgroundColor: HEYWAY_COLORS.accent.success,
+    backgroundColor: '#6B6B6B',
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    paddingHorizontal: 4,
   },
   badgeText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.small,
-    color: HEYWAY_COLORS.text.tertiary,
+    fontSize: 11,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 
   footer: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: HEYWAY_COLORS.border.tertiary,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E7',
     padding: HEYWAY_SPACING.md,
     gap: HEYWAY_SPACING.sm,
-    backgroundColor: HEYWAY_COLORS.background.primary,
-  },
-  accountRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: HEYWAY_SPACING.sm,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
-  },
-  avatarInitial: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    color: HEYWAY_COLORS.text.secondary,
-  },
-  accountTextCol: { flex: 1 },
-  nameContainer: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold as any,
-    color: HEYWAY_COLORS.text.primary,
-    lineHeight: 16,
-  },
-  callerIdText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    color: HEYWAY_COLORS.text.secondary,
-  },
-  editNameContainer: {
-    flex: 1,
-  },
-  nameInput: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    color: HEYWAY_COLORS.text.primary,
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.sm,
-    paddingHorizontal: HEYWAY_SPACING.sm,
-    paddingVertical: HEYWAY_SPACING.xs,
-    marginBottom: HEYWAY_SPACING.xs,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-  },
-  editButtons: {
-    flexDirection: 'row',
-    gap: HEYWAY_SPACING.xs,
-  },
-  saveButton: {
-    backgroundColor: HEYWAY_COLORS.accent.success,
-    borderRadius: HEYWAY_RADIUS.sm,
-    paddingHorizontal: HEYWAY_SPACING.sm,
-    paddingVertical: HEYWAY_SPACING.xs,
-    flex: 1,
-  },
-  saveButtonText: {
-    color: HEYWAY_COLORS.text.inverse,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium as any,
-    textAlign: 'center',
-  },
-  cancelButton: {
-    backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.sm,
-    paddingHorizontal: HEYWAY_SPACING.sm,
-    paddingVertical: HEYWAY_SPACING.xs,
-    flex: 1,
-    borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.primary,
-  },
-  cancelButtonText: {
-    color: HEYWAY_COLORS.text.secondary,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium as any,
-    textAlign: 'center',
-  },
-  settingsIconBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: HEYWAY_COLORS.background.secondary,
+    backgroundColor: '#F8F9FA',
   },
 
   answeringBtn: {
@@ -777,10 +576,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: HEYWAY_SPACING.sm,
     paddingVertical: HEYWAY_SPACING.sm,
+    ...webView({ cursor: 'pointer' as any }),
   },
-  answeringText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium as any,
+  answeringText: { fontSize: 13, fontWeight: '600' },
+
+  /* --- LEGAL LINKS STYLES ------------------------------------------ */
+  legalLinksContainer: {
+    marginTop: HEYWAY_SPACING.sm,
+    gap: HEYWAY_SPACING.xs,
+  },
+  legalLinksRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: HEYWAY_SPACING.xs,
+  },
+  legalLink: {
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    ...webView({ cursor: 'pointer' as any }),
+  },
+  legalLinkText: {
+    fontSize: 10,
+    color: HEYWAY_COLORS.text.tertiary,
+    fontWeight: '500',
+  },
+  legalSeparator: {
+    fontSize: 10,
+    color: HEYWAY_COLORS.text.tertiary,
+    fontWeight: '400',
+  },
+  copyrightText: {
+    fontSize: 9,
+    color: HEYWAY_COLORS.text.tertiary,
+    fontWeight: '400',
+    textAlign: 'center',
   },
 });
 

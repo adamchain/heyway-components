@@ -22,7 +22,7 @@ export default function CallAnalysisTag({
       case 'good':
         return {
           label: 'Good',
-          backgroundColor: '#E8F5E8',
+          backgroundColor: 'rgba(76, 175, 80, 0.1)',
           textColor: '#2D5A2D',
           borderColor: '#4CAF50',
           icon: CheckCircle
@@ -30,7 +30,7 @@ export default function CallAnalysisTag({
       case 'bad':
         return {
           label: 'Bad',
-          backgroundColor: '#FFEBEE',
+          backgroundColor: 'rgba(244, 67, 54, 0.1)',
           textColor: '#B71C1C',
           borderColor: '#F44336',
           icon: AlertTriangle
@@ -38,7 +38,7 @@ export default function CallAnalysisTag({
       case 'opportunity':
         return {
           label: 'Opportunity',
-          backgroundColor: '#FFF3E0',
+          backgroundColor: 'rgba(255, 152, 0, 0.1)',
           textColor: '#E65100',
           borderColor: '#FF9800',
           icon: Clock
@@ -58,27 +58,27 @@ export default function CallAnalysisTag({
     switch (size) {
       case 'small':
         return {
-          paddingVertical: HEYWAY_SPACING.xs,
-          paddingHorizontal: HEYWAY_SPACING.sm,
+          paddingVertical: HEYWAY_SPACING.xxs,
+          paddingHorizontal: HEYWAY_SPACING.xs,
           fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
-          iconSize: 10,
-          borderRadius: HEYWAY_RADIUS.sm
+          iconSize: 8,
+          borderRadius: HEYWAY_RADIUS.xs
         };
       case 'large':
         return {
-          paddingVertical: HEYWAY_SPACING.sm,
-          paddingHorizontal: HEYWAY_SPACING.md,
+          paddingVertical: HEYWAY_SPACING.xs,
+          paddingHorizontal: HEYWAY_SPACING.sm,
           fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-          iconSize: 16,
-          borderRadius: HEYWAY_RADIUS.md
+          iconSize: 14,
+          borderRadius: HEYWAY_RADIUS.sm
         };
       default: // medium
         return {
-          paddingVertical: HEYWAY_SPACING.xs,
-          paddingHorizontal: HEYWAY_SPACING.sm,
-          fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.medium,
-          iconSize: 12,
-          borderRadius: HEYWAY_RADIUS.sm
+          paddingVertical: HEYWAY_SPACING.xxs,
+          paddingHorizontal: HEYWAY_SPACING.xs,
+          fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
+          iconSize: 10,
+          borderRadius: HEYWAY_RADIUS.xs
         };
     }
   };
@@ -126,7 +126,7 @@ export default function CallAnalysisTag({
 
 const styles = StyleSheet.create({
   tag: {
-    borderWidth: 1,
+    borderWidth: 0,
     alignSelf: 'flex-start',
   },
   tagContent: {
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    marginRight: HEYWAY_SPACING.xs,
+    marginRight: HEYWAY_SPACING.xxs,
   },
   tagText: {
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,

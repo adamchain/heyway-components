@@ -60,6 +60,45 @@ export default function CallerIdAdd({ visible, onClose, onSuccess }: CallerIdAdd
         setPhoneNumber(formatted);
     };
 
+    const handleRemoveAndRetry = async () => {
+        try {
+            setLoading(true);
+            // Remove the existing caller ID
+            await apiService.delete(`/caller-ids/${encodeURIComponent(phoneNumber.trim())}`);
+            
+            // Wait a moment for the removal to process
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Retry the verification
+            const response = await apiService.post('/caller-ids/start', {
+                phoneNumber: phoneNumber.trim(),
+                isLandline: isLandline
+            });
+
+            if (response.success) {
+                if (isLandline) {
+                    setStep('call');
+                    Alert.alert(
+                        'Call Initiated',
+                        'Twilio will call this number now with a verification code. Pick up and follow the prompts to complete verification.'
+                    );
+                } else {
+                    setStep('sms');
+                    Alert.alert(
+                        'SMS Sent',
+                        'Please check your phone for a verification code and enter it below.'
+                    );
+                }
+            } else {
+                Alert.alert('Error', response.error || 'Failed to start verification');
+            }
+        } catch (removeError) {
+            Alert.alert('Error', 'Failed to remove existing caller ID. Please try with a different number.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const startVerification = async () => {
         if (!phoneNumber.trim()) {
             Alert.alert('Error', 'Please enter a phone number');
@@ -103,16 +142,7 @@ export default function CallerIdAdd({ visible, onClose, onSuccess }: CallerIdAdd
                         {
                             text: 'Remove & Retry',
                             style: 'destructive',
-                            onPress: async () => {
-                                try {
-                                    // Remove the existing caller ID and retry
-                                    await apiService.delete(`/caller-ids/${encodeURIComponent(phoneNumber.trim())}`);
-                                    // Retry the verification
-                                    startVerification();
-                                } catch (removeError) {
-                                    Alert.alert('Error', 'Failed to remove existing caller ID. Please try with a different number.');
-                                }
-                            }
+                            onPress: handleRemoveAndRetry
                         }
                     ]
                 );
@@ -450,16 +480,33 @@ export default function CallerIdAdd({ visible, onClose, onSuccess }: CallerIdAdd
     };
 
     return (
-        <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-            <SafeAreaView style={styles.container}>
-                <KeyboardAvoidingView
-                    style={styles.keyboardAvoid}
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                >
+        <Modal
+            visible={visible}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={handleClose}
+        >
+            <KeyboardAvoidingView
+                style={styles.overlay}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                <View style={styles.modalContainer}>
                     <View style={styles.header}>
-                        <Text style={styles.title}>Caller ID Verification</Text>
-                        <TouchableOpacity onPress={handleClose}>
-                            <X size={24} color="#8E8E93" />
+                        <View style={styles.headerContent}>
+                            <View style={styles.iconContainer}>
+                                <Phone size={20} color={HEYWAY_COLORS.interactive.primary} />
+                            </View>
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.title}>Caller ID Verification</Text>
+                                <Text style={styles.subtitle}>Add and verify your phone number</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={handleClose}
+                            activeOpacity={0.7}
+                        >
+                            <X size={20} color={HEYWAY_COLORS.text.secondary} />
                         </TouchableOpacity>
                     </View>
 
@@ -468,62 +515,118 @@ export default function CallerIdAdd({ visible, onClose, onSuccess }: CallerIdAdd
                     </View>
 
                     {step !== 'complete' && (
-                        <View style={styles.stepIndicator}>
-                            <View style={styles.stepDots}>
-                                {['input', 'sms', 'call'].map((stepName, index) => (
-                                    <View
-                                        key={stepName}
-                                        style={[
-                                            styles.stepDot,
-                                            stepName === step && styles.activeStepDot,
-                                            ['input', 'sms', 'call'].indexOf(step) > index && styles.completedStepDot
-                                        ]}
-                                    />
-                                ))}
+                        <View style={styles.footer}>
+                            <View style={styles.stepIndicator}>
+                                <View style={styles.stepDots}>
+                                    {['input', 'sms', 'call'].map((stepName, index) => (
+                                        <View
+                                            key={stepName}
+                                            style={[
+                                                styles.stepDot,
+                                                stepName === step && styles.activeStepDot,
+                                                ['input', 'sms', 'call'].indexOf(step) > index && styles.completedStepDot
+                                            ]}
+                                        />
+                                    ))}
+                                </View>
+                                <Text style={styles.stepIndicatorText}>
+                                    Step {step === 'input' ? '1' : step === 'sms' ? '2' : '3'} of 3
+                                </Text>
                             </View>
-                            <Text style={styles.stepIndicatorText}>
-                                Step {step === 'input' ? '1' : step === 'sms' ? '2' : '3'} of 3
-                            </Text>
                         </View>
                     )}
-                </KeyboardAvoidingView>
-            </SafeAreaView>
+                </View>
+            </KeyboardAvoidingView>
         </Modal>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    overlay: {
         flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: HEYWAY_SPACING.xl,
+    },
+
+    modalContainer: {
         backgroundColor: HEYWAY_COLORS.background.primary,
+        borderRadius: HEYWAY_RADIUS.lg,
+        width: '100%',
+        maxWidth: 500,
+        maxHeight: '90%',
+        ...HEYWAY_SHADOWS.light.lg,
+        elevation: 8,
     },
-    keyboardAvoid: {
-        flex: 1,
-    },
+
     header: {
         flexDirection: 'row',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: HEYWAY_SPACING.xl,
-        paddingVertical: HEYWAY_SPACING.lg,
-        borderBottomWidth: 1,
+        padding: HEYWAY_SPACING.xl,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: HEYWAY_COLORS.border.primary,
-        backgroundColor: HEYWAY_COLORS.background.secondary,
+    },
+
+    headerContent: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        flex: 1,
+        gap: HEYWAY_SPACING.md,
+    },
+
+    titleContainer: {
+        flex: 1,
+        gap: HEYWAY_SPACING.xs,
+    },
+
+    iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: HEYWAY_COLORS.background.intelligenceSubtle,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    closeButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: HEYWAY_COLORS.background.content,
     },
     title: {
-        fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
         color: HEYWAY_COLORS.text.primary,
         letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
     },
+
+    subtitle: {
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+        color: HEYWAY_COLORS.text.secondary,
+        letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    },
     content: {
         flex: 1,
-        justifyContent: 'center',
         paddingHorizontal: HEYWAY_SPACING.xl,
+        paddingVertical: HEYWAY_SPACING.lg,
+    },
+
+    footer: {
+        padding: HEYWAY_SPACING.xl,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: HEYWAY_COLORS.border.divider,
     },
     stepContent: {
         alignItems: 'center',
-        paddingVertical: HEYWAY_SPACING.xxxxl,
+        justifyContent: 'center',
+        flex: 1,
+        paddingVertical: HEYWAY_SPACING.xl,
     },
     iconContainer: {
         width: 80,
@@ -678,8 +781,7 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     stepIndicator: {
-        paddingHorizontal: HEYWAY_SPACING.xl,
-        paddingBottom: HEYWAY_SPACING.xl,
+        alignItems: 'center',
     },
     stepDots: {
         flexDirection: 'row',

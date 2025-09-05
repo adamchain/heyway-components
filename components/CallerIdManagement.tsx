@@ -65,7 +65,9 @@ export default function CallerIdManagement({
                 return;
             }
 
-            const ids = await apiService.getCallerIds();
+            const response = await apiService.get('/caller-ids');
+            const ids = response.success ? response.data : [];
+            console.log('Loaded caller IDs:', ids);
             setCallerIds(ids);
         } catch (error) {
             console.error('Failed to load caller IDs:', error);
@@ -150,7 +152,7 @@ export default function CallerIdManagement({
     const syncCallerIds = async () => {
         try {
             setSyncing(true);
-            const result = await apiService.syncCallerIds();
+            const result = await apiService.post('/caller-ids/sync');
 
             if (result.success) {
                 Alert.alert('Success', result.message || 'Caller IDs synced successfully');
@@ -227,14 +229,32 @@ export default function CallerIdManagement({
     );
 
     return (
-        <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-            <SafeAreaView style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Caller ID Setup</Text>
-                    <TouchableOpacity onPress={onClose}>
-                        <X size={24} color="#8E8E93" />
-                    </TouchableOpacity>
-                </View>
+        <Modal
+            visible={visible}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={onClose}
+        >
+            <View style={styles.overlay}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.header}>
+                        <View style={styles.headerContent}>
+                            <View style={styles.iconContainer}>
+                                <Phone size={20} color={HEYWAY_COLORS.interactive.primary} />
+                            </View>
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.title}>Caller ID Setup</Text>
+                                <Text style={styles.subtitle}>Manage your verified phone numbers</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={onClose}
+                            activeOpacity={0.7}
+                        >
+                            <X size={20} color={HEYWAY_COLORS.text.secondary} />
+                        </TouchableOpacity>
+                    </View>
 
                 <ScrollView style={styles.content}>
                     <Text style={styles.description}>
@@ -282,9 +302,9 @@ export default function CallerIdManagement({
                     ) : callerIds.length === 0 ? (
                         <View style={styles.emptyContainer}>
                             <Phone size={48} color="#8E8E93" />
-                            <Text style={styles.emptyTitle}>No Caller IDs</Text>
+                            <Text style={styles.emptyTitle}>No Verified Caller IDs</Text>
                             <Text style={styles.emptyText}>
-                                Add a phone number to get started with AI calling
+                                Add and verify a phone number to get started with AI calling
                             </Text>
                         </View>
                     ) : (
@@ -325,7 +345,27 @@ export default function CallerIdManagement({
                             </View>
                         ))
                     )}
-                </ScrollView>
+                    </ScrollView>
+
+                    <View style={styles.footer}>
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={onClose}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.cancelButtonText}>Close</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.addButton}
+                            onPress={() => setShowAddModal(true)}
+                            disabled={loading}
+                            activeOpacity={0.8}
+                        >
+                            <Plus size={16} color={HEYWAY_COLORS.text.white} />
+                            <Text style={styles.addButtonText}>Add Number</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
 
                 {/* Add Caller ID Modal */}
                 <CallerIdAdd
@@ -337,36 +377,84 @@ export default function CallerIdManagement({
                         Alert.alert('Success', 'Caller ID verified successfully!');
                     }}
                 />
-            </SafeAreaView>
+            </View>
         </Modal>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    overlay: {
         flex: 1,
-        backgroundColor: HEYWAY_COLORS.background.primary,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: HEYWAY_SPACING.xl,
     },
+
+    modalContainer: {
+        backgroundColor: HEYWAY_COLORS.background.primary,
+        borderRadius: HEYWAY_RADIUS.lg,
+        width: '100%',
+        maxWidth: 500,
+        maxHeight: '80%',
+        ...HEYWAY_SHADOWS.light.lg,
+        elevation: 8,
+    },
+
     header: {
         flexDirection: 'row',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: HEYWAY_SPACING.xl,
-        paddingVertical: HEYWAY_SPACING.lg,
-        backgroundColor: HEYWAY_COLORS.background.secondary,
-        borderBottomWidth: 1,
+        padding: HEYWAY_SPACING.xl,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: HEYWAY_COLORS.border.primary,
     },
+
+    headerContent: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        flex: 1,
+        gap: HEYWAY_SPACING.md,
+    },
+
+    iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: HEYWAY_COLORS.background.intelligenceSubtle,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    titleContainer: {
+        flex: 1,
+        gap: HEYWAY_SPACING.xs,
+    },
+
+    closeButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: HEYWAY_COLORS.background.content,
+    },
     title: {
-        fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.medium,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
         color: HEYWAY_COLORS.text.primary,
         letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
     },
+
+    subtitle: {
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+        color: HEYWAY_COLORS.text.secondary,
+        letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    },
     content: {
         flex: 1,
-        paddingHorizontal: HEYWAY_SPACING.xl,
-        paddingTop: HEYWAY_SPACING.xl,
+        padding: HEYWAY_SPACING.xl,
     },
     description: {
         fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
@@ -376,20 +464,41 @@ const styles = StyleSheet.create({
         marginBottom: HEYWAY_SPACING.xxl,
         letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     },
-    buttonRow: {
+    footer: {
         flexDirection: 'row',
-        marginBottom: HEYWAY_SPACING.xl,
+        gap: HEYWAY_SPACING.md,
+        padding: HEYWAY_SPACING.xl,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: HEYWAY_COLORS.border.divider,
     },
+
+    cancelButton: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: HEYWAY_SPACING.md,
+        borderRadius: HEYWAY_RADIUS.md,
+        backgroundColor: HEYWAY_COLORS.background.content,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: HEYWAY_COLORS.border.primary,
+    },
+
+    cancelButtonText: {
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+        color: HEYWAY_COLORS.text.secondary,
+        letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    },
+
     addButton: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: HEYWAY_COLORS.background.secondary,
-        borderRadius: HEYWAY_RADIUS.component.button.lg,
-        paddingVertical: HEYWAY_SPACING.lg,
-        borderWidth: 1,
-        borderColor: HEYWAY_COLORS.border.primary,
-        ...HEYWAY_SHADOWS.light.xs,
+        gap: HEYWAY_SPACING.sm,
+        paddingVertical: HEYWAY_SPACING.md,
+        borderRadius: HEYWAY_RADIUS.md,
+        backgroundColor: HEYWAY_COLORS.interactive.primary,
     },
     refreshButton: {
         alignItems: 'center',
@@ -403,7 +512,6 @@ const styles = StyleSheet.create({
         ...HEYWAY_SHADOWS.light.sm,
     },
     addButtonText: {
-        marginLeft: HEYWAY_SPACING.sm,
         fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
         fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
         color: HEYWAY_COLORS.text.primary,
@@ -511,6 +619,31 @@ const styles = StyleSheet.create({
         color: HEYWAY_COLORS.text.secondary,
         textAlign: 'center',
         lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+        letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    },
+
+    actionButtons: {
+        flexDirection: 'row',
+        gap: HEYWAY_SPACING.sm,
+        marginBottom: HEYWAY_SPACING.lg,
+    },
+
+    syncButton: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: HEYWAY_COLORS.background.content,
+        borderRadius: HEYWAY_RADIUS.md,
+        paddingVertical: HEYWAY_SPACING.sm,
+        paddingHorizontal: HEYWAY_SPACING.md,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: HEYWAY_COLORS.border.primary,
+    },
+
+    syncButtonText: {
+        fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+        fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+        color: HEYWAY_COLORS.text.primary,
         letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
     },
 });

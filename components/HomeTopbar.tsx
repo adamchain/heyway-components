@@ -142,17 +142,22 @@ const styles = StyleSheet.create({
     paddingVertical: HEYWAY_SPACING.md,
     paddingHorizontal: HEYWAY_SPACING.xxl,
     zIndex: 100,
-    borderBottomWidth: 0.5,
-    borderBottomColor: HEYWAY_COLORS.border.secondary,
-    shadowColor: 'rgba(0, 0, 0, 0.08)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 4,
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
+    // Apple-style prominent border and shadow
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    // Enhanced Apple-style shadow
+    shadowColor: 'rgba(0, 0, 0, 0.15)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 12,
+    // Add subtle inner shadow effect
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.8)',
   },
 
   topbarContent: {
@@ -160,7 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
-    gap: HEYWAY_SPACING.lg,
+    // gap is not supported in React Native ViewStyle, so use margin/padding if needed
   },
 
   leftPanelSpacer: {
@@ -171,14 +176,14 @@ const styles = StyleSheet.create({
   topbarBranding: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: HEYWAY_SPACING.sm,
     marginLeft: HEYWAY_SPACING.lg,
+    gap: 8, // Add small gap between logo and text
   },
 
   topbarLogoImage: {
     width: 40,
     height: 40,
-    borderRadius: HEYWAY_RADIUS.component.card.lg,
+    borderRadius: HEYWAY_RADIUS.component.card, // should be a number, not object
     shadowColor: 'rgba(0, 0, 0, 0.06)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
@@ -187,9 +192,9 @@ const styles = StyleSheet.create({
   },
 
   topbarTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title.large,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.primary,
+    fontSize: 24, // Increased from title.large to 24px for bigger text
+    fontWeight: '600',
+    color: '#0071e3',
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
 
@@ -213,10 +218,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#000000',
-    borderRadius: HEYWAY_RADIUS.component.button.full,
+    borderRadius: typeof HEYWAY_RADIUS.component.button === 'number' ? HEYWAY_RADIUS.component.button : 10,
     paddingVertical: HEYWAY_SPACING.sm,
     paddingHorizontal: HEYWAY_SPACING.md,
-    gap: HEYWAY_SPACING.xs,
     minHeight: 32,
     shadowColor: 'rgba(0, 0, 0, 0.1)',
     shadowOffset: { width: 0, height: 2 },
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
     top: 56,
     right: 0,
     backgroundColor: HEYWAY_COLORS.background.primary,
-    borderRadius: HEYWAY_RADIUS.component.card.xxl,
+    borderRadius: typeof HEYWAY_RADIUS.component.card === 'number' ? HEYWAY_RADIUS.component.card : 12,
     paddingVertical: HEYWAY_SPACING.sm,
     minWidth: 200,
     borderWidth: 1,
@@ -252,15 +256,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: HEYWAY_SPACING.lg,
     paddingHorizontal: HEYWAY_SPACING.lg,
-    gap: HEYWAY_SPACING.md,
-    borderRadius: HEYWAY_RADIUS.component.button.md,
+    borderRadius: typeof HEYWAY_RADIUS.component.button === 'number' ? HEYWAY_RADIUS.component.button : 10,
     marginHorizontal: HEYWAY_SPACING.xs,
     minHeight: HEYWAY_LAYOUT.component.button.height.md,
   },
 
   dropdownItemText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    fontSize: 15,
+    fontWeight: '500',
     color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
@@ -269,7 +272,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: HEYWAY_COLORS.background.secondary,
-    borderRadius: HEYWAY_RADIUS.component.input.xl,
+    borderRadius: 12,
     paddingHorizontal: HEYWAY_SPACING.md,
     paddingVertical: HEYWAY_SPACING.sm,
     borderWidth: 0,
@@ -283,8 +286,8 @@ const styles = StyleSheet.create({
 
   searchInput: {
     flex: 1,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
+    fontSize: 15,
+    fontWeight: '400',
     color: HEYWAY_COLORS.text.primary,
     paddingVertical: 0,
   },
