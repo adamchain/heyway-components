@@ -578,7 +578,7 @@ function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: HEYWAY_COLORS.background.primary, // Consistent background
+    backgroundColor: '#FFFFFF', // Clean white background
   } as const,
 
   safeArea: {
@@ -586,321 +586,234 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 
-  // Desktop Layout Styles - Clean minimalist design
+  // Clean Desktop Layout
   desktopLayout: {
     flex: 1,
     flexDirection: 'row',
     gap: 0,
-    backgroundColor: '#FFFFFF', // Clean white background
-    paddingTop: 44, // Account for fixed header height
+    backgroundColor: '#FFFFFF',
+    paddingTop: 60, // Clean header space
   },
 
-  // Mobile Layout Override
+  // Mobile Layout
   mobileLayout: {
     flexDirection: 'column',
-    backgroundColor: '#FFFFFF', // Clean white background
-    paddingTop: 0, // No header on mobile, so no padding needed
-    paddingBottom: 0, // Bottom nav handles its own padding
+    backgroundColor: '#FFFFFF',
+    paddingTop: 0,
+    paddingBottom: 0,
   },
 
-  // Mobile Overlay - WhatsApp-inspired overlay
+  // Clean Mobile Overlay
   mobileOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: HEYWAY_COLORS.background.overlay,
+    backgroundColor: 'rgba(0,0,0,0.3)',
     zIndex: 999,
   },
 
-  // Clean Header Styles
+  // Modern Header
   liquidGlassHeader: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 44,
-    backgroundColor: '#FFFFFF', // Clean white background
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7', // Clean subtle border
+    height: 60,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E5E5E7',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    ...HEYWAY_SHADOWS.light.xs, // Subtle shadow
-    zIndex: 1000, // Ensure it's above other content
+    paddingHorizontal: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+    zIndex: 1000,
   },
   headerLeft: {
-    width: 120,
+    width: 140,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: 8,
+    gap: 12,
   },
   headerLogo: {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
+    borderRadius: 6,
   },
   headerLogoText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    color: HEYWAY_COLORS.interactive.primary,
-    letterSpacing: -0.2,
+    color: '#007AFF',
+    letterSpacing: -0.3,
   },
   headerCenter: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  topbarNavigation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 24,
-  },
-  topbarNavItem: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-    gap: 2,
-  },
-  topbarNavItemActive: {
-    backgroundColor: 'rgba(0,122,255,0.1)',
-  },
-  topbarNavLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: -0.1,
-  },
-  topbarNavLabelActive: {
-    color: HEYWAY_COLORS.interactive.primary,
-    fontWeight: '600',
-  },
-  headerSearchContainer: {
-    position: 'relative',
-    width: 300,
-  },
-  headerSearchIcon: {
-    position: 'absolute',
-    left: 12,
-    top: 6,
-    zIndex: 1,
-  },
-  headerSearchInput: {
-    backgroundColor: HEYWAY_COLORS.background.macosHover,
-    borderRadius: HEYWAY_RADIUS.lg,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    paddingLeft: 36,
-    fontSize: 14,
-    color: HEYWAY_COLORS.text.macosPrimary,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.secondary,
-    ...HEYWAY_SHADOWS.light.xs,
-    height: 32,
-  },
   headerRight: {
+    width: 240,
     alignItems: 'center',
     justifyContent: 'flex-end',
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
     position: 'relative',
-  },
-  topbarSettingsSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  topbarInboundButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: HEYWAY_COLORS.background.macosHover,
-  },
-  topbarSettingsButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: HEYWAY_COLORS.background.macosHover,
   },
   topbarSettingsDropdown: {
     position: 'absolute',
-    top: 40,
+    top: 44,
     right: 0,
     backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
     zIndex: 1001,
-    minWidth: 180,
-    paddingVertical: HEYWAY_SPACING.sm,
+    minWidth: 200,
+    paddingVertical: 8,
   },
   topbarDropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.sm,
-    gap: HEYWAY_SPACING.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
   },
   topbarDropdownText: {
     fontSize: 14,
     fontWeight: '500',
-    color: HEYWAY_COLORS.text.secondary,
+    color: '#424242',
   },
 
-  /* --- USER INFO IN HEADER STYLES ------------------------------------------ */
+  // Clean User Info Section
   userInfoSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
   },
   avatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: HEYWAY_COLORS.fill.tertiary,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F5F5F5',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.primary,
+    borderColor: '#E0E0E0',
   },
   avatarInitial: {
-    fontSize: 13,
-    color: HEYWAY_COLORS.text.secondary,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#757575',
   },
   accountTextCol: {
-    minWidth: 200,
+    minWidth: 180,
   },
   profileFieldsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
   },
   nameFieldContainer: {
-    paddingVertical: 2,
-    paddingHorizontal: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     flex: 1,
   },
   callerIdFieldContainer: {
-    paddingVertical: 2,
-    paddingHorizontal: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     flex: 1,
   },
   userName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    lineHeight: 14,
+    color: '#1C1C1E',
+    lineHeight: 18,
   },
   callerIdText: {
-    fontSize: 11,
-    color: HEYWAY_COLORS.text.secondary,
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#757575',
   },
   editNameContainer: {
-    minWidth: 150,
+    minWidth: 160,
   },
   nameInput: {
-    fontSize: 12,
-    color: HEYWAY_COLORS.text.primary,
-    backgroundColor: HEYWAY_COLORS.fill.quaternary,
-    borderRadius: HEYWAY_RADIUS.sm,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    marginBottom: 4,
+    fontSize: 13,
+    color: '#1C1C1E',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 8,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.secondary,
-    height: 24,
+    borderColor: '#E0E0E0',
+    height: 28,
   },
   editButtons: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 8,
   },
   saveButton: {
-    backgroundColor: HEYWAY_COLORS.accent.success,
-    borderRadius: HEYWAY_RADIUS.sm,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: '#34C759',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     flex: 1,
-    height: 20,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },
   saveButtonText: {
-    color: HEYWAY_COLORS.text.inverse,
-    fontSize: 10,
+    color: '#FFFFFF',
+    fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
   },
   cancelButton: {
-    backgroundColor: HEYWAY_COLORS.fill.quaternary,
-    borderRadius: HEYWAY_RADIUS.sm,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     flex: 1,
     borderWidth: 1,
-    borderColor: HEYWAY_COLORS.border.secondary,
-    height: 20,
+    borderColor: '#E0E0E0',
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },
   cancelButtonText: {
-    color: HEYWAY_COLORS.text.secondary,
-    fontSize: 10,
+    color: '#757575',
+    fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
   },
   settingsIconBtn: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: HEYWAY_COLORS.fill.quaternary,
-  },
-
-  // Search Overlay Styles
-  searchOverlay: {
-    position: 'absolute',
-    top: 44 + 8 + 14, // Header height + sidebar margin + sidebar top padding
-    left: 8 + 16, // Sidebar left margin + sidebar internal padding
-    width: 224 - 32, // Sidebar width minus internal padding (16px on each side)
-    zIndex: 1001, // Above sidebar but below modals
-  },
-  overlaySearchContainer: {
-    position: 'relative',
-  },
-  overlaySearchIcon: {
-    position: 'absolute',
-    left: 12,
-    top: 6,
-    zIndex: 1,
-  },
-  overlaySearchInput: {
-    backgroundColor: HEYWAY_COLORS.background.macosHover,
-    borderRadius: HEYWAY_RADIUS.lg,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    paddingLeft: 36,
-    fontSize: 14,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    backgroundColor: '#F5F5F5',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HEYWAY_COLORS.border.secondary,
-    ...HEYWAY_SHADOWS.light.xs,
-    height: 32,
+    borderColor: '#E0E0E0',
   },
 
-  // Mobile Floating Action Button
+  // Clean Mobile FAB
   mobileFloatingActionContainer: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 100 : 85, // Above bottom navigation
-    right: HEYWAY_SPACING.lg,
+    bottom: Platform.OS === 'ios' ? 100 : 85,
+    right: 20,
     zIndex: 1000,
   },
 
@@ -908,30 +821,30 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: HEYWAY_COLORS.interactive.whatsappGreen,
+    backgroundColor: '#007AFF',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: HEYWAY_COLORS.interactive.whatsappGreen,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowColor: '#007AFF',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
     elevation: 8,
   },
 
-  // Loading fallback styles
+  // Clean Loading States
   loadingFallback: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: HEYWAY_COLORS.background.primary,
-    gap: HEYWAY_SPACING.md,
+    backgroundColor: '#FFFFFF',
+    gap: 16,
   },
 
   loadingText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
-    fontWeight: '500' as const,
-    color: HEYWAY_COLORS.text.secondary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#757575',
+    letterSpacing: 0,
   },
 });
 
