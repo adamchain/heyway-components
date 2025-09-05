@@ -337,34 +337,26 @@ const GroupRow = ({ name, count, active, onPress }: { name: string; count: numbe
 const SIDEBAR_WIDTH = 224;
 
 const styles = StyleSheet.create({
-  // Clean sidebar container with sharp borders
+  // Modern minimal sidebar container
   sidebarContainer: {
     width: SIDEBAR_WIDTH,
     height: '100%',
-    borderRightWidth: 1,
-    borderRightColor: '#d1d1d6', // Clean sharp border
-    ...HEYWAY_SHADOWS.light.sm, // Subtle shadow
-    overflow: 'hidden', // clips blur & highlight to rounded edge
-    backgroundColor: '#F1F3F4', // Slightly darker gray background
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    overflow: 'hidden',
+    ...HEYWAY_SHADOWS.sm,
   },
-  // Web fallback when BlurView isn't available
   webGlassFallback: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#F1F3F4', // Slightly darker gray background
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
-  // inner highlight ring for glass rim
   innerHighlight: {
     ...StyleSheet.absoluteFillObject,
-    borderRightWidth: 0,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-    borderBottomWidth: 0,
-    // subtle inner top highlight
     shadowColor: '#FFFFFF',
-    shadowOpacity: 0.55,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
   },
-  // actual content wrapper to restore solid padding
   sidebarContent: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -372,21 +364,23 @@ const styles = StyleSheet.create({
 
   mobileSidebar: {
     position: 'absolute',
-    left: 8,
-    top: 8,
-    bottom: 8,
-    right: 8,
+    left: HEYWAY_SPACING.sm,
+    top: HEYWAY_SPACING.sm,
+    bottom: HEYWAY_SPACING.sm,
+    right: HEYWAY_SPACING.sm,
     zIndex: 20,
-    borderRadius: HEYWAY_RADIUS.lg, // Add curved corners for mobile too
+    borderRadius: HEYWAY_RADIUS.lg,
   },
-  hiddenMobileSidebar: { transform: [{ translateX: -(SIDEBAR_WIDTH + 16) }] }, // Account for margins
+  hiddenMobileSidebar: { 
+    transform: [{ translateX: -(SIDEBAR_WIDTH + 16) }] 
+  },
 
   header: {
-    paddingHorizontal: 16,
-    paddingVertical: 11,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7', // Clean border
-    backgroundColor: '#F1F3F4', // Slightly darker gray background
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
     alignItems: 'center',
   },
 
@@ -396,47 +390,39 @@ const styles = StyleSheet.create({
   },
   newButton: {
     width: '100%',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    borderRadius: HEYWAY_RADIUS.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 34,
-    backgroundColor: '#007AFF', // Clean blue
-    shadowColor: '#007AFF',
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    height: 36,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
     flexDirection: 'row',
-    gap: 6,
+    gap: HEYWAY_SPACING.xs,
+    ...HEYWAY_SHADOWS.sm,
   },
   newButtonText: {
     color: HEYWAY_COLORS.text.inverse,
-    fontSize: 16,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: '600',
-    letterSpacing: -0.2,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   chevronIcon: {
-    marginLeft: 2,
+    marginLeft: HEYWAY_SPACING.xs,
   },
   dropdown: {
     position: 'absolute',
-    top: 42,
+    top: 40,
     left: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
     paddingVertical: HEYWAY_SPACING.sm,
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
     zIndex: 1000,
-    ...webView({
-      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)'
-    } as any),
+    ...HEYWAY_SHADOWS.md,
+    ...webView({ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' } as any),
   },
   dropdownItem: {
     flexDirection: 'row',
@@ -447,140 +433,178 @@ const styles = StyleSheet.create({
     ...webView({ cursor: 'pointer' as any }),
   },
   dropdownItemText: {
-    fontSize: 14,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     fontWeight: '500',
     color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.2,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
-  body: { flex: 1 },
-  bodyContent: { paddingVertical: HEYWAY_SPACING.xs },
+  body: { 
+    flex: 1 
+  },
+  bodyContent: { 
+    paddingVertical: HEYWAY_SPACING.sm 
+  },
 
   navItem: {
-    height: 32,
+    height: 36,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 12,
+    paddingLeft: HEYWAY_SPACING.lg,
+    paddingRight: HEYWAY_SPACING.md,
     backgroundColor: 'transparent',
-    borderRadius: 8, // Rounder corners for consistency
+    borderRadius: HEYWAY_RADIUS.md,
+    marginHorizontal: HEYWAY_SPACING.sm,
+    marginVertical: 1,
     ...webView({ cursor: 'pointer' as any }),
   },
   navItemActive: {
-    backgroundColor: '#E5E7EB', // Darker gray background
-    borderRadius: 8, // Rounder corners
+    backgroundColor: HEYWAY_COLORS.background.selected,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.xs,
   },
   navIconWrap: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
+    marginRight: HEYWAY_SPACING.sm,
   },
   navLabel: {
-    fontSize: 16,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
-  navLabelActive: { fontWeight: '600' },
+  navLabelActive: { 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+  },
 
   sectionHeaderRow: {
     marginTop: HEYWAY_SPACING.lg,
-    marginBottom: HEYWAY_SPACING.xs,
-    paddingHorizontal: HEYWAY_SPACING.sm,
+    marginBottom: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   sectionLabel: {
-    fontSize: 11,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
     fontWeight: '500',
-    color: HEYWAY_COLORS.text.tertiary,
-    letterSpacing: 0.5,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
     textTransform: 'uppercase',
   },
   createBtn: {
-    width: 20, height: 20, alignItems: 'center', justifyContent: 'center',
-    borderRadius: 10,
-    backgroundColor: HEYWAY_COLORS.fill.quaternary,
-    borderWidth: 0.5, borderColor: HEYWAY_COLORS.border.tertiary,
+    width: 20, 
+    height: 20, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    borderRadius: HEYWAY_RADIUS.sm,
+    backgroundColor: HEYWAY_COLORS.background.hover,
+    borderWidth: StyleSheet.hairlineWidth, 
+    borderColor: HEYWAY_COLORS.border.primary,
     ...webView({ cursor: 'pointer' as any }),
   },
 
   emptyGroupsState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: HEYWAY_SPACING.xl,
-    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.xxl,
+    paddingHorizontal: HEYWAY_SPACING.lg,
     gap: HEYWAY_SPACING.xs,
   },
   emptyGroupsText: {
-    fontSize: 13,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     fontWeight: '600',
     color: HEYWAY_COLORS.text.primary,
-    letterSpacing: -0.2,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
-  emptyGroupsSubtext: { fontSize: 15, color: HEYWAY_COLORS.text.secondary },
+  emptyGroupsSubtext: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline, 
+    color: HEYWAY_COLORS.text.secondary 
+  },
 
   collapseRow: {
-    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.xs,
     ...webView({ cursor: 'pointer' as any }),
   },
-  collapseText: { fontSize: 12, color: HEYWAY_COLORS.text.tertiary },
+  collapseText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption, 
+    color: HEYWAY_COLORS.text.secondary 
+  },
 
   groupRow: {
-    marginHorizontal: HEYWAY_SPACING.sm,
-    height: 28,
-    borderRadius: 6,
+    marginHorizontal: HEYWAY_SPACING.lg,
+    height: 32,
+    borderRadius: HEYWAY_RADIUS.sm,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 40,
+    paddingLeft: 36,
     paddingRight: HEYWAY_SPACING.sm,
     backgroundColor: 'transparent',
     ...webView({ cursor: 'pointer' as any }),
   },
-  groupRowActive: { backgroundColor: 'rgba(255,255,255,0.12)' },
+  groupRowActive: { 
+    backgroundColor: HEYWAY_COLORS.background.selected 
+  },
   groupIconWrap: {
     position: 'absolute',
-    left: 12,
-    width: 20, height: 20,
-    alignItems: 'center', justifyContent: 'center',
+    left: HEYWAY_SPACING.md,
+    width: 16, 
+    height: 16,
+    alignItems: 'center', 
+    justifyContent: 'center',
   },
-  groupName: { flex: 1, fontSize: 12, color: HEYWAY_COLORS.text.secondary },
-  groupNameActive: { color: HEYWAY_COLORS.text.primary, fontWeight: '500' },
+  groupName: { 
+    flex: 1, 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.footnote, 
+    color: HEYWAY_COLORS.text.secondary 
+  },
+  groupNameActive: { 
+    color: HEYWAY_COLORS.text.primary, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium 
+  },
   badge: {
-    backgroundColor: '#6B6B6B',
+    backgroundColor: HEYWAY_COLORS.text.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
-    paddingHorizontal: 4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: HEYWAY_RADIUS.sm,
+    paddingHorizontal: HEYWAY_SPACING.xs,
   },
   badgeText: {
-    fontSize: 11,
-    color: '#FFFFFF',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    color: HEYWAY_COLORS.text.inverse,
     fontWeight: '600',
   },
 
   footer: {
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E7',
-    padding: HEYWAY_SPACING.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: HEYWAY_COLORS.border.primary,
+    padding: HEYWAY_SPACING.lg,
     gap: HEYWAY_SPACING.sm,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
 
   answeringBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: HEYWAY_SPACING.sm,
-    paddingVertical: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    borderRadius: HEYWAY_RADIUS.sm,
+    backgroundColor: 'transparent',
     ...webView({ cursor: 'pointer' as any }),
   },
-  answeringText: { fontSize: 13, fontWeight: '600' },
+  answeringText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.footnote, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold 
+  },
 
-  /* --- LEGAL LINKS STYLES ------------------------------------------ */
   legalLinksContainer: {
     marginTop: HEYWAY_SPACING.sm,
     gap: HEYWAY_SPACING.xs,
@@ -592,25 +616,27 @@ const styles = StyleSheet.create({
     gap: HEYWAY_SPACING.xs,
   },
   legalLink: {
-    paddingVertical: 2,
-    paddingHorizontal: 4,
+    paddingVertical: HEYWAY_SPACING.xs,
+    paddingHorizontal: HEYWAY_SPACING.xs,
     ...webView({ cursor: 'pointer' as any }),
   },
   legalLinkText: {
-    fontSize: 10,
-    color: HEYWAY_COLORS.text.tertiary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    color: HEYWAY_COLORS.text.secondary,
     fontWeight: '500',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   legalSeparator: {
-    fontSize: 10,
-    color: HEYWAY_COLORS.text.tertiary,
-    fontWeight: '400',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    color: HEYWAY_COLORS.text.secondary,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
   },
   copyrightText: {
-    fontSize: 9,
-    color: HEYWAY_COLORS.text.tertiary,
-    fontWeight: '400',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    color: HEYWAY_COLORS.text.secondary,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });
 
