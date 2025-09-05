@@ -631,7 +631,7 @@ export default function AutomationDetailsView({
 
   // Always use embedded mode for side-by-side layout
   return (
-    <View style={styles.rootEmbedded}>
+    <View style={styles.container}>
       {Header}
       {Body}
       {Footer}
@@ -672,49 +672,73 @@ const R = HEYWAY_RADIUS;
 const T = HEYWAY_TYPOGRAPHY;
 
 const styles = StyleSheet.create({
-  rootEmbedded: { flex: 1, backgroundColor: '#fff' },
+  container: { 
+    flex: 1, 
+    backgroundColor: HEYWAY_COLORS.background.primary 
+  },
 
   headerWrap: {
     position: 'relative',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-    backgroundColor: '#F8F9FA',
-    ...HEYWAY_SHADOWS.light.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    ...HEYWAY_SHADOWS.xs,
   },
   headerGlassFallback: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.sm,
   },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  headerLeft: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: HEYWAY_SPACING.sm, 
+    flex: 1 
+  },
   titleCol: { flex: 1 },
   subject: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.macosPrimary,
-    letterSpacing: -0.1,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' },
+  metaRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: HEYWAY_SPACING.xs, 
+    marginTop: HEYWAY_SPACING.xs, 
+    flexWrap: 'wrap' 
+  },
   statusRow: { flexDirection: 'row', alignItems: 'center' },
   metaPill: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
     textTransform: 'uppercase',
-    color: HEYWAY_COLORS.text.macosPrimary,
-    backgroundColor: 'rgba(0,0,0,0.06)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 999,
+    color: HEYWAY_COLORS.text.primary,
+    backgroundColor: HEYWAY_COLORS.background.active,
+    paddingHorizontal: HEYWAY_SPACING.xs,
+    paddingVertical: HEYWAY_SPACING.xxs,
+    borderRadius: HEYWAY_RADIUS.full,
   },
-  dot: { color: HEYWAY_COLORS.text.tertiary, marginHorizontal: 2 },
-  metaText: { fontSize: 11, color: HEYWAY_COLORS.text.macosSecondary },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  dot: { 
+    color: HEYWAY_COLORS.text.tertiary, 
+    marginHorizontal: HEYWAY_SPACING.xxs 
+  },
+  metaText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption, 
+    color: HEYWAY_COLORS.text.secondary 
+  },
+  headerRight: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: HEYWAY_SPACING.md 
+  },
   headerInfo: { flex: 1, alignItems: 'flex-end', marginRight: 8 },
 
   // Toggle Button Styles
@@ -725,27 +749,28 @@ const styles = StyleSheet.create({
   toggleButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    minWidth: 60,
+    gap: HEYWAY_SPACING.xs,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.xs,
+    borderRadius: HEYWAY_RADIUS.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    minWidth: 64,
     justifyContent: 'center',
-    ...HEYWAY_SHADOWS.light.xs,
+    ...HEYWAY_SHADOWS.xs,
   },
   toggleButtonActive: {
-    backgroundColor: '#4CAF50',
-    borderColor: '#4CAF50',
+    backgroundColor: HEYWAY_COLORS.status.success,
+    borderColor: HEYWAY_COLORS.status.success,
   },
   toggleButtonInactive: {
-    backgroundColor: '#F8F9FA',
-    borderColor: '#E5E5E7',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderColor: HEYWAY_COLORS.border.primary,
   },
   toggleButtonText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
     textTransform: 'uppercase',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
   },
   toggleButtonTextActive: {
     color: HEYWAY_COLORS.text.inverse,
@@ -756,21 +781,21 @@ const styles = StyleSheet.create({
 
   body: { flex: 1 },
   bodyContent: {
-    paddingHorizontal: 14,
-    paddingTop: 12,
-    paddingBottom: 16,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingTop: HEYWAY_SPACING.md,
+    paddingBottom: HEYWAY_SPACING.lg,
     maxWidth: 800, // Max width for larger screens
     alignSelf: 'center', // Center the content
     width: '100%', // Take full width on smaller screens
   },
 
   drawer: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    borderRadius: 8,
-    ...HEYWAY_SHADOWS.light.sm,
-    marginBottom: 10,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.sm,
+    marginBottom: HEYWAY_SPACING.sm,
     maxWidth: 950, // Much wider than transcript bubbles (400px)
     alignSelf: 'center', // Center the drawer
     width: '100%', // Take full width on smaller screens
@@ -779,42 +804,79 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: '#F8F9FA',
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderTopLeftRadius: HEYWAY_RADIUS.md,
+    borderTopRightRadius: HEYWAY_RADIUS.md,
   },
-  drawerTitle: { fontSize: 12, fontWeight: '700', color: HEYWAY_COLORS.text.macosPrimary, textTransform: 'uppercase' },
-  drawerBody: { paddingHorizontal: 10, paddingVertical: 8, gap: 4 },
-  drawerLine: { fontSize: 12, color: HEYWAY_COLORS.text.macosSecondary },
-  drawerStrong: { fontWeight: '700', color: HEYWAY_COLORS.text.macosPrimary },
-  drawerMuted: { color: HEYWAY_COLORS.text.tertiary, fontStyle: 'italic' },
-  drawerReason: { fontSize: 12, color: HEYWAY_COLORS.text.macosSecondary, lineHeight: 18 },
+  drawerTitle: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold, 
+    color: HEYWAY_COLORS.text.primary, 
+    textTransform: 'uppercase',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
+  },
+  drawerBody: { 
+    paddingHorizontal: HEYWAY_SPACING.sm, 
+    paddingVertical: HEYWAY_SPACING.xs, 
+    gap: HEYWAY_SPACING.xs 
+  },
+  drawerLine: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption, 
+    color: HEYWAY_COLORS.text.secondary 
+  },
+  drawerStrong: { 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold, 
+    color: HEYWAY_COLORS.text.primary 
+  },
+  drawerMuted: { 
+    color: HEYWAY_COLORS.text.tertiary, 
+    fontStyle: 'italic' 
+  },
+  drawerReason: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption, 
+    color: HEYWAY_COLORS.text.secondary, 
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.caption 
+  },
 
-  thread: { gap: 8 },
-  messageRow: { flexDirection: 'row', alignItems: 'flex-end', marginVertical: 2 },
+  thread: { gap: HEYWAY_SPACING.md },
+  messageRow: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-end', 
+    marginVertical: HEYWAY_SPACING.xs 
+  },
   leftAlignedRow: { justifyContent: 'flex-start' },
   messageBubble: {
-    maxWidth: 400,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    maxWidth: 360,
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.xs,
   },
   leftAlignedBubble: {
-    backgroundColor: '#F8F9FA',
-    borderBottomLeftRadius: 4,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderBottomLeftRadius: HEYWAY_RADIUS.xs,
   },
-  messageText: { fontSize: 13, lineHeight: 18 },
-  leftAlignedText: { color: HEYWAY_COLORS.text.macosPrimary },
-  messageBold: { fontWeight: '600' },
+  messageText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline, 
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.subheadline 
+  },
+  leftAlignedText: { 
+    color: HEYWAY_COLORS.text.primary 
+  },
+  messageBold: { 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold 
+  },
 
   // Contacts Section Styles
   contactsSection: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    borderRadius: 8,
-    ...HEYWAY_SHADOWS.light.sm,
-    marginBottom: 10,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.sm,
+    marginBottom: HEYWAY_SPACING.sm,
     maxWidth: 950,
     alignSelf: 'center',
     width: '100%',
@@ -823,162 +885,193 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-    backgroundColor: '#F8F9FA',
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderTopLeftRadius: HEYWAY_RADIUS.md,
+    borderTopRightRadius: HEYWAY_RADIUS.md,
   },
   contactsToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: HEYWAY_SPACING.md,
     flex: 1,
   },
   contactsToggleText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.macosPrimary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactsActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: HEYWAY_SPACING.md,
   },
   contactsActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    ...HEYWAY_SHADOWS.light.xs,
+    gap: HEYWAY_SPACING.xs,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
+    borderRadius: HEYWAY_RADIUS.xs,
+    ...HEYWAY_SHADOWS.xs,
   },
   contactsActionText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.inverse,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactsList: {
-    paddingVertical: 8,
+    paddingVertical: HEYWAY_SPACING.md,
   },
   contactsLoading: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 20,
-    gap: 8,
+    paddingVertical: HEYWAY_SPACING.xl,
+    gap: HEYWAY_SPACING.md,
   },
   contactsLoadingText: {
-    fontSize: 13,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactsEmpty: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 24,
-    gap: 8,
+    paddingVertical: HEYWAY_SPACING.xxl,
+    gap: HEYWAY_SPACING.md,
   },
   contactsEmptyText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactsEmptySubtext: {
-    fontSize: 12,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.caption,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactsFlatList: {
     maxHeight: 200,
   },
   contactsFlatListContent: {
-    paddingHorizontal: 12,
+    paddingHorizontal: HEYWAY_SPACING.md,
   },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    paddingVertical: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.secondary,
   },
   contactInfo: {
     flex: 1,
   },
   contactName: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: HEYWAY_COLORS.text.macosPrimary,
-    marginBottom: 2,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.primary,
+    marginBottom: HEYWAY_SPACING.xxs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactPhone: {
-    fontSize: 12,
-    color: HEYWAY_COLORS.text.macosSecondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   contactMeta: {
     alignItems: 'flex-end',
   },
   contactDate: {
-    fontSize: 11,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
     color: HEYWAY_COLORS.text.tertiary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
-  empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 32 },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: HEYWAY_COLORS.text.macosPrimary, marginBottom: 6 },
-  emptyText: { fontSize: 13, color: HEYWAY_COLORS.text.macosSecondary },
+  empty: { 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingVertical: HEYWAY_SPACING.xxxl 
+  },
+  emptyTitle: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold, 
+    color: HEYWAY_COLORS.text.primary, 
+    marginBottom: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
+  },
+  emptyText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline, 
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+  },
 
   footer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E7',
-    backgroundColor: '#FFFFFF',
+    gap: HEYWAY_SPACING.md,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
   inputWrap: {
     flex: 1,
-    borderRadius: 8,
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
+    borderRadius: HEYWAY_RADIUS.md,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
   },
   input: {
-    minHeight: 36,
+    minHeight: 40,
     maxHeight: 120,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    fontSize: 13,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    paddingHorizontal: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.xs,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    color: HEYWAY_COLORS.text.primary,
   },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    ...HEYWAY_SHADOWS.light.sm,
+    gap: HEYWAY_SPACING.xs,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.sm,
   },
-  primaryBtnLabel: { fontSize: 13, fontWeight: '700', color: HEYWAY_COLORS.text.inverse },
+  primaryBtnLabel: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold, 
+    color: HEYWAY_COLORS.text.inverse,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+  },
 
   retryButton: {
     marginTop: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.sm,
+    paddingVertical: HEYWAY_SPACING.md,
     paddingHorizontal: HEYWAY_SPACING.lg,
     backgroundColor: HEYWAY_COLORS.interactive.primary,
-    borderRadius: HEYWAY_RADIUS.md,
+    borderRadius: HEYWAY_RADIUS.lg,
+    ...HEYWAY_SHADOWS.sm,
   },
   retryButtonText: {
     color: HEYWAY_COLORS.text.inverse,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 });
 
@@ -992,13 +1085,14 @@ function HeaderIcon({ children, onPress }: { children: React.ReactNode; onPress?
 
 const headerIconStyles = StyleSheet.create({
   btn: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: HEYWAY_SPACING.xxxl,
+    height: HEYWAY_SPACING.xxxl,
+    borderRadius: HEYWAY_RADIUS.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
   },
 });
