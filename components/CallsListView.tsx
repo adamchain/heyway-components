@@ -1110,18 +1110,18 @@ const styles = StyleSheet.create({
     flex: 1,
 
     overflow: 'visible',
-    ...HEYWAY_SHADOWS.light.sm,
+    ...HEYWAY_SHADOWS.xs,
     borderRightWidth: 1,
-    borderRightColor: '#E5E5E7',
-    backgroundColor: '#FFFFFF',
+    borderRightColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
   webGlassFallback: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
   innerHighlight: {
     ...StyleSheet.absoluteFillObject,
-    shadowColor: '#FFFFFF',
+    shadowColor: HEYWAY_COLORS.background.primary,
     shadowOpacity: 0.45,
     shadowRadius: 0,
   },
@@ -1133,11 +1133,11 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
     paddingBottom: 6,
     paddingTop: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
   },
   compactHeaderRow: {
     flexDirection: 'row',
@@ -1151,7 +1151,7 @@ const styles = StyleSheet.create({
   compactTitle: {
     fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
     ...(Platform.OS === 'web' ? { userSelect: 'none' } : {}),
   },
   compactControlsContainer: {
@@ -1162,14 +1162,14 @@ const styles = StyleSheet.create({
     gap: HEYWAY_SPACING.sm,
   },
   compactFilterButton: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.md,
     paddingHorizontal: 8,
     paddingVertical: 4,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E5E7',
+    borderColor: HEYWAY_COLORS.border.primary,
     ...(Platform.OS === 'web' ? { cursor: 'pointer' } : {}),
   },
   compactFilterButtonContent: { flexDirection: 'row', alignItems: 'center', gap: 4 },
@@ -1213,11 +1213,11 @@ const styles = StyleSheet.create({
     top: 40,
     left: 12,
     right: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
     zIndex: 1000,
     maxHeight: 300,
   },
@@ -1240,11 +1240,11 @@ const styles = StyleSheet.create({
 
   // Dropdown menu shared
   filterDropdownMenu: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
     marginTop: HEYWAY_SPACING.sm,
     maxHeight: 300,
     zIndex: 1001,
@@ -1273,14 +1273,14 @@ const styles = StyleSheet.create({
 
   // Call item
   callCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderRadius: 0,
     marginHorizontal: 0,
     marginVertical: 0,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
     minHeight: 56,
     position: 'relative',
     ...(Platform.OS === 'web' ? { cursor: 'pointer' } : {}),
@@ -1305,41 +1305,41 @@ const styles = StyleSheet.create({
   callCardHeaderAnalysis: { marginLeft: 4 },
   callCardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   callCardName: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.large
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body
   },
   callCardNameSelected: {
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold
   },
   callCardSubject: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body,
     marginTop: 1
   },
   callCardSubjectSelected: {
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold
   },
   callCardTime: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption1,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.macosSecondary,
+    color: HEYWAY_COLORS.text.secondary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal
   },
   callCardTimeSelected: {
-    color: HEYWAY_COLORS.text.macosSecondary
+    color: HEYWAY_COLORS.text.secondary
   },
   callCardMessage: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.callout,
     color: HEYWAY_COLORS.text.secondary,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.callout,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   callCardMessageContainer: {
@@ -1348,10 +1348,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   callCardMessageBold: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.callout,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.secondary,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.callout,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   callCardMessageBoldSelected: {
@@ -1378,11 +1378,11 @@ const styles = StyleSheet.create({
     right: 12,
     top: '100%',
     minWidth: 180,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
     zIndex: 99999,
     paddingVertical: 6,
     elevation: 10,
@@ -1505,7 +1505,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E7',
+    borderTopColor: HEYWAY_COLORS.border.primary,
   },
   loadMoreText: {
     fontSize: 13,
@@ -1515,7 +1515,7 @@ const styles = StyleSheet.create({
 
   // Toggles / chevron states
   hideEmptyToggleActive: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: HEYWAY_COLORS.background.secondary,
   },
   toggleIndicatorActive: {
     backgroundColor: HEYWAY_COLORS.interactive.primary,
@@ -1541,9 +1541,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     minHeight: 44,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
   },
   mobileBackButton: {
     padding: 8,
@@ -1588,16 +1588,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
+    borderBottomColor: HEYWAY_COLORS.border.primary,
   },
   mobileSearchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.md,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
@@ -1617,11 +1617,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 44, // Adjust based on header height
     right: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
     borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
     zIndex: 1002,
     minWidth: 180,
     elevation: 10,
@@ -1643,4 +1643,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: HEYWAY_COLORS.text.primary,
   },
-}); // Fixed HEYWAY_TYPOGRAPHY references
+});
