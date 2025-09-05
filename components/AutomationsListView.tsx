@@ -36,7 +36,6 @@ import {
   HEYWAY_TYPOGRAPHY,
   HEYWAY_RADIUS,
   HEYWAY_SHADOWS,
-  HEYWAY_CHAT_PATTERNS,
 } from '../styles/HEYWAY_STYLE_GUIDE';
 
 interface Automation {
@@ -443,24 +442,16 @@ function AutomationsListView({
       flex: 1,
 
       overflow: 'visible',
-      ...HEYWAY_SHADOWS.light.sm,
-      borderRightWidth: isFullWidth ? 0 : 1,
-      borderRightColor: '#E5E5E7',
-      backgroundColor: '#FFFFFF',
+      ...HEYWAY_SHADOWS.sm,
+      borderRightWidth: isFullWidth ? 0 : StyleSheet.hairlineWidth,
+      borderRightColor: HEYWAY_COLORS.border.primary,
+      backgroundColor: HEYWAY_COLORS.background.primary,
     },
   });
 
   return (
     <View style={dynamicStyles.panelContainer} accessibilityRole="none" accessibilityLabel="Automations list">
       {/* Liquid Glass layer */}
-      {Platform.OS !== 'web' ? (
-        <BlurView tint="light" intensity={30} style={StyleSheet.absoluteFill} />
-      ) : (
-        <View style={styles.webGlassFallback} />
-      )}
-      {/* Inner highlight (glass rim) */}
-      <View pointerEvents="none" style={styles.innerHighlight} />
-
       {/* Content */}
       <View style={styles.panelContent}>
         {/* Header */}
@@ -748,17 +739,6 @@ const getEmptySubtitle = (section: string) => {
 const PANEL_MIN_WIDTH = 360; // friendly width for list next to summary
 
 const styles = StyleSheet.create({
-  // Clean panel wrapper - now handled by dynamic styles
-  webGlassFallback: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#FFFFFF',
-  },
-  innerHighlight: {
-    ...StyleSheet.absoluteFillObject,
-    shadowColor: '#FFFFFF',
-    shadowOpacity: 0.45,
-    shadowRadius: 0,
-  },
   panelContent: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -767,25 +747,28 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    backgroundColor: '#FFFFFF',
-    paddingBottom: 6,
-    paddingTop: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    paddingBottom: HEYWAY_SPACING.xs,
+    paddingTop: HEYWAY_SPACING.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
   },
   compactHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    minHeight: 38,
-    gap: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    minHeight: 40,
+    gap: HEYWAY_SPACING.md,
   },
-  compactTitleContainer: { minWidth: 60 },
+  compactTitleContainer: { 
+    minWidth: HEYWAY_SPACING.xxxxl 
+  },
   compactTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title1,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
     ...webText({ userSelect: 'none' as any }),
   },
   compactControlsContainer: {
@@ -793,46 +776,54 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: HEYWAY_SPACING.sm,
+    gap: HEYWAY_SPACING.md,
   },
   compactFilterButton: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderRadius: HEYWAY_RADIUS.md,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingVertical: HEYWAY_SPACING.xs,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
     ...webView({ cursor: 'pointer' as any }),
   },
-  compactFilterButtonContent: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  compactFilterButtonText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption1, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.primary },
-  compactChevron: { marginLeft: 2 },
+  compactFilterButtonContent: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: HEYWAY_SPACING.xs 
+  },
+  compactFilterButtonText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, 
+    color: HEYWAY_COLORS.text.primary 
+  },
+  compactChevron: { 
+    marginLeft: HEYWAY_SPACING.xs 
+  },
   compactPlusButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#007AFF',
+    width: HEYWAY_SPACING.xxxl,
+    height: HEYWAY_SPACING.xxxl,
+    borderRadius: HEYWAY_SPACING.lg,
+    backgroundColor: HEYWAY_COLORS.interactive.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#007AFF',
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    ...HEYWAY_SHADOWS.sm,
     ...webView({ cursor: 'pointer' as any }),
   },
 
   compactFilterDropdownContainer: {
     position: 'absolute',
-    top: 40,
-    left: 12,
-    right: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
+    top: 44,
+    left: HEYWAY_SPACING.md,
+    right: HEYWAY_SPACING.md,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.md,
     zIndex: 1000,
     maxHeight: 300,
   },
@@ -855,48 +846,66 @@ const styles = StyleSheet.create({
 
   // Dropdown menu shared
   filterDropdownMenu: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.md,
-    marginTop: HEYWAY_SPACING.sm,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.md,
+    marginTop: HEYWAY_SPACING.md,
     maxHeight: 300,
     zIndex: 1001,
   },
-  filterCategory: { paddingVertical: HEYWAY_SPACING.sm },
-  filterCategoryTitle: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: HEYWAY_COLORS.text.tertiary,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingBottom: HEYWAY_SPACING.xs,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: HEYWAY_COLORS.border.divider,
-    marginBottom: HEYWAY_SPACING.xs,
+  filterCategory: { 
+    paddingVertical: HEYWAY_SPACING.md 
   },
-  filterDropdownItem: { paddingHorizontal: HEYWAY_SPACING.md, paddingVertical: HEYWAY_SPACING.sm },
-  filterDropdownItemActive: { backgroundColor: '#F0F9FF' },
-  filterDropdownItemContent: { flexDirection: 'row', alignItems: 'center', gap: HEYWAY_SPACING.sm },
-  filterDropdownItemText: { fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium, fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, color: HEYWAY_COLORS.text.secondary },
-  filterDropdownItemTextActive: { color: HEYWAY_COLORS.interactive.primary, fontWeight: '600' },
+  filterCategoryTitle: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.bold,
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
+    textTransform: 'uppercase',
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingBottom: HEYWAY_SPACING.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    marginBottom: HEYWAY_SPACING.sm,
+  },
+  filterDropdownItem: { 
+    paddingHorizontal: HEYWAY_SPACING.lg, 
+    paddingVertical: HEYWAY_SPACING.md 
+  },
+  filterDropdownItemActive: { 
+    backgroundColor: HEYWAY_COLORS.background.selected 
+  },
+  filterDropdownItemContent: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: HEYWAY_SPACING.md 
+  },
+  filterDropdownItemText: { 
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium, 
+    color: HEYWAY_COLORS.text.secondary 
+  },
+  filterDropdownItemTextActive: { 
+    color: HEYWAY_COLORS.interactive.primary, 
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold 
+  },
 
   // Overlay to dismiss menus
   menuOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 },
 
   // Automation item
   automationCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderRadius: 0,
     marginHorizontal: 0,
     marginVertical: 0,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-    minHeight: 56,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    minHeight: 60,
     position: 'relative',
     ...webView({ cursor: 'pointer' as any }),
     // Ensure proper stacking context for dropdowns
@@ -904,42 +913,49 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   automationCardSelected: {
-    backgroundColor: '#F0F9FF',
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
+    backgroundColor: HEYWAY_COLORS.background.selected,
+    borderLeftWidth: HEYWAY_SPACING.xs,
+    borderLeftColor: HEYWAY_COLORS.interactive.primary,
     zIndex: 2,
   },
   automationCardContent: {
     flex: 1,
     overflow: 'visible',
   },
-  automationCardMain: { flex: 1, gap: 2 },
+  automationCardMain: { 
+    flex: 1, 
+    gap: HEYWAY_SPACING.xs 
+  },
   automationCardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  automationCardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  automationCardMeta: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: HEYWAY_SPACING.xs 
+  },
   automationCardName: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.large,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
-    color: HEYWAY_COLORS.text.macosPrimary,
+    color: HEYWAY_COLORS.text.primary,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.large
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body
   },
   automationCardNameSelected: {
-    color: HEYWAY_COLORS.text.macosPrimary,
-    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold
+    color: HEYWAY_COLORS.text.primary,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
   },
   automationCardTime: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption1,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
-    color: HEYWAY_COLORS.text.macosSecondary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal
+    color: HEYWAY_COLORS.text.secondary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   automationCardTimeSelected: {
-    color: HEYWAY_COLORS.text.macosSecondary
+    color: HEYWAY_COLORS.text.secondary,
   },
   automationCardMessage: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     color: HEYWAY_COLORS.text.secondary,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   automationCardMessageContainer: {
@@ -948,10 +964,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   automationCardMessageBold: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.secondary,
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.normal * HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   automationCardMessageBoldSelected: {
@@ -964,19 +980,20 @@ const styles = StyleSheet.create({
 
   // Status indicator and quick action button
   statusIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 4,
+    width: HEYWAY_SPACING.xs,
+    height: HEYWAY_SPACING.xs,
+    borderRadius: HEYWAY_RADIUS.xs,
   },
   quickActionButton: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 6,
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
+    borderRadius: HEYWAY_RADIUS.xs,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
   },
 
   // Loading / Empty
@@ -984,74 +1001,82 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: HEYWAY_SPACING.lg,
     backgroundColor: 'transparent',
-    gap: HEYWAY_SPACING.md,
+    gap: HEYWAY_SPACING.lg,
   },
   loadingTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title2,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   loadingSubtitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   errorContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: HEYWAY_SPACING.xl,
+    padding: HEYWAY_SPACING.xxl,
     backgroundColor: 'transparent',
-    gap: HEYWAY_SPACING.md,
+    gap: HEYWAY_SPACING.lg,
   },
   errorTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title3,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title2,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   errorMessage: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   retryButton: {
     backgroundColor: HEYWAY_COLORS.interactive.primary,
-    paddingHorizontal: HEYWAY_SPACING.lg,
-    paddingVertical: HEYWAY_SPACING.sm,
-    borderRadius: HEYWAY_RADIUS.md,
-    marginTop: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    paddingVertical: HEYWAY_SPACING.md,
+    borderRadius: HEYWAY_RADIUS.lg,
+    marginTop: HEYWAY_SPACING.md,
+    ...HEYWAY_SHADOWS.sm,
     ...webView({ cursor: 'pointer' as any }),
   },
   retryButtonText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.medium,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.inverse,
     textAlign: 'center',
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
   emptyState: {
-    paddingVertical: 40,
-    paddingHorizontal: 16,
+    paddingVertical: HEYWAY_SPACING.giant,
+    paddingHorizontal: HEYWAY_SPACING.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: HEYWAY_SPACING.md,
   },
   emptyTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.title2,
     fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
   emptyText: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body.small,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    marginTop: 2,
+    marginTop: HEYWAY_SPACING.xs,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
   // Toggles / chevron states
