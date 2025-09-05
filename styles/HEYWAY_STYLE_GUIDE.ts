@@ -250,8 +250,7 @@ export const HEYWAY_ACCESSIBILITY = {
     normal: 250,
     slow: 400,
   },
-};
-
+  window: {
     minWidth: 360,
     maxWidth: 1440,
     headerHeight: HEYWAY_LAYOUT.window.headerHeight,
