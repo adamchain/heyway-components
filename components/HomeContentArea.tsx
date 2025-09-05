@@ -364,10 +364,9 @@ const HomeContentArea: React.FC<HomeContentAreaProps> = ({
 };
 
 const styles = StyleSheet.create({
-  /* --- ROOT CANVAS ------------------------------------------------------ */
   mainContentArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Clean white background
+    backgroundColor: HEYWAY_COLORS.background.primary,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -377,11 +376,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     marginLeft: 0,
     paddingLeft: 0,
-    backgroundColor: '#FFFFFF', // Clean white background
+    backgroundColor: HEYWAY_COLORS.background.primary,
     paddingBottom: 0,
   },
 
-  /* --- LAYOUT ----------------------------------------------------------- */
   twoSectionLayout: {
     flex: 1,
     flexDirection: 'row',
@@ -393,56 +391,60 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
-  /* Left list pane (Calls list) - Clean minimalist */
   leftHalfPanel: {
-    width: 420,
-    minWidth: 360,
-    maxWidth: 460,
-    backgroundColor: '#FFFFFF',
+    width: 400,
+    minWidth: 320,
+    maxWidth: 480,
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderRightWidth: 1,
-    borderRightColor: '#E5E5E7', // Clean sharp border
-    ...HEYWAY_SHADOWS.light.xs,
-    paddingTop: 60, // Space for search bar overlay
+    borderRightColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
+    paddingTop: 56,
   },
 
-  /* Right details pane (Call details) - Clean minimalist */
   rightHalfPanel: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8, // Clean rounded corners
-    ...HEYWAY_SHADOWS.light.sm,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.sm,
   },
 
-  /* Single-pane modes (Contacts, Business, Keypad, Automations, etc.) - Clean minimalist */
   fullWidthPanel: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8, // Clean rounded corners
-    ...HEYWAY_SHADOWS.light.xs,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    ...HEYWAY_SHADOWS.xs,
   },
 
-  /* --- MOBILE STACKING - Clean minimalist ----------------------------- */
   mobileLeftHalf: {
     position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     borderRightWidth: 0,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 0, // No radius on mobile for full coverage
-    paddingTop: 0, // Remove desktop search bar padding on mobile
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: 0,
+    paddingTop: 0,
   },
 
   mobileRightHalf: {
     position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 0, // No radius on mobile for full coverage
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: 0,
   },
 
   mobileFullWidthPanel: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
 
-  mobileHiddenPanel: { display: 'none' },
+  mobileHiddenPanel: {
+    display: 'none',
+  },
 
   desktopFullWidthPanel: {
     flex: 1,
@@ -451,175 +453,174 @@ const styles = StyleSheet.create({
   },
 
   desktopHiddenPanel: {
-    display: 'none'
+    display: 'none',
   },
 
-  /* --- TWO SECTION LAYOUT STYLES ------------------------------- */
   twoSectionContainer: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
   },
 
-  /* --- OPTIONAL PANE TOOLBARS (Clean minimalist) ------------------------- */
   paneToolbar: {
-    height: 48,
+    height: 44,
     paddingHorizontal: HEYWAY_SPACING.lg,
     alignItems: 'center',
     flexDirection: 'row',
     gap: HEYWAY_SPACING.md,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: HEYWAY_COLORS.background.primary,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.xs,
-  },
-  paneTitle: {
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.large,
-    fontWeight: '600',
-    color: HEYWAY_COLORS.text.primary,
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
-  },
-  paneSubtitle: {
-    marginLeft: 'auto',
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
-    color: HEYWAY_COLORS.text.tertiary,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
   },
 
-  /* --- MOBILE BACK (Clean minimalist) ------------------------------------ */
+  paneTitle: {
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    color: HEYWAY_COLORS.text.primary,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+  },
+
+  paneSubtitle: {
+    marginLeft: 'auto',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    color: HEYWAY_COLORS.text.secondary,
+  },
+
   mobileBackButton: {
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-    backgroundColor: '#F8F9FA', // Clean light background
-    ...HEYWAY_SHADOWS.light.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    ...HEYWAY_SHADOWS.xs,
   },
+
   backButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: HEYWAY_SPACING.sm,
   },
+
   backButtonText: {
-    fontSize: 17,
-    fontWeight: '500',
-    color: '#1D1D1F', // Clean dark text
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.medium,
+    color: HEYWAY_COLORS.text.primary,
   },
 
-  /* --- EMPTY / LOADING STATES ------------------------------------------ */
   detailsPlaceholder: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: HEYWAY_SPACING.xxxxl,
-    gap: HEYWAY_SPACING.lg,
-    // glass-lite card floating on the AI wash
+    paddingHorizontal: HEYWAY_SPACING.xl,
+    gap: HEYWAY_SPACING.md,
     backgroundColor: 'transparent',
   },
 
-  // wrapper card to use around placeholders or Suspense fallbacks (Clean minimalist)
   placeholderCard: {
     alignItems: 'center',
     justifyContent: 'center',
     gap: HEYWAY_SPACING.md,
-    paddingVertical: HEYWAY_SPACING.xl,
-    paddingHorizontal: HEYWAY_SPACING.xl,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    borderRadius: 8,
-    ...HEYWAY_SHADOWS.light.md,
+    paddingVertical: HEYWAY_SPACING.xxl,
+    paddingHorizontal: HEYWAY_SPACING.xxl,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    borderRadius: HEYWAY_RADIUS.lg,
+    ...HEYWAY_SHADOWS.md,
   },
 
   detailsPlaceholderText: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.headline,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
     color: HEYWAY_COLORS.text.primary,
     textAlign: 'center',
     marginBottom: HEYWAY_SPACING.xs,
-    letterSpacing: -0.3,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.tight,
   },
 
   detailsPlaceholderSubtext: {
-    fontSize: 17,
-    fontWeight: '400',
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.body,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.regular,
     color: HEYWAY_COLORS.text.secondary,
     textAlign: 'center',
-    lineHeight: 24,
-    maxWidth: 360,
-    letterSpacing: -0.15,
+    lineHeight: HEYWAY_TYPOGRAPHY.lineHeight.relaxed * HEYWAY_TYPOGRAPHY.fontSize.body,
+    maxWidth: 320,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
   },
 
-  /* --- LIST / DETAILS INNER SURFACES ----------------------------------- */
-  // use for inner scroll regions in list/detail children to get a subtle inset look (Clean minimalist)
   insetSurface: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#E5E5E7',
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
   },
 
-  // card shells for child rows (calls, contacts, etc.) - Clean minimalist
   rowCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    ...HEYWAY_SHADOWS.light.xs,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    ...HEYWAY_SHADOWS.xs,
   },
 
-  // minimal section headers inside panes - Clean minimalist
   sectionHeader: {
     paddingHorizontal: HEYWAY_SPACING.lg,
     paddingVertical: HEYWAY_SPACING.sm,
-    backgroundColor: '#F8F9FA',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-  },
-  sectionHeaderText: {
-    color: HEYWAY_COLORS.text.tertiary,
-    fontSize: HEYWAY_TYPOGRAPHY.fontSize.label.small,
-    fontWeight: '600',
-    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.wide,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
   },
 
-  /* --- SEARCH BAR STYLES ------------------------------------------ */
+  sectionHeaderText: {
+    color: HEYWAY_COLORS.text.secondary,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.caption,
+    fontWeight: HEYWAY_TYPOGRAPHY.fontWeight.semibold,
+    letterSpacing: HEYWAY_TYPOGRAPHY.letterSpacing.normal,
+    textTransform: 'uppercase',
+  },
+
   searchBarContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 420,
-    minWidth: 360,
-    maxWidth: 460,
+    width: 400,
+    minWidth: 320,
+    maxWidth: 480,
     zIndex: 100,
-    backgroundColor: '#F8F9FA',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E7',
-    paddingHorizontal: HEYWAY_SPACING.md,
-    paddingVertical: 10,
-    ...HEYWAY_SHADOWS.light.sm,
+    backgroundColor: HEYWAY_COLORS.background.secondary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HEYWAY_COLORS.border.primary,
+    paddingHorizontal: HEYWAY_SPACING.lg,
+    paddingVertical: HEYWAY_SPACING.sm,
+    ...HEYWAY_SHADOWS.sm,
   },
+
   searchBarWrapper: {
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   searchIcon: {
     position: 'absolute',
-    left: 12,
+    left: HEYWAY_SPACING.sm,
     zIndex: 1,
   },
+
   searchInput: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    paddingLeft: 36,
-    fontSize: 14,
-    color: '#1D1D1F',
-    borderWidth: 1,
-    borderColor: '#E5E5E7',
-    height: 36,
+    backgroundColor: HEYWAY_COLORS.background.primary,
+    borderRadius: HEYWAY_RADIUS.md,
+    paddingVertical: HEYWAY_SPACING.sm,
+    paddingHorizontal: HEYWAY_SPACING.md,
+    paddingLeft: 32,
+    fontSize: HEYWAY_TYPOGRAPHY.fontSize.subheadline,
+    color: HEYWAY_COLORS.text.primary,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: HEYWAY_COLORS.border.primary,
+    height: 32,
+    ...HEYWAY_SHADOWS.xs,
   },
 });
 
